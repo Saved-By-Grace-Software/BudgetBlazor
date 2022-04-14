@@ -1,10 +1,9 @@
+using BlazorStrap;
 using BudgetBlazor.Areas.Identity;
 using BudgetBlazor.Data;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,10 +15,27 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<ApplicationDbContext>();
+builder.Services.AddBlazorStrap();
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
 builder.Services.AddSingleton<WeatherForecastService>();
+
+// Server Side Blazor doesn't register HttpClient by default
+if (!builder.Services.Any(x => x.ServiceType == typeof(HttpClient)))
+{
+    // Setup HttpClient for server side in a client side compatible fashion
+    builder.Services.AddScoped<HttpClient>(s =>
+    {
+        // Creating the URI helper needs to wait until the JS Runtime is initialized, so defer it.
+        NavigationManager navman = s.GetRequiredService<NavigationManager>();
+        return new HttpClient
+        {
+            BaseAddress = new Uri(navman.BaseUri)
+        };
+    });
+}
+
 
 var app = builder.Build();
 
