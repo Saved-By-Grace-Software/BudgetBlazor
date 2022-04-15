@@ -1,0 +1,21 @@
+﻿@inject IBlazorStrap _blazorStrap
+
+@foreach (string theme in _themes)
+{
+    <BSDropdownItem OnClick='() => ChangeTheme(theme)'>@theme</BSDropdownItem>
+}
+
+@code
+{
+    private List<string> _themes = new List<string>();
+
+    protected override void OnInitialized()
+    {
+        _themes = Enum.GetNames(typeof(Theme)).ToList();
+    }
+
+    private async Task ChangeTheme(string newTheme)
+    {
+        await _blazorStrap.SetBootstrapCss(newTheme, "5.1.3");
+    }
+}
