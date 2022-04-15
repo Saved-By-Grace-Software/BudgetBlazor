@@ -1,0 +1,19 @@
+﻿@inject NavigationManager Navigation
+@code {
+    protected override void OnInitialized()
+    {
+        var returnUrl = Navigation.ToBaseRelativePath(Navigation.Uri);
+
+        if (string.IsNullOrWhiteSpace(returnUrl))
+        {
+            Navigation.NavigateTo("Identity/Account/Login", true);
+        }
+        else
+        {
+            Navigation.NavigateTo("Identity/Account/Login", true);
+
+            // Return URL not working for some reason
+            //Navigation.NavigateTo($"Identity/Account/Login?returnUrl={returnUrl}", true);
+        }
+     }
+ } 
