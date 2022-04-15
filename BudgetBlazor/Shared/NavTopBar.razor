@@ -1,0 +1,43 @@
+﻿<BSNavbar Color="BSColor.Primary" IsDark="true" IsStickyTop="true">
+    <BSContainer Container="Container.Fluid">
+        <BSNavbarBrand Url="/">SBG Budget</BSNavbarBrand>
+        <BSCollapse IsInNavbar="true">
+            <Toggler>
+                <BSNavbarToggle/>
+            </Toggler>
+            <Content>
+                <BSNav IsPills="true" IsFill="true">
+                    <BSNavItem Url="javascript:void(0);">
+                        <span class="oi oi-pie-chart" aria-hidden="true"></span> Budgets
+                    </BSNavItem>
+                    <BSNavItem Url="javascript:void(0);">
+                        <span class="oi oi-target" aria-hidden="true"></span> Piggy Banks
+                    </BSNavItem>
+                    <BSNavItem Url="javascript:void(0);">
+                        <span class="oi oi-credit-card" aria-hidden="true"></span> Accounts
+                    </BSNavItem>
+                    <BSNavItem Url="javascript:void(0);">
+                        <span class="oi oi-code" aria-hidden="true"></span> Automation
+                    </BSNavItem>
+                    <BSNavItem Url="javascript:void(0);">
+                        <span class="oi oi-cog" aria-hidden="true"></span> Options
+                    </BSNavItem>
+                    <BSNavItem Url="Identity/Account/Manage">
+                        <span class="oi oi-person" aria-hidden="true"></span> Profile
+                    </BSNavItem>
+                </BSNav>
+            </Content>
+        </BSCollapse>
+        <BSDropdown>
+            <Toggler><BSToggle IsButton="true" Color="BSColor.Secondary">Theme</BSToggle></Toggler>
+            <Content>
+                <BSDropdownItem>Action</BSDropdownItem>
+                <BSDropdownItem>Another action</BSDropdownItem>
+                <BSDropdownItem>Something else here</BSDropdownItem>
+            </Content>
+        </BSDropdown>
+        <form method="post" action="Identity/Account/LogOut">
+            <BSButton Color="BSColor.Light" IsOutlined="true" IsSubmit="true" MarginStart="Margins.Small">Log Out</BSButton>
+        </form>
+    </BSContainer>
+</BSNavbar>
