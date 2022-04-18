@@ -4,4 +4,30 @@
 
 <PageTitle>Budgets</PageTitle>
 
-<h1>Budgets!</h1>
+<MudCard>
+    <MudCardHeader>
+        <CardHeaderContent>
+            <MudText Typo="Typo.h6">Budgets</MudText>
+        </CardHeaderContent>
+        <CardHeaderActions>
+            <MudGrid Spacing="0" Justify="Justify.Center">
+                <MudItem xs="3" Style="text-align: right !important; padding: 1rem 0;">
+                    <MudIconButton Icon="@Icons.Filled.ArrowLeft" OnClick="LastMonth" />
+                </MudItem>
+                <MudItem xs="6">
+                    <MudDatePicker 
+                        PickerVariant="PickerVariant.Dialog" 
+                        DateFormat="MMMM yyyy" 
+                        FixDay="1" 
+                        OpenTo="OpenTo.Month" 
+                        IconSize="Size.Large" 
+                        PickerMonthChanged="MonthChanged"
+                        @bind-Date="_currentMonth" />
+                </MudItem>
+                <MudItem xs="3" Style="text-align: left !important; padding: 1rem 0;">
+                    <MudIconButton Icon="@Icons.Filled.ArrowRight" OnClick="NextMonth" />
+                </MudItem>
+            </MudGrid>
+        </CardHeaderActions>
+    </MudCardHeader>
+</MudCard>
