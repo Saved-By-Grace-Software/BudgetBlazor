@@ -4,22 +4,23 @@
     <Authorized>
         <PageTitle>BudgetBlazor</PageTitle>
 
+        <MudThemeProvider Theme="_currentTheme"/>
+        <MudDialogProvider/>
+        <MudSnackbarProvider/>
+
         <MudLayout>
             <AppBar OnSidebarToggled="ToggleSidebar" OnThemeToggled="ToggleTheme" />
 
 	        <NavMenu SideBarOpen="_sidebarOpen" />
 
-            <MudMainContent Class="pt-16 px-16">
-                <MudContainer Class="mt-6">
+            <MudMainContent>
+                <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge">
                     @Body
                 </MudContainer>
             </MudMainContent>
 
         </MudLayout>
 
-        <MudThemeProvider Theme="_currentTheme"/>
-        <MudDialogProvider/>
-        <MudSnackbarProvider/>
     </Authorized>
     <NotAuthorized>
         <LoginRedirect />
