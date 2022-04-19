@@ -58,6 +58,13 @@
             TotalBudgeted = (decimal)random.NextDouble() * Math.Abs(ExpectedIncome);
             ActualIncome = (decimal)random.NextDouble() * Math.Abs((ExpectedIncome + 50) - (ExpectedIncome - 50)) + ExpectedIncome;
             TotalSpent = ((decimal)random.NextDouble() * Math.Abs(ActualIncome));
+
+            BudgetItems.Add(new BudgetItem()
+            {
+                Id = random.Next(10),
+                Name = "Budget Name",
+                Budget = (decimal)random.NextDouble() * Math.Abs(200)
+            });
             // END DEBUG
         }
     }
