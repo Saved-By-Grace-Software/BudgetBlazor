@@ -5,7 +5,7 @@
 <PageTitle>Budgets</PageTitle>
 
 <!-- Header Card -->
-<MudCard Class="mt-2 mb-4 mud-theme-tertiary">
+<MudCard Class="mt-2 mb-4" Style="@($"color:{CurrentTheme.Palette.TertiaryContrastText}; background:{CurrentTheme.Palette.Tertiary};")">
     <MudCardHeader>
         <CardHeaderContent>
             <MudStack Row="true" Spacing="4" AlignItems="AlignItems.Center">
@@ -38,7 +38,7 @@
 </MudCard>
 
 <!-- Income and Total Budget Card -->
-<MudCard Class="my-4" Elevation="3">
+<MudCard Class="my-4" Elevation="3" Style="@($"color:{CurrentTheme.Palette.TextPrimary}; background:{CurrentTheme.Palette.GrayLight};")">
     <MudCardHeader>
         <CardHeaderContent>
             <MudText Typo="Typo.h6">Total Budget - @String.Format("{0:MMMM yyyy}", _currentMonth)</MudText>
@@ -48,13 +48,13 @@
         </CardHeaderActions>
     </MudCardHeader>
     <MudCardContent Class="my-n4">
-        <MudPaper Class="my-2 pa-1" Elevation="1">
+        <MudPaper Class="my-2 pa-1" Elevation="1" Style="@($"color:{CurrentTheme.Palette.TextPrimary}; background:{CurrentTheme.Palette.GrayLighter};")">
             <MudText Typo="Typo.subtitle2"><i>Expected Income - </i>$@String.Format("{0:0.00}", month.ExpectedIncome)</MudText>
             <MudProgressLinear Color="@ColorHelpers.ProgressBarColorReverse(month.PercentBudgeted)" Rounded="true" Size="Size.Large" Value="@month.PercentBudgeted" />
             <MudText Typo="Typo.subtitle2"><i>Total Budgeted - </i>$@String.Format("{0:0.00}", month.TotalBudgeted)</MudText>
         </MudPaper>
         
-        <MudPaper Class="my-2 pa-1" Elevation="1">
+        <MudPaper Class="my-2 pa-1" Elevation="1" Style="@($"color:{CurrentTheme.Palette.TextPrimary}; background:{CurrentTheme.Palette.GrayLighter};")">
             <MudText Typo="Typo.subtitle2"><i>Actual Income - </i>$@String.Format("{0:0.00}", month.ActualIncome)</MudText>
             <MudProgressLinear Color="@ColorHelpers.ProgressBarColor(month.PercentSpent)" Rounded="true" Size="Size.Large" Value="@month.PercentSpent" />
             <MudText Typo="Typo.subtitle2"><i>Total Spent - </i>$@String.Format("{0:0.00}", month.TotalSpent)</MudText>
@@ -63,7 +63,7 @@
 </MudCard>
 
 <!-- Budget Lists -->
-<MudCard Class="my-8" Elevation="3">
+<MudCard Class="my-8" Elevation="3" Style="@($"color:{CurrentTheme.Palette.TextPrimary}; background:{CurrentTheme.Palette.GrayLighter};")">
     <MudCardHeader>
         <CardHeaderContent>
             <MudText Typo="Typo.h6">Budgets</MudText>

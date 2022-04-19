@@ -4,7 +4,7 @@
     <Authorized>
         <PageTitle>BudgetBlazor</PageTitle>
 
-        <MudThemeProvider Theme="_currentTheme"/>
+        <MudThemeProvider Theme="CurrentTheme"/>
         <MudDialogProvider
             FullWidth="true"
             MaxWidth="MaxWidth.Small"
@@ -17,16 +17,17 @@
         <MudSnackbarProvider/>
 
         <MudLayout>
-            <AppBar OnSidebarToggled="ToggleSidebar" OnThemeToggled="ToggleTheme" />
+            <CascadingValue Value="@CurrentTheme">
+                <AppBar OnSidebarToggled="ToggleSidebar" OnThemeToggled="ToggleTheme" />
 
-	        <NavMenu SideBarOpen="_sidebarOpen" />
+	            <NavMenu SideBarOpen="_sidebarOpen" />
 
-            <MudMainContent>
-                <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge">
-                    @Body
-                </MudContainer>
-            </MudMainContent>
-
+                <MudMainContent>
+                    <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge">
+                        @Body
+                    </MudContainer>
+                </MudMainContent>
+            </CascadingValue>
         </MudLayout>
 
     </Authorized>
@@ -37,10 +38,11 @@
 
 @code
 {
-    private MudTheme _currentTheme = new MudTheme();
+    MudTheme CurrentTheme = new MudTheme();
+
 	private bool _sidebarOpen = true;
 
-	private void ToggleTheme(MudTheme changedTheme) => _currentTheme = changedTheme;
+	private void ToggleTheme(MudTheme changedTheme) => CurrentTheme = changedTheme;
 
 	private void ToggleSidebar() => _sidebarOpen = !_sidebarOpen;
 }

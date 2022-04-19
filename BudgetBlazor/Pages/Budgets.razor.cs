@@ -7,12 +7,15 @@ namespace BudgetBlazor.Pages
 {
     public class BudgetsBase : ComponentBase
     {
-        #region Dependency Injection Parameters
+        #region Dependency Injection & Cascading Parameters
         [Inject]
         protected ISnackbar Snackbar { get; set; }
 
         [Inject]
         protected IDialogService DialogService { get; set; }
+
+        [CascadingParameter]
+        protected MudTheme CurrentTheme { get; set; }
         #endregion
 
         // Date for the month that we are currently viewing
@@ -20,6 +23,23 @@ namespace BudgetBlazor.Pages
 
         // DEUBG - This is temporary until I learn EFCore
         protected BudgetMonth month = new BudgetMonth(2022, 4);
+
+        /// <summary>
+        /// Opens the dialog to edit the expected income
+        /// </summary>
+        protected async Task OpenDialog()
+        {
+            // Open the dialog
+            var parameters = new DialogParameters { ["ExpectedIncome"] = month.ExpectedIncome };
+            var dialogRef = DialogService.Show<EditIncomeDialog>("Edit Expected Income", parameters);
+
+            // Wait for a response and update the expected income
+            var res = await dialogRef.Result;
+            if (!res.Cancelled)
+            {
+                month.ExpectedIncome = (decimal)res.Data;
+            }
+        }
 
         #region Switch Month Functions
         /// <summary>
@@ -68,22 +88,5 @@ namespace BudgetBlazor.Pages
             }
         }
         #endregion
-
-        /// <summary>
-        /// Opens the dialog to edit the expected income
-        /// </summary>
-        protected async Task OpenDialog()
-        {
-            // Open the dialog
-            var parameters = new DialogParameters { ["ExpectedIncome"] = month.ExpectedIncome };
-            var dialogRef = DialogService.Show<EditIncomeDialog>("Edit Expected Income", parameters);
-
-            // Wait for a response and update the expected income
-            var res = await dialogRef.Result;
-            if (!res.Cancelled)
-            {
-                month.ExpectedIncome = (decimal)res.Data;
-            }
-        }
     }
 }
