@@ -5,7 +5,15 @@
         <PageTitle>BudgetBlazor</PageTitle>
 
         <MudThemeProvider Theme="_currentTheme"/>
-        <MudDialogProvider/>
+        <MudDialogProvider
+            FullWidth="true"
+            MaxWidth="MaxWidth.Small"
+            CloseButton="true"
+            DisableBackdropClick="true"
+            NoHeader="false"
+            Position="DialogPosition.Center"
+            CloseOnEscapeKey="true"
+        />
         <MudSnackbarProvider/>
 
         <MudLayout>

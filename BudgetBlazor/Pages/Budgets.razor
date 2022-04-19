@@ -1,10 +1,12 @@
 ﻿@attribute [Authorize]
 @page "/Budgets"
 @inherits BudgetsBase
+@inject IDialogService DialogService
 
 <PageTitle>Budgets</PageTitle>
 
-<MudCard>
+<!-- Header Card -->
+<MudCard Class="mt-2 mb-4">
     <MudCardHeader>
         <CardHeaderContent>
             <MudText Typo="Typo.h6">Budgets</MudText>
@@ -30,4 +32,29 @@
             </MudGrid>
         </CardHeaderActions>
     </MudCardHeader>
+</MudCard>
+
+<!-- Income and Total Budget Card -->
+<MudCard Class="my-4">
+    <MudCardHeader>
+        <CardHeaderContent>
+            <MudText Typo="Typo.h6">Total Budget - @String.Format("{0:MMMM yyyy}", _currentMonth)</MudText>
+        </CardHeaderContent>
+        <CardHeaderActions>
+            <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Default" OnClick="OpenDialog" />
+        </CardHeaderActions>
+    </MudCardHeader>
+    <MudCardContent Class="my-n4">
+        <MudPaper Class="my-2 pa-1">
+            <MudText Typo="Typo.subtitle2"><i>Expected Income - </i>$@String.Format("{0:0.00}", month.ExpectedIncome)</MudText>
+            <MudProgressLinear Color="@ColorHelpers.ProgressBarColorReverse(month.PercentBudgeted)" Rounded="true" Size="Size.Large" Value="@month.PercentBudgeted" />
+            <MudText Typo="Typo.subtitle2"><i>Total Budgeted - </i>$@String.Format("{0:0.00}", month.TotalBudgeted)</MudText>
+        </MudPaper>
+        
+        <MudPaper Class="my-2 pa-1">
+            <MudText Typo="Typo.subtitle2"><i>Actual Income - </i>$@String.Format("{0:0.00}", month.ActualIncome)</MudText>
+            <MudProgressLinear Color="@ColorHelpers.ProgressBarColor(month.PercentSpent)" Rounded="true" Size="Size.Large" Value="@month.PercentSpent" />
+            <MudText Typo="Typo.subtitle2"><i>Total Spent - </i>$@String.Format("{0:0.00}", month.TotalSpent)</MudText>
+        </MudPaper>
+    </MudCardContent>
 </MudCard>

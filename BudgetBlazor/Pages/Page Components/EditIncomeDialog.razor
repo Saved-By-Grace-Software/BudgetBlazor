@@ -1,0 +1,18 @@
+﻿<MudDialog>
+    <DialogContent>
+        <MudTextField @bind-Value="ExpectedIncome" Label="Expected Income" Variant="Variant.Outlined"></MudTextField>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">Ok</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+    [Parameter] public decimal ExpectedIncome { get; set; }
+
+    void Submit() => MudDialog.Close(DialogResult.Ok(ExpectedIncome));
+    void Cancel() => MudDialog.Cancel();
+}
