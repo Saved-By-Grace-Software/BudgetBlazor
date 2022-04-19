@@ -9,7 +9,11 @@
 <MudCard Class="mt-2 mb-4">
     <MudCardHeader>
         <CardHeaderContent>
-            <MudText Typo="Typo.h6">Budgets</MudText>
+            <MudContainer  class="d-flex flex-row flex-grow-1 gap-4 align-content-center">
+                <MudIcon Icon="@Icons.Material.Filled.PieChartOutline" Size="Size.Large" />
+                <MudText Typo="Typo.h4">Budgets</MudText>
+            </MudContainer>
+            
         </CardHeaderContent>
         <CardHeaderActions>
             <MudGrid Spacing="0" Justify="Justify.Center">
@@ -56,5 +60,24 @@
             <MudProgressLinear Color="@ColorHelpers.ProgressBarColor(month.PercentSpent)" Rounded="true" Size="Size.Large" Value="@month.PercentSpent" />
             <MudText Typo="Typo.subtitle2"><i>Total Spent - </i>$@String.Format("{0:0.00}", month.TotalSpent)</MudText>
         </MudPaper>
+    </MudCardContent>
+</MudCard>
+
+<!-- Budget Lists -->
+<MudCard Class="my-8">
+    <MudCardHeader>
+        <CardHeaderContent>
+            <MudText Typo="Typo.h6">Budgets</MudText>
+        </CardHeaderContent>
+        <CardHeaderActions>
+            <MudTooltip Text="Add Budget">
+                <MudIconButton Icon="@Icons.Material.Filled.AddCircle" Color="Color.Default" />
+            </MudTooltip>
+            <MudTooltip Text="Add Budget Group">
+                <MudIconButton Icon="@Icons.Material.Filled.LibraryAdd" Color="Color.Default" />
+            </MudTooltip>
+        </CardHeaderActions>
+    </MudCardHeader>
+    <MudCardContent Class="my-n4">
     </MudCardContent>
 </MudCard>
