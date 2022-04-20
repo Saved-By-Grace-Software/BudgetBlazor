@@ -1,13 +1,21 @@
 ﻿<MudDialog>
     <DialogContent>
-        <MudGrid Spacing="4" Justify="Justify.SpaceBetween">
-            <MudItem xs="6">
-                <MudTextField @bind-Value="CategoryName" Label="Category Name" Variant="Variant.Outlined"></MudTextField>
-            </MudItem>
-            <MudItem xs="6">
-                <MudColorPicker Label="Category Color" @bind-Value="CategoryColor" Style="@($"color: {CategoryColor};")" />
-            </MudItem>
-        </MudGrid>
+        <MudForm @ref="form" @bind-IsValid="@success" @bind-Errors="@errors">
+            <MudGrid Spacing="4" Justify="Justify.SpaceBetween">
+                <MudItem xs="6">
+                    <MudTextField @bind-Value="CategoryName" Label="Category Name" Variant="Variant.Outlined" Required="true" RequiredError="Must enter a Category name"></MudTextField>
+                </MudItem>
+                <MudItem xs="6">
+                    <MudColorPicker 
+                        Label="Category Color" 
+                        DisableToolbar="false" 
+                        @bind-Value="CategoryColor" 
+                        Style="@($"color: {CategoryColor};")" 
+                        Required="true" 
+                        RequiredError="Must pick a Category color"/>
+                </MudItem>
+            </MudGrid>
+        </MudForm>
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="Cancel">Cancel</MudButton>
@@ -19,10 +27,29 @@
     [CascadingParameter] MudDialogInstance MudDialog { get; set; }
 
     [Parameter] public string CategoryName { get; set; }
+
     [Parameter] public MudColor CategoryColor { get; set; }
 
-    private MudColor mudCategoryColor { get; set; }
+    MudForm form;
+    bool success;
+    string[] errors = { };
 
-    void Submit() => MudDialog.Close<Tuple<string, string>>(Tuple.Create(CategoryName, CategoryColor.Value));
+    private async Task Submit()
+    {
+        // Validate the form
+        await form.Validate();
+
+        // Manually validate the color (fix this later, should not need to do this)
+        if (CategoryColor != null && !String.IsNullOrWhiteSpace(CategoryColor.Value) && !String.IsNullOrWhiteSpace(CategoryName))
+        {
+            success = true;
+        }
+
+        if (form.IsValid || success)
+        {
+            MudDialog.Close<Tuple<string, string>>(Tuple.Create(CategoryName, CategoryColor.Value));
+        }
+    }
+
     void Cancel() => MudDialog.Cancel();
 }

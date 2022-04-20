@@ -18,16 +18,18 @@ namespace BudgetBlazor.Data.Models
 
         public decimal Remaining { get; set; }
 
-        public BudgetCategory(string name)
+        public BudgetCategory(string name) : this(name, "#1ec8a54d") { }
+
+        public BudgetCategory(string name, string color)
         {
             BudgetItems = new List<BudgetItem>();
             Name = name;
-            Color = "#1ec8a54d";
+            Color = color;
 
             // DEBUG - Fix when real data in EF
             Random random = new Random();
             int numItems = random.Next(5);
-            for (int i=0; i < numItems; i++)
+            for (int i = 0; i < numItems; i++)
             {
                 BudgetItem item = new BudgetItem("Budget " + i);
                 BudgetItems.Add(item);

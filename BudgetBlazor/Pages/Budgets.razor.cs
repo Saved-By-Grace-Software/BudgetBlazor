@@ -27,7 +27,7 @@ namespace BudgetBlazor.Pages
         /// <summary>
         /// Opens the dialog to edit the expected income
         /// </summary>
-        protected async Task OpenDialog()
+        protected async Task OpenEditIncomeDialog()
         {
             // Open the dialog
             var parameters = new DialogParameters { ["ExpectedIncome"] = month.ExpectedIncome };
@@ -38,6 +38,27 @@ namespace BudgetBlazor.Pages
             if (!res.Cancelled)
             {
                 month.ExpectedIncome = (decimal)res.Data;
+            }
+        }
+
+        /// <summary>
+        /// Opens the dialog to add a new budget category
+        /// </summary>
+        /// <returns></returns>
+        protected async Task OpenAddCategoryDialog()
+        {
+            // Open the dialog
+            var parameters = new DialogParameters { ["CategoryName"] = "", ["CategoryColor"] = null };
+            var dialogRef = DialogService.Show<EditCategoryDialog>("Add New Category", parameters);
+
+            // Wait for a response and add the Category
+            var res = await dialogRef.Result;
+            if (!res.Cancelled)
+            {
+                // Add the new category to the month
+                Tuple<string, string> data = (Tuple<string, string>)res.Data;
+                BudgetCategory budgetCategory = new BudgetCategory(data.Item1, data.Item2);
+                month.BudgetCategories.Add(budgetCategory);
             }
         }
 

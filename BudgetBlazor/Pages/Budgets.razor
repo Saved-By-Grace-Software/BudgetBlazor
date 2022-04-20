@@ -44,7 +44,7 @@
             <MudText Typo="Typo.h6">Total Budget - @String.Format("{0:MMMM yyyy}", _currentMonth)</MudText>
         </CardHeaderContent>
         <CardHeaderActions>
-            <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Default" OnClick="OpenDialog" />
+            <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Default" OnClick="OpenEditIncomeDialog" />
         </CardHeaderActions>
     </MudCardHeader>
     <MudCardContent Class="my-n4">
@@ -69,7 +69,7 @@
             <MudText Typo="Typo.h6">Budgets</MudText>
         </CardHeaderContent>
         <CardHeaderActions>
-            <MudIconButton Icon="@Icons.Material.Filled.Add" />
+            <MudIconButton Icon="@Icons.Material.Filled.Add" OnClick="OpenAddCategoryDialog" />
         </CardHeaderActions>
     </MudCardHeader>
     <MudCardContent>
