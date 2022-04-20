@@ -62,6 +62,19 @@ namespace BudgetBlazor.Pages
             }
         }
 
+        /// <summary>
+        /// Callback to delete the budget category
+        /// </summary>
+        /// <param name="categoryToDelete"></param>
+        protected void DeleteCategory(BudgetCategory categoryToDelete)
+        {
+            // Delete the category budgets
+            categoryToDelete.BudgetItems.Clear();
+
+            // Delete the category
+            month.BudgetCategories.Remove(categoryToDelete);
+        }
+
         #region Switch Month Functions
         /// <summary>
         /// Changes to the next month

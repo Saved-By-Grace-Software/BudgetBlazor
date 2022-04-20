@@ -15,7 +15,14 @@
                     <MudStack Row="true" Spacing="4" AlignItems="AlignItems.Center">
                         <MudIcon Icon="@Icons.Material.Filled.Edit" />
                         <MudText>Edit Category</MudText>
-                    </MudStack></MudMenuItem>
+                    </MudStack>
+                </MudMenuItem>
+                <MudMenuItem OnClick="DeleteCategory">
+                    <MudStack Row="true" Spacing="4" AlignItems="AlignItems.Center">
+                        <MudIcon Icon="@Icons.Material.Filled.Delete" />
+                        <MudText>Delete Category</MudText>
+                    </MudStack>
+                </MudMenuItem>
             </MudMenu>
         </CardHeaderActions>
     </MudCardHeader>
@@ -49,6 +56,7 @@
 @code
 {
     [Parameter] public BudgetCategory Category { get; set; }
+    [Parameter] public EventCallback<BudgetCategory> OnDelete { get; set; }
 
     [CascadingParameter]
     private MudTheme CurrentTheme { get; set; }
@@ -96,6 +104,23 @@
 
             // Update the category totals
             Category.UpdateCategoryTotals();
+        }
+    }
+
+    /// <summary>
+    /// Calls the callback to delete the category
+    /// </summary>
+    private async void DeleteCategory()
+    {
+        bool? result = await DialogService.ShowMessageBox(
+            "Warning", 
+            "Deleting a category will delete all budgets inside of it and cannot be undone!", 
+            yesText:"Delete!", cancelText:"Cancel");
+
+        if (result != null && result == true)
+        {
+            // Delete the budget
+            await OnDelete.InvokeAsync(Category);
         }
     }
 
