@@ -5,7 +5,7 @@
         </CardHeaderContent>
         <CardHeaderActions>
             <MudMenu Icon="@Icons.Material.Filled.MoreVert">
-                <MudMenuItem>
+                <MudMenuItem OnClick="OpenAddBudgetDialog">
                     <MudStack Row="true" Spacing="4" AlignItems="AlignItems.Center">
                         <MudIcon Icon="@Icons.Material.Filled.Add" />
                         <MudText>Add Budget</MudText>
@@ -72,6 +72,29 @@
             Tuple<string, string> data = (Tuple<string, string>)res.Data;
             Category.Name = data.Item1;
             Category.Color = data.Item2;
+        }
+    }
+
+    /// <summary>
+    /// Opens the dialog to add a budget to the category
+    /// </summary>
+    /// <returns></returns>
+    protected async Task OpenAddBudgetDialog()
+    {
+        // Open the dialog
+        var parameters = new DialogParameters { ["BudgetName"] = "" };
+        var dialogRef = DialogService.Show<EditBudgetItemDialog>("Add New Budget", parameters);
+
+        // Wait for a response and add the new budget item
+        var res = await dialogRef.Result;
+        if (!res.Cancelled)
+        {
+            // Add the new budget item
+            BudgetItem item = new BudgetItem((string)res.Data);
+            Category.BudgetItems.Add(item);
+
+            // Update the category totals
+            Category.UpdateCategoryTotals();
         }
     }
 }
