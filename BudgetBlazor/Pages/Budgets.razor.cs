@@ -73,6 +73,9 @@ namespace BudgetBlazor.Pages
 
             // Delete the category
             month.BudgetCategories.Remove(categoryToDelete);
+
+            // Update the month totals
+            month.UpdateMonthTotals();
         }
 
         #region Switch Month Functions
