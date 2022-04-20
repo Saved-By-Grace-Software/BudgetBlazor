@@ -31,12 +31,18 @@
                 {
                     <BudgetItemDisplay Item=@item />
                 }
+
+                <MudPaper Elevation="1" Class="pa-2" Style="@($"color:{CurrentTheme.Palette.TextPrimary}; background:{CurrentTheme.Palette.GrayLighter};")">
+                    <MudGrid Spacing="4" Justify="Justify.SpaceBetween">
+                        <MudItem xs="1" Class="d-flex align-center"><MudText Typo="Typo.body1" Align="Align.Left"><strong>TOTALS</strong></MudText></MudItem>
+                        <MudItem xs="3"><MudTextField Value="Category.Budgeted" Label="Budget" Variant="Variant.Text" Format="F2" Margin="Margin.Dense"></MudTextField></MudItem>
+                        <MudItem xs="3"><MudTextField Value="Category.Spent" Label="Spent" Variant="Variant.Text" Format="F2" Margin="Margin.Dense" ReadOnly="true"></MudTextField></MudItem>
+                        <MudItem xs="3"><MudTextField Value="Category.Remaining" Label="Remaining" Variant="Variant.Text" Format="F2" Margin="Margin.Dense" ReadOnly="true"></MudTextField></MudItem>
+                    </MudGrid>
+                </MudPaper>
             </MudStack>
         }
     </MudCardContent>
-    <MudCardActions>
-        <MudText>TOTALS...</MudText>
-    </MudCardActions>
 </MudCard>
 
 @code

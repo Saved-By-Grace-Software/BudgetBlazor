@@ -16,7 +16,7 @@
         public Guid User { get; set; }
         #endregion
 
-        #region Calculation Getters
+        #region Calculated Getters
         public decimal ActualIncome { get; }
 
         public decimal TotalBudgeted { get; }
@@ -59,10 +59,12 @@
             ActualIncome = (decimal)random.NextDouble() * Math.Abs((ExpectedIncome + 50) - (ExpectedIncome - 50)) + ExpectedIncome;
             TotalSpent = ((decimal)random.NextDouble() * Math.Abs(ActualIncome));
 
-            int numCategories = random.Next(6);
+            int numCategories = random.Next(4);
             for (int i = 0; i < numCategories; i++)
             {
-                BudgetCategories.Add(new BudgetCategory("Category " + i));
+                BudgetCategory temp = new BudgetCategory("Category " + i);
+                temp.UpdateCategoryTotals();
+                BudgetCategories.Add(temp);
             }
             // END DEBUG
         }

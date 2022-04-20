@@ -10,10 +10,10 @@
 
         public List<Transaction> Transactions { get; set; }
 
-        #region Calculation Getters
-        public decimal Spent { get; }
+        #region Calculated Getters
+        public decimal Spent { get; set; }
 
-        public decimal Remaining { get; }
+        public decimal Remaining { get; set; }
         #endregion
 
         public BudgetItem(string name)
@@ -25,8 +25,35 @@
             Random random = new Random();
             Budget = (decimal)random.NextDouble() * Math.Abs((300) - (100)) + 100;
             Spent = (decimal)random.NextDouble() * Math.Abs(Budget);
-            Remaining = (decimal)random.NextDouble() * Math.Abs((Budget + 50) - (Budget - 50)) + Budget;
+            Remaining = Budget - Spent;
             // END DEBUG
         }
+
+        #region Calculation Helpers
+        /// <summary>
+        /// Updates the Spent amount for this budget item
+        /// </summary>
+        public void UpdateSpent()
+        {
+            // DEBUG - Commenting this out so it doesn't override the hardcoded test value
+            //decimal total = 0;
+            //foreach (Transaction transaction in Transactions)
+            //{
+            //    total += transaction.Amount;
+            //}
+            //Spent = total;
+        }
+
+        /// <summary>
+        /// Updates the Remaining amount for this budget item
+        /// </summary>
+        public void UpdateRemaining()
+        {
+            // Update the Spent amount first
+            UpdateSpent();
+
+            Remaining = Budget - Spent;
+        }
+        #endregion
     }
 }

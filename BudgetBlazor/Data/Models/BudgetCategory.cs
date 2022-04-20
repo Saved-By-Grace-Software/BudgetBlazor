@@ -12,15 +12,21 @@ namespace BudgetBlazor.Data.Models
 
         public List<BudgetItem> BudgetItems { get; set; }
 
+        public decimal Budgeted { get; set; }
+
+        public decimal Spent { get; set; }
+
+        public decimal Remaining { get; set; }
+
         public BudgetCategory(string name)
         {
             BudgetItems = new List<BudgetItem>();
             Name = name;
-            Color = "rgb(200, 150, 100, 0.3)";
+            Color = "rgb(30, 200, 165, 0.3)";
 
             // DEBUG - Fix when real data in EF
             Random random = new Random();
-            int numItems = random.Next(10);
+            int numItems = random.Next(5);
             for (int i=0; i < numItems; i++)
             {
                 BudgetItem item = new BudgetItem("Budget " + i);
@@ -28,5 +34,58 @@ namespace BudgetBlazor.Data.Models
             }
             // END DEBUG
         }
+
+        #region Calculation Helpers
+        /// <summary>
+        /// Updates the total numbers for the category
+        /// </summary>
+        public void UpdateCategoryTotals()
+        {
+            // We only need to call UpdateRemaining because internally it updates Budgeted and Spent
+            UpdateRemaining();
+        }
+
+        /// <summary>
+        /// Updates the Budgeted amount for this category
+        /// </summary>
+        public void UpdateBudgeted()
+        {
+            decimal total = 0;
+            foreach (BudgetItem item in BudgetItems)
+            {
+                total += item.Budget;
+            }
+            Budgeted = total;
+        }
+
+        /// <summary>
+        /// Updates the Spent amount for this category
+        /// </summary>
+        public void UpdateSpent()
+        {
+            decimal total = 0;
+            foreach (BudgetItem item in BudgetItems)
+            {
+                // Update the Spent amount for this item
+                item.UpdateSpent();
+
+                // Add the udpated amount to the total
+                total += item.Spent;
+            }
+            Spent = total;
+        }
+
+        /// <summary>
+        /// Updates the Remaining amount for this category
+        /// </summary>
+        public void UpdateRemaining()
+        {
+            // Update the Budgeted and Spent amounts first
+            UpdateBudgeted();
+            UpdateSpent();
+
+            Remaining = Budgeted - Spent;
+        }
+        #endregion
     }
 }
