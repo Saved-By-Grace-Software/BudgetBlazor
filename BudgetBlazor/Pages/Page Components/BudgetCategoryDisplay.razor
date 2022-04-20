@@ -29,7 +29,7 @@
             <MudStack Spacing="4" AlignItems="AlignItems.Stretch">
                 @foreach (BudgetItem item in Category.BudgetItems)
                 {
-                    <BudgetItemDisplay Item=@item />
+                    <BudgetItemDisplay Item=@item OnDelete="DeleteBudgetItem" />
                 }
 
                 <MudPaper Elevation="1" Class="pa-2" Style="@($"color:{CurrentTheme.Palette.TextPrimary}; background:{CurrentTheme.Palette.GrayLighter};")">
@@ -37,7 +37,8 @@
                         <MudItem xs="1" Class="d-flex align-center"><MudText Typo="Typo.body1" Align="Align.Left"><strong>TOTALS</strong></MudText></MudItem>
                         <MudItem xs="3"><MudTextField Value="Category.Budgeted" Label="Budget" Variant="Variant.Text" Format="F2" Margin="Margin.Dense"></MudTextField></MudItem>
                         <MudItem xs="3"><MudTextField Value="Category.Spent" Label="Spent" Variant="Variant.Text" Format="F2" Margin="Margin.Dense" ReadOnly="true"></MudTextField></MudItem>
-                        <MudItem xs="3"><MudTextField Value="Category.Remaining" Label="Remaining" Variant="Variant.Text" Format="F2" Margin="Margin.Dense" ReadOnly="true"></MudTextField></MudItem>
+                        <MudItem xs="3"><MudTextField Value="Category.Remaining" Label="Remaining" Variant="Variant.Text" Format="F2" Margin="Margin.Dense" ReadOnly="true"></MudTextField></MudItem> 
+                        <MudItem xs="1"></MudItem>
                     </MudGrid>
                 </MudPaper>
             </MudStack>
@@ -50,16 +51,16 @@
     [Parameter] public BudgetCategory Category { get; set; }
 
     [CascadingParameter]
-    protected MudTheme CurrentTheme { get; set; }
+    private MudTheme CurrentTheme { get; set; }
 
     [Inject]
-    protected IDialogService DialogService { get; set; }
+    private IDialogService DialogService { get; set; }
 
     /// <summary>
     /// Opens the dialog to edit a budget category
     /// </summary>
     /// <returns></returns>
-    protected async Task OpenEditDialog()
+    private async Task OpenEditDialog()
     {
         // Open the dialog
         var parameters = new DialogParameters { ["CategoryName"] = Category.Name, ["CategoryColor"] = new MudColor(Category.Color) };
@@ -79,7 +80,7 @@
     /// Opens the dialog to add a budget to the category
     /// </summary>
     /// <returns></returns>
-    protected async Task OpenAddBudgetDialog()
+    private async Task OpenAddBudgetDialog()
     {
         // Open the dialog
         var parameters = new DialogParameters { ["BudgetName"] = "" };
@@ -96,5 +97,18 @@
             // Update the category totals
             Category.UpdateCategoryTotals();
         }
+    }
+
+    /// <summary>
+    /// Callback to delete a budget item from the category
+    /// </summary>
+    /// <param name="itemToDelete"></param>
+    protected void DeleteBudgetItem(BudgetItem itemToDelete)
+    {
+        // Delete the budget
+        Category.BudgetItems.Remove(itemToDelete);
+
+        // Update the category totals
+        Category.UpdateCategoryTotals();
     }
 }
