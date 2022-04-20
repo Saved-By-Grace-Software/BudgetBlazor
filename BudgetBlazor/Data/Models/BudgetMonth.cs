@@ -11,7 +11,7 @@
 
         public decimal ExpectedIncome { get; set; }
 
-        public List<BudgetItem> BudgetItems { get; set; }
+        public List<BudgetCategory> BudgetCategories { get; set; }
 
         public Guid User { get; set; }
         #endregion
@@ -48,7 +48,7 @@
 
         public BudgetMonth(int year, int month)
         {
-            BudgetItems = new List<BudgetItem>();
+            BudgetCategories = new List<BudgetCategory>();
             Year = year;
             Month = month;
 
@@ -59,12 +59,11 @@
             ActualIncome = (decimal)random.NextDouble() * Math.Abs((ExpectedIncome + 50) - (ExpectedIncome - 50)) + ExpectedIncome;
             TotalSpent = ((decimal)random.NextDouble() * Math.Abs(ActualIncome));
 
-            BudgetItems.Add(new BudgetItem()
+            int numCategories = random.Next(6);
+            for (int i = 0; i < numCategories; i++)
             {
-                Id = random.Next(10),
-                Name = "Budget Name",
-                Budget = (decimal)random.NextDouble() * Math.Abs(200)
-            });
+                BudgetCategories.Add(new BudgetCategory("Category " + i));
+            }
             // END DEBUG
         }
     }

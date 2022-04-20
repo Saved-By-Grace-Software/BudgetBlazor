@@ -1,7 +1,9 @@
 ﻿<MudPaper Elevation="1" Class="pa-2">
-    <MudStack Row="true" Spacing="4" AlignItems="AlignItems.Center">
+    <MudStack Row="true" Spacing="4" AlignItems="AlignItems.Center" Justify="Justify.SpaceEvenly">
         <MudText Typo="Typo.body1"><strong>@Item.Name</strong></MudText>
-        <MudTextField @bind-Value="Item.Budget" Label="Budget" Variant="Variant.Outlined" Format="F2"></MudTextField>
+        <MudTextField @bind-Value="Item.Budget" Label="Budget" Variant="Variant.Outlined" Format="F2" Margin="Margin.Dense"></MudTextField>
+        <MudTextField Value="300" Label="Spent" Variant="Variant.Text" Format="F2" Margin="Margin.Dense" ReadOnly="true"></MudTextField>
+        <MudTextField Value="200" Label="Remaining" Variant="Variant.Text" Format="F2" Margin="Margin.Dense" ReadOnly="true"></MudTextField>
     </MudStack>
 </MudPaper>
 

@@ -1,0 +1,48 @@
+﻿<MudCard Elevation="1" Style="@($"color:{CurrentTheme.Palette.TextPrimary}; background:{Category.Color};")">
+    <MudCardHeader Class="mb-n4">
+        <CardHeaderContent>
+            <MudText Typo="Typo.body1"><strong>@Category.Name</strong></MudText>
+        </CardHeaderContent>
+        <CardHeaderActions>
+            <MudMenu Icon="@Icons.Material.Filled.MoreVert">
+                <MudMenuItem>
+                    <MudStack Row="true" Spacing="4" AlignItems="AlignItems.Center">
+                        <MudIcon Icon="@Icons.Material.Filled.Add" />
+                        <MudText>Add Budget</MudText>
+                    </MudStack>
+                </MudMenuItem>
+                <MudMenuItem>
+                    <MudStack Row="true" Spacing="4" AlignItems="AlignItems.Center">
+                        <MudIcon Icon="@Icons.Material.Filled.Edit" />
+                        <MudText>Edit Category</MudText>
+                    </MudStack></MudMenuItem>
+            </MudMenu>
+        </CardHeaderActions>
+    </MudCardHeader>
+    <MudCardContent>
+        @if (Category.BudgetItems.Count == 0)
+        {
+            <MudText Typo="Typo.body2" Align="Align.Center"><i>No budgets to display for this category</i></MudText>
+        }
+        else
+        {
+            <MudStack Spacing="4" AlignItems="AlignItems.Stretch">
+                @foreach (BudgetItem item in Category.BudgetItems)
+                {
+                    <BudgetItemDisplay Item=@item />
+                }
+            </MudStack>
+        }
+    </MudCardContent>
+    <MudCardActions>
+        <MudText>TOTALS...</MudText>
+    </MudCardActions>
+</MudCard>
+
+@code
+{
+    [Parameter] public BudgetCategory Category { get; set; }
+
+    [CascadingParameter]
+    protected MudTheme CurrentTheme { get; set; }
+}

@@ -69,18 +69,22 @@
             <MudText Typo="Typo.h6">Budgets</MudText>
         </CardHeaderContent>
         <CardHeaderActions>
-            <MudMenu Icon="@Icons.Material.Filled.Add">
-                <MudMenuItem>Add Budget</MudMenuItem>
-                <MudMenuItem>Add Budget Group</MudMenuItem>
-            </MudMenu>
+            <MudIconButton Icon="@Icons.Material.Filled.Add" />
         </CardHeaderActions>
     </MudCardHeader>
     <MudCardContent>
-        <MudStack>
-            <BudgetItemDisplay Item="@month.BudgetItems[0]" />
-            <BudgetItemDisplay Item="@month.BudgetItems[0]" />
-            <BudgetItemDisplay Item="@month.BudgetItems[0]" />
-            <BudgetItemDisplay Item="@month.BudgetItems[0]" />
-        </MudStack>
+        @if (month.BudgetCategories.Count == 0)
+        {
+            <MudText Typo="Typo.body2" Align="Align.Center"><i>No budget categories to display</i></MudText>
+        }
+        else
+        {
+            <MudStack>
+                @foreach(BudgetCategory category in month.BudgetCategories)
+                {
+                    <BudgetCategoryDisplay Category="@category" />
+                }
+            </MudStack>
+        }
     </MudCardContent>
 </MudCard>
