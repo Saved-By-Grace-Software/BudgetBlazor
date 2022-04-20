@@ -4,18 +4,10 @@
 
 <PageTitle>Budgets</PageTitle>
 
-<!-- Header Card -->
-<MudCard Class="mt-2 mb-4" Style="@($"color:{CurrentTheme.Palette.TertiaryContrastText}; background:{CurrentTheme.Palette.Tertiary};")">
-    <MudCardHeader>
-        <CardHeaderContent>
-            <MudStack Row="true" Spacing="4" AlignItems="AlignItems.Center">
-                <MudIcon Icon="@Icons.Material.Filled.PieChartOutline" Size="Size.Large" />
-                <MudText Typo="Typo.h4">Budgets</MudText>
-            </MudStack>
-            
-        </CardHeaderContent>
-        <CardHeaderActions>
-            <MudGrid Spacing="0" Justify="Justify.Center">
+<!-- Page Header -->
+<PageHeader PageIcon="@Icons.Material.Filled.PieChartOutline" PageTitleText="Budgets">
+    <PageHeaderActions>
+        <MudGrid Spacing="0" Justify="Justify.Center">
                 <MudItem xs="3" Style="text-align: right !important; padding: 1rem 0;">
                     <MudIconButton Icon="@Icons.Filled.ArrowLeft" OnClick="LastMonth" />
                 </MudItem>
@@ -33,9 +25,8 @@
                     <MudIconButton Icon="@Icons.Filled.ArrowRight" OnClick="NextMonth" />
                 </MudItem>
             </MudGrid>
-        </CardHeaderActions>
-    </MudCardHeader>
-</MudCard>
+    </PageHeaderActions>
+</PageHeader>
 
 <!-- Income and Total Budget Card -->
 <MudCard Class="my-4" Elevation="3" Style="@($"color:{CurrentTheme.Palette.TextPrimary}; background:{CurrentTheme.Palette.GrayLight};")">

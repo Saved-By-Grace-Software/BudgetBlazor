@@ -1,0 +1,21 @@
+﻿<MudCard Class="mt-2 mb-4" Style="@($"color:{CurrentTheme.Palette.TertiaryContrastText}; background:{CurrentTheme.Palette.Tertiary};")">
+    <MudCardHeader>
+        <CardHeaderContent>
+            <MudStack Row="true" Spacing="4" AlignItems="AlignItems.Center">
+                <MudIcon Icon="@PageIcon" Size="Size.Large" />
+                <MudText Typo="Typo.h4">@PageTitleText</MudText>
+            </MudStack>
+        </CardHeaderContent>
+        <CardHeaderActions>
+            @PageHeaderActions
+        </CardHeaderActions>
+    </MudCardHeader>
+</MudCard>
+
+@code {
+    [CascadingParameter] protected MudTheme CurrentTheme { get; set; }
+
+    [Parameter] public string PageIcon { get; set; }
+    [Parameter] public string PageTitleText { get; set; }
+    [Parameter] public RenderFragment? PageHeaderActions { get; set; }
+}

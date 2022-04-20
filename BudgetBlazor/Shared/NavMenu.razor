@@ -8,7 +8,10 @@
 		<MudNavLink Href="/PiggyBanks" Match="NavLinkMatch.All" Icon="@Icons.Filled.Savings">Piggy Banks</MudNavLink>
 		<MudNavLink Href="/Accounts" Match="NavLinkMatch.All" Icon="@Icons.Filled.CreditCard">Accounts</MudNavLink>
 		<MudNavLink Href="/Automations" Match="NavLinkMatch.All" Icon="@Icons.Filled.Code">Automations</MudNavLink>
-		<MudNavLink Href="/Options" Match="NavLinkMatch.All" Icon="@Icons.Filled.MiscellaneousServices">Options</MudNavLink>
+		<MudNavGroup Title="Settings" Expanded="false" Icon="@Icons.Filled.MiscellaneousServices">
+			<MudNavLink Href="/DefaultBudgets" Match="NavLinkMatch.All" Icon="@Icons.Filled.PieChartOutline">Default Budgets</MudNavLink>
+			<MudNavLink Href="Identity/Account/Manage" Icon="@Icons.Filled.Person">Profile</MudNavLink>
+		</MudNavGroup>
 	</MudNavMenu>
 </MudDrawer>
 
