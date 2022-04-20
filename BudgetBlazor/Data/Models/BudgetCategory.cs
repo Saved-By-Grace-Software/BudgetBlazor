@@ -22,7 +22,7 @@ namespace BudgetBlazor.Data.Models
         {
             BudgetItems = new List<BudgetItem>();
             Name = name;
-            Color = "rgb(30, 200, 165, 0.3)";
+            Color = "#1ec8a54d";
 
             // DEBUG - Fix when real data in EF
             Random random = new Random();

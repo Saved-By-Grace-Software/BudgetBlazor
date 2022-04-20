@@ -1,0 +1,28 @@
+﻿<MudDialog>
+    <DialogContent>
+        <MudGrid Spacing="4" Justify="Justify.SpaceBetween">
+            <MudItem xs="6">
+                <MudTextField @bind-Value="CategoryName" Label="Category Name" Variant="Variant.Outlined"></MudTextField>
+            </MudItem>
+            <MudItem xs="6">
+                <MudColorPicker Label="Category Color" @bind-Value="CategoryColor" Style="@($"color: {CategoryColor};")" />
+            </MudItem>
+        </MudGrid>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">Ok</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+    [Parameter] public string CategoryName { get; set; }
+    [Parameter] public MudColor CategoryColor { get; set; }
+
+    private MudColor mudCategoryColor { get; set; }
+
+    void Submit() => MudDialog.Close<Tuple<string, string>>(Tuple.Create(CategoryName, CategoryColor.Value));
+    void Cancel() => MudDialog.Cancel();
+}
