@@ -16,7 +16,7 @@ namespace BudgetBlazor.Pages
         protected IDialogService DialogService { get; set; }
 
         [Inject]
-        protected IBudgetMonthService BudgetMonthService { get; set; }
+        protected IBudgetDataService BudgetDataService { get; set; }
 
         [CascadingParameter]
         protected MudTheme CurrentTheme { get; set; }
@@ -32,8 +32,11 @@ namespace BudgetBlazor.Pages
         /// <returns></returns>
         protected override async Task OnInitializedAsync()
         {
-            _currentMonth = BudgetMonthService.GetOrCreate(((DateTime)_currentMonthDate).Year, ((DateTime)_currentMonthDate).Month);
+            _currentMonth = BudgetDataService.GetOrCreate(((DateTime)_currentMonthDate).Year, ((DateTime)_currentMonthDate).Month);
+            BudgetDataService.BudgetMonthChanged += BudgetDataService_BudgetMonthChanged;
         }
+
+        
 
         /// <summary>
         /// Opens the dialog to edit the expected income
@@ -49,7 +52,7 @@ namespace BudgetBlazor.Pages
             if (!res.Cancelled)
             {
                 _currentMonth.ExpectedIncome = (decimal)res.Data;
-                BudgetMonthService.Update(_currentMonth);
+                BudgetDataService.Update(_currentMonth);
             }
         }
 
@@ -71,7 +74,7 @@ namespace BudgetBlazor.Pages
                 Tuple<string, string> data = (Tuple<string, string>)res.Data;
                 BudgetCategory budgetCategory = new BudgetCategory(data.Item1, data.Item2);
                 _currentMonth.BudgetCategories.Add(budgetCategory);
-                BudgetMonthService.Update(_currentMonth);
+                BudgetDataService.Update(_currentMonth);
             }
         }
 
@@ -125,10 +128,17 @@ namespace BudgetBlazor.Pages
             if (newDate.HasValue)
             {
                 _currentMonthDate = newDate;
-                _currentMonth = BudgetMonthService.GetOrCreate(((DateTime)_currentMonthDate).Year, ((DateTime)_currentMonthDate).Month);
+                _currentMonth = BudgetDataService.GetOrCreate(((DateTime)_currentMonthDate).Year, ((DateTime)_currentMonthDate).Month);
 
                 Snackbar.Add("Loaded: " + ((DateTime)_currentMonthDate).ToString("MMMM yyyy"));
             }
+        }
+        #endregion
+
+        #region Event Functions
+        private void BudgetDataService_BudgetMonthChanged(BudgetMonth updatedMonth)
+        {
+            Snackbar.Add("Testing!!! " + updatedMonth.Id);
         }
         #endregion
     }

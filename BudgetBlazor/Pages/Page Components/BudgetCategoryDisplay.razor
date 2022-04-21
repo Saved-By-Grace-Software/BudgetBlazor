@@ -57,12 +57,9 @@
 {
     [Parameter] public BudgetCategory Category { get; set; }
     [Parameter] public EventCallback<BudgetCategory> OnDelete { get; set; }
-
-    [CascadingParameter]
-    private MudTheme CurrentTheme { get; set; }
-
-    [Inject]
-    private IDialogService DialogService { get; set; }
+    [CascadingParameter] private MudTheme CurrentTheme { get; set; }
+    [Inject] private IDialogService DialogService { get; set; }
+    [Inject] private IBudgetDataService BudgetDataService { get; set; }
 
     /// <summary>
     /// Opens the dialog to edit a budget category
@@ -81,6 +78,7 @@
             Tuple<string, string> data = (Tuple<string, string>)res.Data;
             Category.Name = data.Item1;
             Category.Color = data.Item2;
+            BudgetDataService.Update(Category);
         }
     }
 

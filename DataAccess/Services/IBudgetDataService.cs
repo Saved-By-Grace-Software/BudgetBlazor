@@ -2,8 +2,12 @@
 
 namespace DataAccess.Services
 {
-    public interface IBudgetMonthService
+    public interface IBudgetDataService
     {
+        // Event to notify subscribers when changes occur
+        public delegate void NotifyMonthChange(BudgetMonth updatedMonth);
+        public event NotifyMonthChange BudgetMonthChanged;
+
         // Create
         BudgetMonth Create(int year, int month);
 
@@ -15,6 +19,7 @@ namespace DataAccess.Services
 
         // Update
         BudgetMonth Update(BudgetMonth budgetMonth);
+        BudgetCategory Update(BudgetCategory budgetCategory);
 
         // Delete
         void Delete(int budgetMonthId);
