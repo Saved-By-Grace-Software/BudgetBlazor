@@ -14,7 +14,7 @@ namespace DataAccess.Models
         [Column(TypeName = "decimal(12,2)")]
         public decimal ExpectedIncome { get; set; }
 
-        public List<BudgetCategory> BudgetCategories { get; set; }
+        public virtual List<BudgetCategory> BudgetCategories { get; set; }
 
         public Guid User { get; set; }
 

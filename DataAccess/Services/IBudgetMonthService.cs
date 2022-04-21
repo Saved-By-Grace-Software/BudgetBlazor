@@ -1,17 +1,16 @@
 ﻿using DataAccess.Models;
 
-namespace BudgetBlazor.Services
+namespace DataAccess.Services
 {
     public interface IBudgetMonthService
     {
         // Create
-        BudgetMonth Create(BudgetMonth budgetMonth);
+        BudgetMonth Create(int year, int month);
 
         // Get
         BudgetMonth Get(int budgetMonthId);
         BudgetMonth Get(int year, int month);
-
-        // GetAll
+        BudgetMonth GetOrCreate(int year, int month);
         List<BudgetMonth> GetAll();
 
         // Update

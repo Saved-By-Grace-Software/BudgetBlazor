@@ -11,7 +11,7 @@ namespace DataAccess.Models
         [Column(TypeName = "decimal(12,2)")]
         public decimal Budget { get; set; }
 
-        public List<Transaction> Transactions { get; set; }
+        public virtual List<Transaction> Transactions { get; set; }
 
         [Column(TypeName = "decimal(12,2)")]
         public decimal Spent { get; set; }

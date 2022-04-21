@@ -10,7 +10,7 @@ namespace DataAccess.Models
 
         public string Color { get; set; }
 
-        public List<BudgetItem> BudgetItems { get; set; }
+        public virtual List<BudgetItem> BudgetItems { get; set; }
 
         [Column(TypeName = "decimal(12,2)")]
         public decimal Budgeted { get; set; }

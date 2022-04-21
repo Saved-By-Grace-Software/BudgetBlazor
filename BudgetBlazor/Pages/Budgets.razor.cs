@@ -1,5 +1,5 @@
 ﻿using BudgetBlazor.Pages.Page_Components;
-using BudgetBlazor.Services;
+using DataAccess.Services;
 using DataAccess.Models;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
@@ -34,7 +34,7 @@ namespace BudgetBlazor.Pages
         /// <returns></returns>
         protected override async Task OnInitializedAsync()
         {
-            month = BudgetMonthService.Get(((DateTime)_currentMonth).Year, ((DateTime)_currentMonth).Month);
+            month = BudgetMonthService.GetOrCreate(((DateTime)_currentMonth).Year, ((DateTime)_currentMonth).Month);
         }
 
         /// <summary>
@@ -130,7 +130,7 @@ namespace BudgetBlazor.Pages
         {
             if (newDate.HasValue)
             {
-                month = BudgetMonthService.Get(((DateTime)_currentMonth).Year, ((DateTime)_currentMonth).Month);
+                month = BudgetMonthService.GetOrCreate(((DateTime)_currentMonth).Year, ((DateTime)_currentMonth).Month);
 
                 Snackbar.Add("Loaded: " + ((DateTime)newDate).ToString("MMMM yyyy"));
             }
