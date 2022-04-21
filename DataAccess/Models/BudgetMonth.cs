@@ -51,21 +51,6 @@
             BudgetCategories = new List<BudgetCategory>();
             Year = year;
             Month = month;
-
-            // DEBUG - Fix when real data in EF
-            Random random = new Random();
-            int numCategories = random.Next(4);
-            for (int i = 0; i < numCategories; i++)
-            {
-                BudgetCategory temp = new BudgetCategory("Category " + i);
-                temp.UpdateCategoryTotals();
-                BudgetCategories.Add(temp);
-            }
-
-            ExpectedIncome = 1000 + (Month * 100);
-            ActualIncome = (decimal)random.NextDouble() * Math.Abs((ExpectedIncome + 50) - (ExpectedIncome - 50)) + ExpectedIncome;
-            UpdateMonthTotals();
-            // END DEBUG
         }
 
         #region Calculation Helpers

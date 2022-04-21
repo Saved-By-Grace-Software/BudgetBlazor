@@ -23,16 +23,6 @@
             BudgetItems = new List<BudgetItem>();
             Name = name;
             Color = color;
-
-            // DEBUG - Fix when real data in EF
-            Random random = new Random();
-            int numItems = random.Next(5);
-            for (int i = 0; i < numItems; i++)
-            {
-                BudgetItem item = new BudgetItem("Budget " + i);
-                BudgetItems.Add(item);
-            }
-            // END DEBUG
         }
 
         #region Calculation Helpers
