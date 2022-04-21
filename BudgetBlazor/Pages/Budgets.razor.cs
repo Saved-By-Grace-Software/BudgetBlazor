@@ -22,11 +22,9 @@ namespace BudgetBlazor.Pages
         protected MudTheme CurrentTheme { get; set; }
         #endregion
 
-        // Date for the month that we are currently viewing
-        protected DateTime? _currentMonth = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
-
-        // DEUBG - This is temporary until I learn EFCore
-        protected BudgetMonth month;
+        // Parameters for the month being displayed
+        protected DateTime? _currentMonthDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+        protected BudgetMonth _currentMonth;
 
         /// <summary>
         /// Lifecycle method called when the page is initialized
@@ -34,7 +32,7 @@ namespace BudgetBlazor.Pages
         /// <returns></returns>
         protected override async Task OnInitializedAsync()
         {
-            month = BudgetMonthService.GetOrCreate(((DateTime)_currentMonth).Year, ((DateTime)_currentMonth).Month);
+            _currentMonth = BudgetMonthService.GetOrCreate(((DateTime)_currentMonthDate).Year, ((DateTime)_currentMonthDate).Month);
         }
 
         /// <summary>
@@ -43,14 +41,15 @@ namespace BudgetBlazor.Pages
         protected async Task OpenEditIncomeDialog()
         {
             // Open the dialog
-            var parameters = new DialogParameters { ["ExpectedIncome"] = month.ExpectedIncome };
+            var parameters = new DialogParameters { ["ExpectedIncome"] = _currentMonth.ExpectedIncome };
             var dialogRef = DialogService.Show<EditIncomeDialog>("Edit Expected Income", parameters);
 
             // Wait for a response and update the expected income
             var res = await dialogRef.Result;
             if (!res.Cancelled)
             {
-                month.ExpectedIncome = (decimal)res.Data;
+                _currentMonth.ExpectedIncome = (decimal)res.Data;
+                BudgetMonthService.Update(_currentMonth);
             }
         }
 
@@ -71,7 +70,8 @@ namespace BudgetBlazor.Pages
                 // Add the new category to the month
                 Tuple<string, string> data = (Tuple<string, string>)res.Data;
                 BudgetCategory budgetCategory = new BudgetCategory(data.Item1, data.Item2);
-                month.BudgetCategories.Add(budgetCategory);
+                _currentMonth.BudgetCategories.Add(budgetCategory);
+                BudgetMonthService.Update(_currentMonth);
             }
         }
 
@@ -85,10 +85,10 @@ namespace BudgetBlazor.Pages
             categoryToDelete.BudgetItems.Clear();
 
             // Delete the category
-            month.BudgetCategories.Remove(categoryToDelete);
+            _currentMonth.BudgetCategories.Remove(categoryToDelete);
 
             // Update the month totals
-            month.UpdateMonthTotals();
+            _currentMonth.UpdateMonthTotals();
         }
 
         #region Switch Month Functions
@@ -97,13 +97,10 @@ namespace BudgetBlazor.Pages
         /// </summary>
         protected void NextMonth()
         {
-            if (_currentMonth.HasValue)
+            if (_currentMonthDate.HasValue)
             {
-                // Update current month to the next month
-                _currentMonth = ((DateTime)_currentMonth).AddMonths(1);
-
                 // Trigger the change to the next month's data
-                MonthChanged(_currentMonth.Value);
+                MonthChanged(((DateTime)_currentMonthDate).AddMonths(1));
             }
         }
 
@@ -112,13 +109,10 @@ namespace BudgetBlazor.Pages
         /// </summary>
         protected void LastMonth()
         {
-            if (_currentMonth.HasValue)
+            if (_currentMonthDate.HasValue)
             {
-                // Update the current month to the previous month
-                _currentMonth = ((DateTime)_currentMonth).AddMonths(-1);
-
                 // Trigger the change to the previous month's data
-                MonthChanged(_currentMonth.Value);
+                MonthChanged(((DateTime)_currentMonthDate).AddMonths(-1));
             }
         }
 
@@ -130,9 +124,10 @@ namespace BudgetBlazor.Pages
         {
             if (newDate.HasValue)
             {
-                month = BudgetMonthService.GetOrCreate(((DateTime)_currentMonth).Year, ((DateTime)_currentMonth).Month);
+                _currentMonthDate = newDate;
+                _currentMonth = BudgetMonthService.GetOrCreate(((DateTime)_currentMonthDate).Year, ((DateTime)_currentMonthDate).Month);
 
-                Snackbar.Add("Loaded: " + ((DateTime)newDate).ToString("MMMM yyyy"));
+                Snackbar.Add("Loaded: " + ((DateTime)_currentMonthDate).ToString("MMMM yyyy"));
             }
         }
         #endregion

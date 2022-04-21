@@ -38,7 +38,7 @@ namespace BudgetBlazor.Helpers
         /// <returns></returns>
         public static Color ProgressBarColorReverse(int percentComplete)
         {
-            if (percentComplete <= 75)
+            if (percentComplete <= 75 || percentComplete > 100)
             {
                 return Color.Error;
             }

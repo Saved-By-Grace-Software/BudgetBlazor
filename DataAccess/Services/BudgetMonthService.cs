@@ -12,6 +12,7 @@ namespace DataAccess.Services
             _db = db;
         }
 
+        #region Create
         public BudgetMonth Create(int year, int month)
         {
             // Create a new budget month
@@ -19,11 +20,14 @@ namespace DataAccess.Services
 
             // Add it to the database
             _db.BudgetMonths.Add(budgetMonth);
+            _db.SaveChanges();
 
             // Return the new month
             return budgetMonth;
         }
+        #endregion
 
+        #region Get
         public BudgetMonth Get(int budgetMonthId)
         {
             throw new NotImplementedException();
@@ -51,15 +55,41 @@ namespace DataAccess.Services
         {
             return _db.BudgetMonths.ToList();
         }
+        #endregion
 
+        #region Update
         public BudgetMonth Update(BudgetMonth budgetMonth)
         {
-            throw new NotImplementedException();
+            BudgetMonth m = _db.BudgetMonths.FirstOrDefault(x => x.Id == budgetMonth.Id);
+
+            if (m != default(BudgetMonth))
+            {
+                // Update the month data
+                m.ActualIncome = budgetMonth.ActualIncome;
+                m.BudgetCategories = budgetMonth.BudgetCategories;
+                m.ExpectedIncome = budgetMonth.ExpectedIncome;
+                m.TotalBudgeted = budgetMonth.TotalBudgeted;
+                m.TotalSpent = budgetMonth.TotalSpent;
+
+                // Save the changes
+                _db.SaveChanges();
+            }
+
+            // This will return null if trying to update a month that doesn't exist
+            return m;
         }
 
+        //public BudgetCategory Update(BudgetCategory budgetCategory)
+        //{
+            
+        //}
+        #endregion
+
+        #region Delete
         public void Delete(int budgetMonthId)
         {
             throw new NotImplementedException();
         }
+        #endregion
     }
 }
