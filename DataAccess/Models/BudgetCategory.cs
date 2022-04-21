@@ -1,4 +1,6 @@
-﻿namespace DataAccess.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace DataAccess.Models
 {
     public class BudgetCategory
     {
@@ -10,10 +12,13 @@
 
         public List<BudgetItem> BudgetItems { get; set; }
 
+        [Column(TypeName = "decimal(12,2)")]
         public decimal Budgeted { get; set; }
 
+        [Column(TypeName = "decimal(12,2)")]
         public decimal Spent { get; set; }
 
+        [Column(TypeName = "decimal(12,2)")]
         public decimal Remaining { get; set; }
 
         public BudgetCategory(string name) : this(name, "#1ec8a54d") { }

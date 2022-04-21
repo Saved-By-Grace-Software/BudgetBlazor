@@ -1,4 +1,6 @@
-﻿namespace DataAccess.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace DataAccess.Models
 {
     public class BudgetMonth
     {
@@ -9,20 +11,23 @@
 
         public int Year { get; set; }
 
+        [Column(TypeName = "decimal(12,2)")]
         public decimal ExpectedIncome { get; set; }
 
         public List<BudgetCategory> BudgetCategories { get; set; }
 
         public Guid User { get; set; }
-        #endregion
 
-        #region Calculated Getters
+        [Column(TypeName = "decimal(12,2)")]
         public decimal ActualIncome { get; set; }
 
+        [Column(TypeName = "decimal(12,2)")]
         public decimal TotalBudgeted { get; set; }
 
+        [Column(TypeName = "decimal(12,2)")]
         public decimal TotalSpent { get; set; }
 
+        [NotMapped]
         public int PercentBudgeted
         {
             get
@@ -34,6 +39,7 @@
             }
         }
 
+        [NotMapped]
         public int PercentSpent
         {
             get

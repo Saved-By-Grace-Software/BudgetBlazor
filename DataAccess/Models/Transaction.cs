@@ -1,4 +1,6 @@
-﻿namespace DataAccess.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace DataAccess.Models
 {
     public class Transaction
     {
@@ -8,6 +10,7 @@
 
         public int TransactionId { get; set; }
 
+        [Column(TypeName = "decimal(12,2)")]
         public decimal Amount { get; set; }
 
         public string? CheckNumber { get; set; }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using DataAccess.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.Data
@@ -9,5 +10,8 @@ namespace DataAccess.Data
             : base(options)
         {
         }
+
+        public DbSet<BudgetMonth> BudgetMonths { get; set; }
+        public DbSet<Transaction> Transactions { get; set; }
     }
 }
