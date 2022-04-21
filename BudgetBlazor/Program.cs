@@ -1,4 +1,5 @@
 using BudgetBlazor.Areas.Identity;
+using BudgetBlazor.Services;
 using DataAccess.Data;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -33,6 +34,7 @@ builder.Services.AddMudServices(config =>
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
+builder.Services.AddScoped<IBudgetMonthService, BudgetMonthService>();
 
 // Server Side Blazor doesn't register HttpClient by default
 if (!builder.Services.Any(x => x.ServiceType == typeof(HttpClient)))

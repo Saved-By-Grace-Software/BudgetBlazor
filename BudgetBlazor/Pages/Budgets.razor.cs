@@ -1,4 +1,5 @@
 ﻿using BudgetBlazor.Pages.Page_Components;
+using BudgetBlazor.Services;
 using DataAccess.Models;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
@@ -14,6 +15,9 @@ namespace BudgetBlazor.Pages
         [Inject]
         protected IDialogService DialogService { get; set; }
 
+        [Inject]
+        protected IBudgetMonthService BudgetMonthService { get; set; }
+
         [CascadingParameter]
         protected MudTheme CurrentTheme { get; set; }
         #endregion
@@ -22,7 +26,16 @@ namespace BudgetBlazor.Pages
         protected DateTime? _currentMonth = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
 
         // DEUBG - This is temporary until I learn EFCore
-        protected BudgetMonth month = new BudgetMonth(2022, 4);
+        protected BudgetMonth month;
+
+        /// <summary>
+        /// Lifecycle method called when the page is initialized
+        /// </summary>
+        /// <returns></returns>
+        protected override async Task OnInitializedAsync()
+        {
+            month = BudgetMonthService.Get(((DateTime)_currentMonth).Year, ((DateTime)_currentMonth).Month);
+        }
 
         /// <summary>
         /// Opens the dialog to edit the expected income
@@ -117,9 +130,7 @@ namespace BudgetBlazor.Pages
         {
             if (newDate.HasValue)
             {
-                // DEBUG - For testing before real data!
-                month = new BudgetMonth(((DateTime)newDate).Year, ((DateTime)newDate).Month);
-                // END DEBUG
+                month = BudgetMonthService.Get(((DateTime)_currentMonth).Year, ((DateTime)_currentMonth).Month);
 
                 Snackbar.Add("Loaded: " + ((DateTime)newDate).ToString("MMMM yyyy"));
             }
