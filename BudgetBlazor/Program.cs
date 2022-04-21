@@ -1,5 +1,5 @@
 using BudgetBlazor.Areas.Identity;
-using BudgetBlazor.Data;
+using DataAccess.Data;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;

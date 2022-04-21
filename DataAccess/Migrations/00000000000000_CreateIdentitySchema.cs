@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Migrations;
 using System;
 
-namespace BudgetBlazor.Data.Migrations
+namespace DataAccess.Migrations
 {
     public partial class CreateIdentitySchema : Migration
     {

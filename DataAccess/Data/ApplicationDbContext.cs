@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace BudgetBlazor.Data
+namespace DataAccess.Data
 {
     public class ApplicationDbContext : IdentityDbContext
     {

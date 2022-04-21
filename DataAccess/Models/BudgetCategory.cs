@@ -1,6 +1,4 @@
-﻿using MudBlazor;
-
-namespace BudgetBlazor.Data.Models
+﻿namespace DataAccess.Models
 {
     public class BudgetCategory
     {

@@ -1,4 +1,4 @@
-﻿namespace BudgetBlazor.Data.Models
+﻿namespace DataAccess.Models
 {
     public class Transaction
     {
