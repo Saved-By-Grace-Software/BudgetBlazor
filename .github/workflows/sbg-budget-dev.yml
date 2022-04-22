@@ -38,3 +38,5 @@ jobs:
       with:
         name: webapp
         path: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
+    - name: Update Database
+      run: dotnet ef database update -c ApplicationDbContext -p DataAccess -s BudgetBlazor
