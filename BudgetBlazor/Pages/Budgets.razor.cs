@@ -3,6 +3,7 @@ using DataAccess.Services;
 using DataAccess.Models;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
+using Microsoft.AspNetCore.Components.Authorization;
 
 namespace BudgetBlazor.Pages
 {
@@ -18,6 +19,9 @@ namespace BudgetBlazor.Pages
         [Inject]
         protected IBudgetDataService BudgetDataService { get; set; }
 
+        [Inject]
+        protected AuthenticationStateProvider AuthenticationStateProvider { get; set; }
+
         [CascadingParameter]
         protected MudTheme CurrentTheme { get; set; }
         #endregion
@@ -25,6 +29,7 @@ namespace BudgetBlazor.Pages
         // Parameters for the month being displayed
         protected DateTime? _currentMonthDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
         protected BudgetMonth _currentMonth;
+        protected Guid _currentUserId;
 
         /// <summary>
         /// Lifecycle method called when the page is initialized
@@ -32,7 +37,10 @@ namespace BudgetBlazor.Pages
         /// <returns></returns>
         protected override async Task OnInitializedAsync()
         {
-            _currentMonth = BudgetDataService.GetOrCreate(((DateTime)_currentMonthDate).Year, ((DateTime)_currentMonthDate).Month);
+            var authstate = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            _currentUserId = Guid.Parse(authstate.User.Claims.First().Value);
+
+            _currentMonth = BudgetDataService.GetOrCreate(((DateTime)_currentMonthDate).Year, ((DateTime)_currentMonthDate).Month, _currentUserId);
             BudgetDataService.BudgetDataChanged += BudgetDataService_BudgetDataChanged;
         }
 
@@ -110,7 +118,7 @@ namespace BudgetBlazor.Pages
             if (newDate.HasValue)
             {
                 _currentMonthDate = newDate;
-                _currentMonth = BudgetDataService.GetOrCreate(((DateTime)_currentMonthDate).Year, ((DateTime)_currentMonthDate).Month);
+                _currentMonth = BudgetDataService.GetOrCreate(((DateTime)_currentMonthDate).Year, ((DateTime)_currentMonthDate).Month, _currentUserId);
 
                 Snackbar.Add("Loaded: " + ((DateTime)_currentMonthDate).ToString("MMMM yyyy"));
             }

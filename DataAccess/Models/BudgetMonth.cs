@@ -52,11 +52,12 @@ namespace DataAccess.Models
         }
         #endregion
 
-        public BudgetMonth(int year, int month)
+        public BudgetMonth(int year, int month, Guid user)
         {
             BudgetCategories = new List<BudgetCategory>();
             Year = year;
             Month = month;
+            User = user;
         }
     }
 }

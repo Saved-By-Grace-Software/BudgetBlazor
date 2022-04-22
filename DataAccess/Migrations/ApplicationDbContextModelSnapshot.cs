@@ -54,7 +54,7 @@ namespace DataAccess.Migrations
 
                     b.HasIndex("BudgetMonthId");
 
-                    b.ToTable("BudgetCategory");
+                    b.ToTable("BudgetCategory", (string)null);
                 });
 
             modelBuilder.Entity("DataAccess.Models.BudgetItem", b =>
@@ -85,7 +85,7 @@ namespace DataAccess.Migrations
 
                     b.HasIndex("BudgetCategoryId");
 
-                    b.ToTable("BudgetItem");
+                    b.ToTable("BudgetItem", (string)null);
                 });
 
             modelBuilder.Entity("DataAccess.Models.BudgetMonth", b =>
@@ -119,7 +119,7 @@ namespace DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("BudgetMonths");
+                    b.ToTable("BudgetMonths", (string)null);
                 });
 
             modelBuilder.Entity("DataAccess.Models.Transaction", b =>
@@ -162,7 +162,7 @@ namespace DataAccess.Migrations
 
                     b.HasIndex("BudgetItemId");
 
-                    b.ToTable("Transactions");
+                    b.ToTable("Transactions", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

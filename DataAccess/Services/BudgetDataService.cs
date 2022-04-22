@@ -14,10 +14,10 @@ namespace DataAccess.Services
         }
 
         #region Create
-        public BudgetMonth Create(int year, int month)
+        public BudgetMonth Create(int year, int month, Guid user)
         {
             // Create a new budget month
-            BudgetMonth budgetMonth = new BudgetMonth(year, month);
+            BudgetMonth budgetMonth = new BudgetMonth(year, month, user);
 
             // Add it to the database
             _db.BudgetMonths.Add(budgetMonth);
@@ -29,32 +29,33 @@ namespace DataAccess.Services
         #endregion
 
         #region Get
-        public BudgetMonth Get(int budgetMonthId)
+        public BudgetMonth Get(int budgetMonthId, Guid user)
         {
-            return _db.Find<BudgetMonth>(budgetMonthId);
+            BudgetMonth dbMonth = _db.Find<BudgetMonth>(budgetMonthId);
+            return (dbMonth.User == user) ? dbMonth : null;
         }
 
-        public BudgetMonth Get(int year, int month)
+        public BudgetMonth Get(int year, int month, Guid user)
         {
-            return _db.BudgetMonths.FirstOrDefault(x => x.Year == year && x.Month == month);
+            return _db.BudgetMonths.FirstOrDefault(x => x.Year == year && x.Month == month && x.User == user);
         }
 
-        public BudgetMonth GetOrCreate(int year, int month)
+        public BudgetMonth GetOrCreate(int year, int month, Guid user)
         {
-            BudgetMonth m = _db.BudgetMonths.FirstOrDefault(x => x.Year == year && x.Month == month);
+            BudgetMonth m = _db.BudgetMonths.FirstOrDefault(x => x.Year == year && x.Month == month && x.User == user);
 
             if (m == default(BudgetMonth))
             {
                 // Current month doesn't exist, create a new one
-                m = Create(year, month);
+                m = Create(year, month, user);
             }
 
             return m;
         }
 
-        public List<BudgetMonth> GetAll()
+        public List<BudgetMonth> GetAll(Guid user)
         {
-            return _db.BudgetMonths.ToList();
+            return _db.BudgetMonths.Where(x => x.User == user).ToList();
         }
         #endregion
 

@@ -9,13 +9,13 @@ namespace DataAccess.Services
         public event NotifyDataChange BudgetDataChanged;
 
         // Create
-        BudgetMonth Create(int year, int month);
+        BudgetMonth Create(int year, int month, Guid user);
 
         // Get
-        BudgetMonth Get(int budgetMonthId);
-        BudgetMonth Get(int year, int month);
-        BudgetMonth GetOrCreate(int year, int month);
-        List<BudgetMonth> GetAll();
+        BudgetMonth Get(int budgetMonthId, Guid user);
+        BudgetMonth Get(int year, int month, Guid user);
+        BudgetMonth GetOrCreate(int year, int month, Guid user);
+        List<BudgetMonth> GetAll(Guid user);
 
         // Update
         BudgetMonth Update(BudgetMonth budgetMonth);
