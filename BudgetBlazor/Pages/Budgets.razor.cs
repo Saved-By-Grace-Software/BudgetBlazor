@@ -33,10 +33,8 @@ namespace BudgetBlazor.Pages
         protected override async Task OnInitializedAsync()
         {
             _currentMonth = BudgetDataService.GetOrCreate(((DateTime)_currentMonthDate).Year, ((DateTime)_currentMonthDate).Month);
-            BudgetDataService.BudgetMonthChanged += BudgetDataService_BudgetMonthChanged;
+            BudgetDataService.BudgetDataChanged += BudgetDataService_BudgetDataChanged;
         }
-
-        
 
         /// <summary>
         /// Opens the dialog to edit the expected income
@@ -76,22 +74,6 @@ namespace BudgetBlazor.Pages
                 _currentMonth.BudgetCategories.Add(budgetCategory);
                 BudgetDataService.Update(_currentMonth);
             }
-        }
-
-        /// <summary>
-        /// Callback to delete the budget category
-        /// </summary>
-        /// <param name="categoryToDelete"></param>
-        protected void DeleteCategory(BudgetCategory categoryToDelete)
-        {
-            // Delete the category budgets
-            categoryToDelete.BudgetItems.Clear();
-
-            // Delete the category
-            _currentMonth.BudgetCategories.Remove(categoryToDelete);
-
-            // Update the month totals
-            _currentMonth.UpdateMonthTotals();
         }
 
         #region Switch Month Functions
@@ -136,9 +118,13 @@ namespace BudgetBlazor.Pages
         #endregion
 
         #region Event Functions
-        private void BudgetDataService_BudgetMonthChanged(BudgetMonth updatedMonth)
+        /// <summary>
+        /// Subscriber to BudgetDataService changed event, updates UI when data has changed
+        /// </summary>
+        private void BudgetDataService_BudgetDataChanged()
         {
-            Snackbar.Add("Testing!!! " + updatedMonth.Id);
+            // Model data has changed, trigger a UI update
+            StateHasChanged();
         }
         #endregion
     }

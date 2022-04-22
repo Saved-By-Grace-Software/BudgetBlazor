@@ -25,10 +25,8 @@
 @code
 {
     [Parameter] public BudgetItem Item { get; set; }
-    [Parameter] public EventCallback<BudgetItem> OnDelete { get; set; }
-
-    [Inject]
-    protected IDialogService DialogService { get; set; }
+    [Inject] protected IDialogService DialogService { get; set; }
+    [Inject] private IBudgetDataService BudgetDataService { get; set; }
 
     /// <summary>
     /// Opens the dialog to add a budget to the category
@@ -44,8 +42,9 @@
         var res = await dialogRef.Result;
         if (!res.Cancelled)
         {
-            // Update the budget
+            // Update the budget name
             Item.Name = (string)res.Data;
+            BudgetDataService.Update(Item);
         }
     }
 
@@ -62,7 +61,7 @@
         if (result != null && result == true)
         {
             // Delete the budget
-            await OnDelete.InvokeAsync(Item);
+            BudgetDataService.Delete(Item);
         }
     }
 }

@@ -29,58 +29,5 @@ namespace DataAccess.Models
             Name = name;
             Color = color;
         }
-
-        #region Calculation Helpers
-        /// <summary>
-        /// Updates the total numbers for the category
-        /// </summary>
-        public void UpdateCategoryTotals()
-        {
-            // We only need to call UpdateRemaining because internally it updates Budgeted and Spent
-            UpdateRemaining();
-        }
-
-        /// <summary>
-        /// Updates the Budgeted amount for this category
-        /// </summary>
-        public void UpdateBudgeted()
-        {
-            decimal total = 0;
-            foreach (BudgetItem item in BudgetItems)
-            {
-                total += item.Budget;
-            }
-            Budgeted = total;
-        }
-
-        /// <summary>
-        /// Updates the Spent amount for this category
-        /// </summary>
-        public void UpdateSpent()
-        {
-            decimal total = 0;
-            foreach (BudgetItem item in BudgetItems)
-            {
-                // Update the Spent amount for this item
-                item.UpdateSpent();
-
-                // Add the udpated amount to the total
-                total += item.Spent;
-            }
-            Spent = total;
-        }
-
-        /// <summary>
-        /// Updates the Remaining amount for this category
-        /// </summary>
-        public void UpdateRemaining()
-        {
-            // Update the Budgeted and Spent amounts first
-            UpdateBudgeted();
-            UpdateSpent();
-
-            Remaining = Budgeted - Spent;
-        }
-        #endregion
     }
 }

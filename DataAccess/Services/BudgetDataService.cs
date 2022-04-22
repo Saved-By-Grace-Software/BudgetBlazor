@@ -6,8 +6,7 @@ namespace DataAccess.Services
     public class BudgetDataService : IBudgetDataService
     {
         private readonly ApplicationDbContext _db;
-
-        public event IBudgetDataService.NotifyMonthChange BudgetMonthChanged;
+        public event IBudgetDataService.NotifyDataChange BudgetDataChanged;
 
         public BudgetDataService(ApplicationDbContext db)
         {
@@ -32,7 +31,7 @@ namespace DataAccess.Services
         #region Get
         public BudgetMonth Get(int budgetMonthId)
         {
-            throw new NotImplementedException();
+            return _db.Find<BudgetMonth>(budgetMonthId);
         }
 
         public BudgetMonth Get(int year, int month)
@@ -62,22 +61,23 @@ namespace DataAccess.Services
         #region Update
         public BudgetMonth Update(BudgetMonth budgetMonth)
         {
-            BudgetMonth m = _db.BudgetMonths.FirstOrDefault(x => x.Id == budgetMonth.Id);
+            BudgetMonth m = _db.Find<BudgetMonth>(budgetMonth.Id);
 
             if (m != default(BudgetMonth))
             {
                 // Update the month's user specified data
                 m.BudgetCategories = budgetMonth.BudgetCategories;
                 m.ExpectedIncome = budgetMonth.ExpectedIncome;
+                _db.SaveChanges();
 
                 // Update the month's calculated totals
-                m.UpdateMonthTotals();
+                UpdateMonthTotals(m);
 
                 // Save the changes
                 _db.SaveChanges();
 
-                // Notify subscribers that the month has been updated
-                RaiseBudgetMonthChanged(m);
+                // Notify subscribers that the budget data been updated
+                RaiseBudgetDataChanged();
             }
 
             // This will return null if trying to update a month that doesn't exist
@@ -86,7 +86,8 @@ namespace DataAccess.Services
 
         public BudgetCategory Update(BudgetCategory budgetCategory)
         {
-            BudgetCategory c = _db.BudgetMonths.SelectMany(m => m.BudgetCategories).FirstOrDefault(x => x.Id == budgetCategory.Id);
+            // Get the category in the database
+            BudgetCategory c = _db.Find<BudgetCategory>(budgetCategory.Id);
 
             if (c != default(BudgetCategory))
             {
@@ -95,19 +96,126 @@ namespace DataAccess.Services
                 c.BudgetItems = budgetCategory.BudgetItems;
                 c.Color = budgetCategory.Color;
                 c.Name = budgetCategory.Name;
+                _db.SaveChanges();
 
                 // Update the month's (parent) calculated totals
                 BudgetMonth parent = GetMonthFromCategory(c);
-                parent?.UpdateMonthTotals();
+                UpdateMonthTotals(parent);
 
                 // Save the changes
                 _db.SaveChanges();
 
                 // Trigger the updated event
-                RaiseBudgetMonthChanged(parent);
+                RaiseBudgetDataChanged();
             }
 
             return c;
+        }
+
+        public BudgetItem Update(BudgetItem budgetItem)
+        {
+            BudgetItem i = _db.Find<BudgetItem>(budgetItem.Id);
+
+            if (i != default(BudgetItem))
+            {
+                // Update the item's user specified data
+                i.Name = budgetItem.Name;
+                i.Budget = budgetItem.Budget;
+                _db.SaveChanges();
+
+                // Update the month's (grandparent) calculated totals
+                BudgetMonth grandparent = GetMonthFromItem(i);
+                UpdateMonthTotals(grandparent);
+
+                // Save the changes
+                _db.SaveChanges();
+
+                // Trigger the updated event
+                RaiseBudgetDataChanged();
+            }
+
+            return i;
+        }
+
+        /// <summary>
+        /// Updates the totals for the given month
+        /// </summary>
+        /// <param name="budgetMonth"></param>
+        public void UpdateMonthTotals(BudgetMonth budgetMonth)
+        {
+            UpdateMonthTotals(budgetMonth.Id);
+        }
+
+        /// <summary>
+        /// Updates the totals for the given month
+        /// </summary>
+        /// <param name="budgetMonthId"></param>
+        public void UpdateMonthTotals(int budgetMonthId)
+        {
+            decimal totalBudgeted = 0;
+            decimal totalSpent = 0;
+            BudgetMonth m = _db.Find<BudgetMonth>(budgetMonthId);
+
+            // Update each category
+            foreach (BudgetCategory category in m.BudgetCategories)
+            {
+                UpdateCategoryTotals(category);
+
+                totalBudgeted += category.Budgeted;
+                totalSpent += category.Spent;
+            }
+
+            m.TotalBudgeted = totalBudgeted;
+            m.TotalSpent = totalSpent;
+
+            _db.SaveChanges();
+        }
+
+        /// <summary>
+        /// Updates the totals for the given category
+        /// </summary>
+        /// <param name="budgetCategory"></param>
+        private void UpdateCategoryTotals(BudgetCategory budgetCategory)
+        {
+            decimal totalBudgeted = 0;
+            decimal totalSpent = 0;
+            BudgetCategory c = _db.Find<BudgetCategory>(budgetCategory.Id);
+
+            // Update each budget
+            foreach (BudgetItem item in c.BudgetItems)
+            {
+                UpdateBudgetItemTotals(item);
+
+                totalBudgeted += item.Budget;
+                totalSpent += item.Spent;
+            }
+
+            c.Budgeted = totalBudgeted;
+            c.Spent = totalSpent;
+            c.Remaining = totalBudgeted - totalSpent;
+
+            _db.SaveChanges();
+        }
+
+        /// <summary>
+        /// Updates the totals for the given budget item
+        /// </summary>
+        /// <param name="budgetItem"></param>
+        private void UpdateBudgetItemTotals(BudgetItem budgetItem)
+        {
+            decimal totalSpent = 0;
+            BudgetItem i = _db.Find<BudgetItem>(budgetItem.Id);
+
+            // Add the total spent in transactions
+            foreach (Transaction transaction in i.Transactions)
+            {
+                totalSpent += transaction.Amount;
+            }
+
+            i.Spent = totalSpent;
+            i.Remaining = i.Budget - totalSpent;
+
+            _db.SaveChanges();
         }
         #endregion
 
@@ -116,19 +224,54 @@ namespace DataAccess.Services
         {
             throw new NotImplementedException();
         }
+
+        public void Delete(BudgetItem budgetItem)
+        {
+            BudgetMonth grandparent = GetMonthFromItem(budgetItem);
+
+            // Delete the budget item
+            _db.Remove(budgetItem);
+            _db.SaveChanges();
+
+            // Update the month's (grandparent) calculated totals
+            UpdateMonthTotals(grandparent);
+
+            // Save the changes
+            _db.SaveChanges();
+
+            // Trigger the updated event
+            RaiseBudgetDataChanged();
+        }
+
+        public void Delete(BudgetCategory budgetCategory)
+        {
+            BudgetMonth parent = GetMonthFromCategory(budgetCategory);
+
+            // Delete the category's budget items
+            _db.RemoveRange(budgetCategory.BudgetItems);
+
+            // Delete the category from the parent month
+            _db.Remove(budgetCategory);
+            _db.SaveChanges();
+
+            // Update the month's (parent) calculated totals
+            UpdateMonthTotals(parent);
+
+            // Save the changes
+            _db.SaveChanges();
+
+            // Trigger the updated event
+            RaiseBudgetDataChanged();
+        }
         #endregion
 
         #region Private Helper Functions
         /// <summary>
-        /// Raises the budget month changed event
+        /// Raises the budget data changed event
         /// </summary>
-        /// <param name="updatedMonth">The month that changed</param>
-        private void RaiseBudgetMonthChanged(BudgetMonth updatedMonth)
+        private void RaiseBudgetDataChanged()
         {
-            if (updatedMonth != null)
-            {
-                BudgetMonthChanged?.Invoke(updatedMonth);
-            }
+            BudgetDataChanged?.Invoke();
         }
 
         /// <summary>
@@ -138,7 +281,25 @@ namespace DataAccess.Services
         /// <returns></returns>
         private BudgetMonth? GetMonthFromCategory(BudgetCategory category)
         {
-            return ((ApplicationDbContext)_db.Entry(category).Context).BudgetMonths.FirstOrDefault();
+            // Get the month ID from the item's parent
+            int monId = (int)_db.Entry(category).Property("BudgetMonthId").CurrentValue;
+
+            // Get the month from the db based on the ID
+            return _db.Find<BudgetMonth>(monId);
+        }
+
+        /// <summary>
+        /// Gets the grandparent month from the given item
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        private BudgetMonth? GetMonthFromItem(BudgetItem item)
+        {
+            // Get the category ID from the item's parent
+            int catId = (int)_db.Entry(item).Property("BudgetCategoryId").CurrentValue;
+
+            // Get the month from the db based on the category
+            return GetMonthFromCategory(_db.Find<BudgetCategory>(catId));
         }
         #endregion
     }

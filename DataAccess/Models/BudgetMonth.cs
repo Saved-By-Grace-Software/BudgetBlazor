@@ -58,50 +58,5 @@ namespace DataAccess.Models
             Year = year;
             Month = month;
         }
-
-        #region Calculation Helpers
-        /// <summary>
-        /// Updates the totals for the month
-        /// </summary>
-        public void UpdateMonthTotals()
-        {
-            UpdateTotalBudgeted();
-            UpdateTotalSpent();
-        }
-
-        /// <summary>
-        /// Updates the total budgeted amount for the month
-        /// </summary>
-        public void UpdateTotalBudgeted()
-        {
-            decimal total = 0;
-            foreach (BudgetCategory category in BudgetCategories)
-            {
-                // Update category totals
-                category.UpdateBudgeted();
-
-                // Add the total budgeted
-                total += category.Budgeted;
-            }
-            TotalBudgeted = total;
-        }
-
-        /// <summary>
-        /// Updates the total spent amount for the month
-        /// </summary>
-        public void UpdateTotalSpent()
-        {
-            decimal total = 0;
-            foreach (BudgetCategory category in BudgetCategories)
-            {
-                // Update spent totals
-                category.UpdateSpent();
-
-                // Add the total spent
-                total += category.Spent;
-            }
-            TotalSpent = total;
-        }
-        #endregion
     }
 }

@@ -36,7 +36,7 @@
             <MudStack Spacing="4" AlignItems="AlignItems.Stretch">
                 @foreach (BudgetItem item in Category.BudgetItems)
                 {
-                    <BudgetItemDisplay Item=@item OnDelete="DeleteBudgetItem" />
+                    <BudgetItemDisplay Item=@item />
                 }
 
                 <MudPaper Elevation="1" Class="pa-2" Style="@($"color:{CurrentTheme.Palette.TextPrimary}; background:{CurrentTheme.Palette.GrayLighter};")">
@@ -56,7 +56,6 @@
 @code
 {
     [Parameter] public BudgetCategory Category { get; set; }
-    [Parameter] public EventCallback<BudgetCategory> OnDelete { get; set; }
     [CascadingParameter] private MudTheme CurrentTheme { get; set; }
     [Inject] private IDialogService DialogService { get; set; }
     [Inject] private IBudgetDataService BudgetDataService { get; set; }
@@ -99,9 +98,7 @@
             // Add the new budget item
             BudgetItem item = new BudgetItem((string)res.Data);
             Category.BudgetItems.Add(item);
-
-            // Update the category totals
-            Category.UpdateCategoryTotals();
+            BudgetDataService.Update(Category);
         }
     }
 
@@ -117,21 +114,8 @@
 
         if (result != null && result == true)
         {
-            // Delete the budget
-            await OnDelete.InvokeAsync(Category);
+            // Delete the category
+            BudgetDataService.Delete(Category);
         }
-    }
-
-    /// <summary>
-    /// Callback to delete a budget item from the category
-    /// </summary>
-    /// <param name="itemToDelete"></param>
-    protected void DeleteBudgetItem(BudgetItem itemToDelete)
-    {
-        // Delete the budget
-        Category.BudgetItems.Remove(itemToDelete);
-
-        // Update the category totals
-        Category.UpdateCategoryTotals();
     }
 }
