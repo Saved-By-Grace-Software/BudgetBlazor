@@ -4,13 +4,10 @@
 
 <PageTitle>Budgets</PageTitle>
 
-<MudCard>
-    <MudCardHeader>
-        <CardHeaderContent>
-            <MudText Typo="Typo.h6">Budgets</MudText>
-        </CardHeaderContent>
-        <CardHeaderActions>
-            <MudGrid Spacing="0" Justify="Justify.Center">
+<!-- Page Header -->
+<PageHeader PageIcon="@Icons.Material.Filled.PieChartOutline" PageTitleText="Budgets">
+    <PageHeaderActions>
+        <MudGrid Spacing="0" Justify="Justify.Center">
                 <MudItem xs="3" Style="text-align: right !important; padding: 1rem 0;">
                     <MudIconButton Icon="@Icons.Filled.ArrowLeft" OnClick="LastMonth" />
                 </MudItem>
@@ -22,12 +19,63 @@
                         OpenTo="OpenTo.Month" 
                         IconSize="Size.Large" 
                         PickerMonthChanged="MonthChanged"
-                        @bind-Date="_currentMonth" />
+                        @bind-Date="_currentMonthDate" />
                 </MudItem>
                 <MudItem xs="3" Style="text-align: left !important; padding: 1rem 0;">
                     <MudIconButton Icon="@Icons.Filled.ArrowRight" OnClick="NextMonth" />
                 </MudItem>
             </MudGrid>
+    </PageHeaderActions>
+</PageHeader>
+
+<!-- Income and Total Budget Card -->
+<MudCard Class="my-4" Elevation="3" Style="@($"color:{CurrentTheme.Palette.TextPrimary}; background:{CurrentTheme.Palette.GrayLight};")">
+    <MudCardHeader>
+        <CardHeaderContent>
+            <MudText Typo="Typo.h6">Total Budget - @String.Format("{0:MMMM yyyy}", _currentMonthDate)</MudText>
+        </CardHeaderContent>
+        <CardHeaderActions>
+            <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Default" OnClick="OpenEditIncomeDialog" />
         </CardHeaderActions>
     </MudCardHeader>
+    <MudCardContent Class="my-n4">
+        <MudPaper Class="my-2 pa-1" Elevation="1" Style="@($"color:{CurrentTheme.Palette.TextPrimary}; background:{CurrentTheme.Palette.GrayLighter};")">
+            <MudText Typo="Typo.subtitle2"><i>Expected Income - </i>$@String.Format("{0:0.00}", _currentMonth.ExpectedIncome)</MudText>
+            <MudProgressLinear Color="@ColorHelpers.ProgressBarColorReverse(_currentMonth.PercentBudgeted)" Rounded="true" Size="Size.Large" Value="@_currentMonth.PercentBudgeted" />
+            <MudText Typo="Typo.subtitle2"><i>Total Budgeted - </i>$@String.Format("{0:0.00}", _currentMonth.TotalBudgeted)</MudText>
+        </MudPaper>
+        
+        <MudPaper Class="my-2 pa-1" Elevation="1" Style="@($"color:{CurrentTheme.Palette.TextPrimary}; background:{CurrentTheme.Palette.GrayLighter};")">
+            <MudText Typo="Typo.subtitle2"><i>Actual Income - </i>$@String.Format("{0:0.00}", _currentMonth.ActualIncome)</MudText>
+            <MudProgressLinear Color="@ColorHelpers.ProgressBarColor(_currentMonth.PercentSpent)" Rounded="true" Size="Size.Large" Value="@_currentMonth.PercentSpent" />
+            <MudText Typo="Typo.subtitle2"><i>Total Spent - </i>$@String.Format("{0:0.00}", _currentMonth.TotalSpent)</MudText>
+        </MudPaper>
+    </MudCardContent>
+</MudCard>
+
+<!-- Budget Lists -->
+<MudCard Class="my-8" Elevation="3" Style="@($"color:{CurrentTheme.Palette.TextPrimary}; background:{CurrentTheme.Palette.GrayLighter};")">
+    <MudCardHeader>
+        <CardHeaderContent>
+            <MudText Typo="Typo.h6">Budgets</MudText>
+        </CardHeaderContent>
+        <CardHeaderActions>
+            <MudIconButton Icon="@Icons.Material.Filled.Add" OnClick="OpenAddCategoryDialog" />
+        </CardHeaderActions>
+    </MudCardHeader>
+    <MudCardContent>
+        @if (_currentMonth.BudgetCategories.Count == 0)
+        {
+            <MudText Typo="Typo.body2" Align="Align.Center"><i>No budget categories to display</i></MudText>
+        }
+        else
+        {
+            <MudStack>
+                @foreach(BudgetCategory category in _currentMonth.BudgetCategories)
+                {
+                    <BudgetCategoryDisplay Category="@category" />
+                }
+            </MudStack>
+        }
+    </MudCardContent>
 </MudCard>

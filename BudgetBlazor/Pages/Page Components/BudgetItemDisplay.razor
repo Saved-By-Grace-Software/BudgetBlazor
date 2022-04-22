@@ -1,0 +1,87 @@
+﻿<MudPaper Elevation="1" Class="pa-2">
+    <MudGrid Spacing="4" Justify="Justify.SpaceBetween">
+        <MudItem xs="1" Class="d-flex align-center"><MudText Typo="Typo.body1" Align="Align.Left"><strong>@Item.Name</strong></MudText></MudItem>
+        <MudItem xs="3"><MudTextField @bind-Value="Item.Budget" Label="Budget" Variant="Variant.Outlined" Format="F2" Margin="Margin.Dense" OnBlur="UpdateItemTotal" OnKeyPress="OnEnterPressed"></MudTextField></MudItem>
+        <MudItem xs="3"><MudTextField Value="Item.Spent" Label="Spent" Variant="Variant.Text" Format="F2" Margin="Margin.Dense" ReadOnly="true"></MudTextField></MudItem>
+        <MudItem xs="3"><MudTextField Value="Item.Remaining" Label="Remaining" Variant="Variant.Text" Format="F2" Margin="Margin.Dense" ReadOnly="true"></MudTextField></MudItem>
+        <MudItem xs="1">
+            <MudMenu Icon="@Icons.Material.Filled.MoreVert">
+                <MudMenuItem OnClick="OpenEditBudgetDialog">
+                    <MudStack Row="true" Spacing="4" AlignItems="AlignItems.Center">
+                        <MudIcon Icon="@Icons.Material.Filled.Edit" />
+                        <MudText>Edit Budget</MudText>
+                    </MudStack>
+                </MudMenuItem>
+                <MudMenuItem OnClick="DeleteBudgetItem">
+                    <MudStack Row="true" Spacing="4" AlignItems="AlignItems.Center">
+                        <MudIcon Icon="@Icons.Material.Filled.Delete" />
+                        <MudText>Delete Budget</MudText>
+                    </MudStack></MudMenuItem>
+            </MudMenu>
+        </MudItem>
+    </MudGrid>
+</MudPaper>
+
+@code
+{
+    [Parameter] public BudgetItem Item { get; set; }
+    [Inject] protected IDialogService DialogService { get; set; }
+    [Inject] private IBudgetDataService BudgetDataService { get; set; }
+
+    /// <summary>
+    /// Opens the dialog to add a budget to the category
+    /// </summary>
+    /// <returns></returns>
+    private async Task OpenEditBudgetDialog()
+    {
+        // Open the dialog
+        var parameters = new DialogParameters { ["BudgetName"] = Item.Name };
+        var dialogRef = DialogService.Show<EditBudgetItemDialog>("Edit Budget", parameters);
+
+        // Wait for a response and add the new budget item
+        var res = await dialogRef.Result;
+        if (!res.Cancelled)
+        {
+            // Update the budget name
+            Item.Name = (string)res.Data;
+            BudgetDataService.Update(Item);
+        }
+    }
+
+    /// <summary>
+    /// Calls the callback to delete the budget
+    /// </summary>
+    private async void DeleteBudgetItem()
+    {
+        bool? result = await DialogService.ShowMessageBox(
+            "Warning", 
+            "Deleting a budget cannot be undone!", 
+            yesText:"Delete!", cancelText:"Cancel");
+
+        if (result != null && result == true)
+        {
+            // Delete the budget
+            BudgetDataService.Delete(Item);
+        }
+    }
+
+    /// <summary>
+    /// Updates the item's total in the database
+    /// </summary>
+    private void UpdateItemTotal()
+    {
+        BudgetDataService.Update(Item);
+    }
+
+    /// <summary>
+    /// Updates the item's total in the database when the enter key is pressed
+    /// </summary>
+    /// <param name="e"></param>
+    private void OnEnterPressed(KeyboardEventArgs e)
+    {
+        if (e.Code == "Enter" || e.Code == "NumpadEnter")
+        {
+             BudgetDataService.Update(Item);
+        }
+    }
+}

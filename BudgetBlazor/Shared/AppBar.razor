@@ -2,6 +2,9 @@
 	<MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" 
 				   OnClick="async () => await OnSidebarToggled.InvokeAsync()" />
 	<MudSpacer />
+	<form class="form-inline" method="post" action="/Identity/Account/LogOut?returnUrl=%2F">
+        <MudIconButton Icon="@Icons.Material.Filled.Logout" Color="Color.Inherit" ButtonType="ButtonType.Submit" />
+    </form>
 	@if (_isLightMode)
 	{
 		<MudIconButton Icon="@Icons.Material.Filled.Brightness4" Color="Color.Inherit" OnClick="ToggleTheme" />

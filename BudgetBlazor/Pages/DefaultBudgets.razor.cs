@@ -2,7 +2,7 @@
 
 namespace BudgetBlazor.Pages
 {
-    public class OptionsBase : ComponentBase 
+    public class DefaultBudgetsBase : ComponentBase 
     {
     }
 }

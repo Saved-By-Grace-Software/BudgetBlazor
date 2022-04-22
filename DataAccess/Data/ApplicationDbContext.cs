@@ -1,7 +1,8 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using DataAccess.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace BudgetBlazor.Data
+namespace DataAccess.Data
 {
     public class ApplicationDbContext : IdentityDbContext
     {
@@ -9,5 +10,8 @@ namespace BudgetBlazor.Data
             : base(options)
         {
         }
+
+        public DbSet<BudgetMonth> BudgetMonths { get; set; }
+        public DbSet<Transaction> Transactions { get; set; }
     }
 }

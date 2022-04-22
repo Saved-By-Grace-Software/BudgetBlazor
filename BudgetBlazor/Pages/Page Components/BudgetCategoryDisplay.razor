@@ -1,0 +1,121 @@
+﻿<MudCard Elevation="1" Style="@($"color:{CurrentTheme.Palette.TextPrimary}; background:{Category.Color};")">
+    <MudCardHeader Class="mb-n4">
+        <CardHeaderContent>
+            <MudText Typo="Typo.body1"><strong>@Category.Name</strong></MudText>
+        </CardHeaderContent>
+        <CardHeaderActions>
+            <MudMenu Icon="@Icons.Material.Filled.MoreVert">
+                <MudMenuItem OnClick="OpenAddBudgetDialog">
+                    <MudStack Row="true" Spacing="4" AlignItems="AlignItems.Center">
+                        <MudIcon Icon="@Icons.Material.Filled.Add" />
+                        <MudText>Add Budget</MudText>
+                    </MudStack>
+                </MudMenuItem>
+                <MudMenuItem OnClick="OpenEditDialog">
+                    <MudStack Row="true" Spacing="4" AlignItems="AlignItems.Center">
+                        <MudIcon Icon="@Icons.Material.Filled.Edit" />
+                        <MudText>Edit Category</MudText>
+                    </MudStack>
+                </MudMenuItem>
+                <MudMenuItem OnClick="DeleteCategory">
+                    <MudStack Row="true" Spacing="4" AlignItems="AlignItems.Center">
+                        <MudIcon Icon="@Icons.Material.Filled.Delete" />
+                        <MudText>Delete Category</MudText>
+                    </MudStack>
+                </MudMenuItem>
+            </MudMenu>
+        </CardHeaderActions>
+    </MudCardHeader>
+    <MudCardContent>
+        @if (Category.BudgetItems.Count == 0)
+        {
+            <MudText Typo="Typo.body2" Align="Align.Center"><i>No budgets to display for this category</i></MudText>
+        }
+        else
+        {
+            <MudStack Spacing="4" AlignItems="AlignItems.Stretch">
+                @foreach (BudgetItem item in Category.BudgetItems)
+                {
+                    <BudgetItemDisplay Item=@item />
+                }
+
+                <MudPaper Elevation="1" Class="pa-2" Style="@($"color:{CurrentTheme.Palette.TextPrimary}; background:{CurrentTheme.Palette.GrayLighter};")">
+                    <MudGrid Spacing="4" Justify="Justify.SpaceBetween">
+                        <MudItem xs="1" Class="d-flex align-center"><MudText Typo="Typo.body1" Align="Align.Left"><strong>TOTALS</strong></MudText></MudItem>
+                        <MudItem xs="3"><MudTextField Value="Category.Budgeted" Label="Budget" Variant="Variant.Text" Format="F2" Margin="Margin.Dense" ReadOnly="true"></MudTextField></MudItem>
+                        <MudItem xs="3"><MudTextField Value="Category.Spent" Label="Spent" Variant="Variant.Text" Format="F2" Margin="Margin.Dense" ReadOnly="true"></MudTextField></MudItem>
+                        <MudItem xs="3"><MudTextField Value="Category.Remaining" Label="Remaining" Variant="Variant.Text" Format="F2" Margin="Margin.Dense" ReadOnly="true"></MudTextField></MudItem> 
+                        <MudItem xs="1"></MudItem>
+                    </MudGrid>
+                </MudPaper>
+            </MudStack>
+        }
+    </MudCardContent>
+</MudCard>
+
+@code
+{
+    [Parameter] public BudgetCategory Category { get; set; }
+    [CascadingParameter] private MudTheme CurrentTheme { get; set; }
+    [Inject] private IDialogService DialogService { get; set; }
+    [Inject] private IBudgetDataService BudgetDataService { get; set; }
+
+    /// <summary>
+    /// Opens the dialog to edit a budget category
+    /// </summary>
+    /// <returns></returns>
+    private async Task OpenEditDialog()
+    {
+        // Open the dialog
+        var parameters = new DialogParameters { ["CategoryName"] = Category.Name, ["CategoryColor"] = new MudColor(Category.Color) };
+        var dialogRef = DialogService.Show<EditCategoryDialog>("Edit Category", parameters);
+
+        // Wait for a response and update the Category name and color
+        var res = await dialogRef.Result;
+        if (!res.Cancelled)
+        {
+            Tuple<string, string> data = (Tuple<string, string>)res.Data;
+            Category.Name = data.Item1;
+            Category.Color = data.Item2;
+            BudgetDataService.Update(Category);
+        }
+    }
+
+    /// <summary>
+    /// Opens the dialog to add a budget to the category
+    /// </summary>
+    /// <returns></returns>
+    private async Task OpenAddBudgetDialog()
+    {
+        // Open the dialog
+        var parameters = new DialogParameters { ["BudgetName"] = "" };
+        var dialogRef = DialogService.Show<EditBudgetItemDialog>("Add New Budget", parameters);
+
+        // Wait for a response and add the new budget item
+        var res = await dialogRef.Result;
+        if (!res.Cancelled)
+        {
+            // Add the new budget item
+            BudgetItem item = new BudgetItem((string)res.Data);
+            Category.BudgetItems.Add(item);
+            BudgetDataService.Update(Category);
+        }
+    }
+
+    /// <summary>
+    /// Calls the callback to delete the category
+    /// </summary>
+    private async void DeleteCategory()
+    {
+        bool? result = await DialogService.ShowMessageBox(
+            "Warning", 
+            "Deleting a category will delete all budgets inside of it and cannot be undone!", 
+            yesText:"Delete!", cancelText:"Cancel");
+
+        if (result != null && result == true)
+        {
+            // Delete the category
+            BudgetDataService.Delete(Category);
+        }
+    }
+}
