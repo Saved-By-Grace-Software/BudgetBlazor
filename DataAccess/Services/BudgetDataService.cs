@@ -1,5 +1,6 @@
 ﻿using DataAccess.Data;
 using DataAccess.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.Services
 {
@@ -16,15 +17,37 @@ namespace DataAccess.Services
         #region Create
         public BudgetMonth Create(int year, int month, Guid user)
         {
-            // Create a new budget month
-            BudgetMonth budgetMonth = new BudgetMonth(year, month, user);
+            // Get the default month and create a new blank month
+            BudgetMonth defaultMonth = GetDefaultMonth(user);
+            BudgetMonth newMonth = new BudgetMonth(year, month, user);
+
+            // Copy each category from default
+            foreach (BudgetCategory category in defaultMonth.BudgetCategories)
+            {
+                // Create a new copy of the category
+                BudgetCategory newCategory = new BudgetCategory(category.Name, category.Color);
+
+                // Copy each item in the category from default
+                foreach (BudgetItem item in category.BudgetItems)
+                {
+                    // Create a new copy of the item
+                    BudgetItem newItem = new BudgetItem(item.Name);
+
+                    // Add the copy to the new category
+                    newCategory.BudgetItems.Add(newItem);
+                }
+
+                // Add the copy to the new month
+                newMonth.BudgetCategories.Add(newCategory);
+            }
+
 
             // Add it to the database
-            _db.BudgetMonths.Add(budgetMonth);
+            _db.BudgetMonths.Add(newMonth);
             _db.SaveChanges();
 
             // Return the new month
-            return budgetMonth;
+            return newMonth;
         }
         #endregion
 
@@ -56,6 +79,20 @@ namespace DataAccess.Services
         public List<BudgetMonth> GetAll(Guid user)
         {
             return _db.BudgetMonths.Where(x => x.User == user).ToList();
+        }
+
+        public BudgetMonth GetDefaultMonth(Guid user)
+        {
+            // Check for the default month (month 0, year 0)
+            BudgetMonth m = _db.BudgetMonths.FirstOrDefault(x => x.Year == 0 && x.Month == 0 && x.User == user);
+
+            if (m == default(BudgetMonth))
+            {
+                // Default month doesn't exist yet, create it
+                m = Create(0, 0, user);
+            }
+
+            return m;
         }
         #endregion
 

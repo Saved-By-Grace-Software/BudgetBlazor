@@ -73,7 +73,7 @@
             <MudStack>
                 @foreach(BudgetCategory category in _currentMonth.BudgetCategories)
                 {
-                    <BudgetCategoryDisplay Category="@category" />
+                    <BudgetCategoryDisplay Category="@category" AreBudgetsEditable="true" ShouldShowTotals="true" />
                 }
             </MudStack>
         }

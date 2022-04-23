@@ -16,6 +16,7 @@ namespace DataAccess.Services
         BudgetMonth Get(int year, int month, Guid user);
         BudgetMonth GetOrCreate(int year, int month, Guid user);
         List<BudgetMonth> GetAll(Guid user);
+        BudgetMonth GetDefaultMonth(Guid user);
 
         // Update
         BudgetMonth Update(BudgetMonth budgetMonth);
