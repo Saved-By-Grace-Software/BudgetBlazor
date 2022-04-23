@@ -1,6 +1,5 @@
 ﻿using DataAccess.Data;
 using DataAccess.Models;
-using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.Services
 {
@@ -45,6 +44,9 @@ namespace DataAccess.Services
             // Add it to the database
             _db.BudgetMonths.Add(newMonth);
             _db.SaveChanges();
+
+            // Trigger the updated event
+            RaiseBudgetDataChanged();
 
             // Return the new month
             return newMonth;
@@ -260,7 +262,23 @@ namespace DataAccess.Services
         #region Delete
         public void Delete(int budgetMonthId)
         {
-            throw new NotImplementedException();
+            // Get the month to delete
+            BudgetMonth budgetMonth = _db.Find<BudgetMonth>(budgetMonthId);
+
+            // Delete the month's budget items
+            _db.RemoveRange(budgetMonth.BudgetCategories.SelectMany(c => c.BudgetItems));
+
+            // Delete the month's categories
+            _db.RemoveRange(budgetMonth.BudgetCategories);
+
+            // Delete the month
+            _db.Remove(budgetMonth);
+
+            // Save the changes
+            _db.SaveChanges();
+
+            // Trigger the updated event
+            RaiseBudgetDataChanged();
         }
 
         public void Delete(BudgetItem budgetItem)
@@ -300,6 +318,15 @@ namespace DataAccess.Services
 
             // Trigger the updated event
             RaiseBudgetDataChanged();
+        }
+
+        public BudgetMonth ResetMonthToDefault(BudgetMonth budgetMonth, Guid user)
+        {
+            // Delete the month
+            Delete(budgetMonth.Id);
+
+            // Return a newly created month
+            return Create(budgetMonth.Year, budgetMonth.Month, user);
         }
         #endregion
 

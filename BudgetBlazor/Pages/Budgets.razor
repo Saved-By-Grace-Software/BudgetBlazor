@@ -8,10 +8,15 @@
 <PageHeader PageIcon="@Icons.Material.Filled.PieChartOutline" PageTitleText="Budgets">
     <PageHeaderActions>
         <MudGrid Spacing="0" Justify="Justify.Center">
-                <MudItem xs="3" Style="text-align: right !important; padding: 1rem 0;">
+                <MudItem m="2" Style="padding: 1rem 0;">
+                    <MudTooltip Text="Reset Month To Default">
+                        <MudIconButton Icon="@Icons.Filled.RestartAlt" OnClick="ResetMonthToDefault" />
+                    </MudTooltip>
+                </MudItem>
+                <MudItem m="2" Style="text-align: right !important; padding: 1rem 0;">
                     <MudIconButton Icon="@Icons.Filled.ArrowLeft" OnClick="LastMonth" />
                 </MudItem>
-                <MudItem xs="6">
+                <MudItem m="6">
                     <MudDatePicker 
                         PickerVariant="PickerVariant.Dialog" 
                         DateFormat="MMMM yyyy" 
@@ -21,7 +26,7 @@
                         PickerMonthChanged="MonthChanged"
                         @bind-Date="_currentMonthDate" />
                 </MudItem>
-                <MudItem xs="3" Style="text-align: left !important; padding: 1rem 0;">
+                <MudItem m="2" Style="text-align: left !important; padding: 1rem 0;">
                     <MudIconButton Icon="@Icons.Filled.ArrowRight" OnClick="NextMonth" />
                 </MudItem>
             </MudGrid>

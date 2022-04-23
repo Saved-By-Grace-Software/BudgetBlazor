@@ -29,5 +29,6 @@ namespace DataAccess.Services
         void Delete(int budgetMonthId);
         void Delete(BudgetItem budgetItem);
         void Delete(BudgetCategory budgetCategory);
+        BudgetMonth ResetMonthToDefault(BudgetMonth budgetMonth, Guid user);
     }
 }

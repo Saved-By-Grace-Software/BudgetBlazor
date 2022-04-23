@@ -84,6 +84,23 @@ namespace BudgetBlazor.Pages
             }
         }
 
+        /// <summary>
+        /// Resets the month to the default budgets
+        /// </summary>
+        protected async void ResetMonthToDefault()
+        {
+            bool? result = await DialogService.ShowMessageBox(
+                "Warning",
+                "Resetting the month will delete all current budgets!",
+                yesText: "Reset!", cancelText: "Cancel");
+
+            if (result != null && result == true)
+            {
+                // Reset the month
+                _currentMonth = BudgetDataService.ResetMonthToDefault(_currentMonth, _currentUserId);
+            }
+        }
+
         #region Switch Month Functions
         /// <summary>
         /// Changes to the next month
