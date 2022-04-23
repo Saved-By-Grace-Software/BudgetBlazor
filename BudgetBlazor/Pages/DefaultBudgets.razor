@@ -4,8 +4,33 @@
 
 <PageTitle>Default Budgets</PageTitle>
 
-<PageHeader PageIcon="@Icons.Material.Filled.PieChart" PageTitleText="Default Budgets">
-    <PageHeaderActions>
-        <MudIconButton Icon="@Icons.Filled.Save" />
-    </PageHeaderActions>
-</PageHeader>
+<PageHeader PageIcon="@Icons.Material.Filled.PieChart" PageTitleText="Default Budgets" />
+
+<MudAlert Severity="Severity.Normal" Variant="Variant.Outlined">These budgets will affect all newly created months. They will not change months with existing budgets.</MudAlert>
+
+<!-- Budget Lists -->
+<MudCard Class="my-8" Elevation="3" Style="@($"color:{CurrentTheme.Palette.TextPrimary}; background:{CurrentTheme.Palette.GrayLighter};")">
+    <MudCardHeader>
+        <CardHeaderContent>
+            <MudText Typo="Typo.h6">Budgets</MudText>
+        </CardHeaderContent>
+        <CardHeaderActions>
+            <MudIconButton Icon="@Icons.Material.Filled.Add" OnClick="OpenAddCategoryDialog" />
+        </CardHeaderActions>
+    </MudCardHeader>
+    <MudCardContent>
+        @if (_defaultMonth.BudgetCategories.Count == 0)
+        {
+            <MudText Typo="Typo.body2" Align="Align.Center"><i>No budget categories to display</i></MudText>
+        }
+        else
+        {
+            <MudStack>
+                @foreach(BudgetCategory category in _defaultMonth.BudgetCategories)
+                {
+                    <BudgetCategoryDisplay Category="@category" AreBudgetsEditable="false" ShouldShowTotals="false" />
+                }
+            </MudStack>
+        }
+    </MudCardContent>
+</MudCard>

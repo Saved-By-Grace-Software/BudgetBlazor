@@ -1,7 +1,12 @@
 ﻿<MudDialog>
     <DialogContent>
         <MudForm @ref="form" @bind-IsValid="@success" @bind-Errors="@errors">
-            <MudTextField @bind-Value="BudgetName" Label="Budget Name" Variant="Variant.Outlined" Required="true" RequiredError="Must enter a Budget name"></MudTextField>
+            <MudTextField @bind-Value="BudgetName" 
+                Label="Budget Name" 
+                Variant="Variant.Outlined" 
+                AutoFocus="true" 
+                Required="true" 
+                RequiredError="Must enter a Budget name"></MudTextField>
         </MudForm>
     </DialogContent>
     <DialogActions>
