@@ -10,6 +10,7 @@ namespace DataAccess.Services
 
         // Create
         BudgetMonth Create(int year, int month, Guid user);
+        BudgetMonth CreateFromDefault(int year, int month, Guid user);
 
         // Get
         BudgetMonth Get(int budgetMonthId, Guid user);

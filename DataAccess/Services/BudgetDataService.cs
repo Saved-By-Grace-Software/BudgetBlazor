@@ -16,6 +16,22 @@ namespace DataAccess.Services
         #region Create
         public BudgetMonth Create(int year, int month, Guid user)
         {
+            // Create a new, empty, month
+            BudgetMonth newMonth = new BudgetMonth(year, month, user);
+
+            // Add it to the database
+            _db.BudgetMonths.Add(newMonth);
+            _db.SaveChanges();
+
+            // Trigger the updated event
+            RaiseBudgetDataChanged();
+
+            // Return the new month
+            return newMonth;
+        }
+
+        public BudgetMonth CreateFromDefault(int year, int month, Guid user)
+        {
             // Get the default month and create a new blank month
             BudgetMonth defaultMonth = GetDefaultMonth(user);
             BudgetMonth newMonth = new BudgetMonth(year, month, user);
@@ -72,7 +88,7 @@ namespace DataAccess.Services
             if (m == default(BudgetMonth))
             {
                 // Current month doesn't exist, create a new one
-                m = Create(year, month, user);
+                m = CreateFromDefault(year, month, user);
             }
 
             return m;
@@ -326,7 +342,7 @@ namespace DataAccess.Services
             Delete(budgetMonth.Id);
 
             // Return a newly created month
-            return Create(budgetMonth.Year, budgetMonth.Month, user);
+            return CreateFromDefault(budgetMonth.Year, budgetMonth.Month, user);
         }
         #endregion
 
