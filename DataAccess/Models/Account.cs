@@ -25,6 +25,7 @@ namespace DataAccess.Models
         public Account(string name)
         {
             Name = name;
+            AccountNumber = "";
         }
     }
 

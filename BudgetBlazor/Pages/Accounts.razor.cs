@@ -38,15 +38,7 @@ namespace BudgetBlazor.Pages
             var authstate = await AuthenticationStateProvider.GetAuthenticationStateAsync();
             _currentUserId = Guid.Parse(authstate.User.Claims.First().Value);
 
-            // DEBUG
-            _accounts = new List<Account>()
-            {
-                new Account("Account 1") { AccountType = AccountType.Checking, CurrentBalance = 500, LastUpdated = DateTime.Now},
-                new Account("Account 2") { AccountType = AccountType.Savings, CurrentBalance = 500, LastUpdated = DateTime.Now},
-                new Account("Account 3") { AccountType = AccountType.CreditCard, CurrentBalance = 500, LastUpdated = DateTime.Now},
-                new Account("Account 4") { AccountType = AccountType.CreditCard, CurrentBalance = 500, LastUpdated = DateTime.Now}
-            };
-            // END DEBUG
+            _accounts = BudgetDataService.GetAllAccounts(_currentUserId);
         }
 
         /// <summary>
@@ -63,11 +55,9 @@ namespace BudgetBlazor.Pages
             var res = await dialogRef.Result;
             if (!res.Cancelled)
             {
-                //// Add the new category to the month
-                //Tuple<string, string> data = (Tuple<string, string>)res.Data;
-                //BudgetCategory budgetCategory = new BudgetCategory(data.Item1, data.Item2);
-                //_currentMonth.BudgetCategories.Add(budgetCategory);
-                //BudgetDataService.Update(_currentMonth);
+                // Add the new account
+                Account account = (Account)res.Data;
+                _accounts = BudgetDataService.CreateAccount(account, _currentUserId);
             }
         }
     }

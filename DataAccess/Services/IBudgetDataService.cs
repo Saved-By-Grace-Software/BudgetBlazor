@@ -11,13 +11,15 @@ namespace DataAccess.Services
         // Create
         BudgetMonth Create(int year, int month, Guid user);
         BudgetMonth CreateFromDefault(int year, int month, Guid user);
+        List<Account> CreateAccount(Account account, Guid user);
 
         // Get
         BudgetMonth Get(int budgetMonthId, Guid user);
         BudgetMonth Get(int year, int month, Guid user);
         BudgetMonth GetOrCreate(int year, int month, Guid user);
-        List<BudgetMonth> GetAll(Guid user);
+        List<BudgetMonth> GetAllMonths(Guid user);
         BudgetMonth GetDefaultMonth(Guid user);
+        List<Account> GetAllAccounts(Guid user);
 
         // Update
         BudgetMonth Update(BudgetMonth budgetMonth);

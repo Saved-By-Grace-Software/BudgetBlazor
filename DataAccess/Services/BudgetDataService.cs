@@ -67,6 +67,19 @@ namespace DataAccess.Services
             // Return the new month
             return newMonth;
         }
+
+        public List<Account> CreateAccount(Account account, Guid user)
+        {
+            // Update the account with the given user and last updated time
+            account.User = user;
+            account.LastUpdated = DateTime.Now;
+
+            // Add the account to the database
+            _db.Accounts.Add(account);
+            _db.SaveChanges();
+
+            return _db.Accounts.Where(a => a.User == user).ToList();
+        }
         #endregion
 
         #region Get
@@ -94,9 +107,14 @@ namespace DataAccess.Services
             return m;
         }
 
-        public List<BudgetMonth> GetAll(Guid user)
+        public List<BudgetMonth> GetAllMonths(Guid user)
         {
             return _db.BudgetMonths.Where(x => x.User == user).ToList();
+        }
+
+        public List<Account> GetAllAccounts(Guid user)
+        {
+            return _db.Accounts.Where(x => x.User == user).ToList();
         }
 
         public BudgetMonth GetDefaultMonth(Guid user)

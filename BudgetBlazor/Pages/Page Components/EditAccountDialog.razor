@@ -9,10 +9,10 @@
                     <MudTextField @bind-Value="Account.Name" Label="Account Name" Variant="Variant.Outlined" Required="true" RequiredError="Must enter an Account name"></MudTextField>
                 </MudItem>
                 <MudItem xs="6">
-                    <MudSelect T="string" Label="Account Type" AnchorOrigin="Origin.BottomCenter" Required="true" RequiredError="Must choose an Account type">
+                    <MudSelect T="AccountType" @bind-Value="@Account.AccountType" Label="Account Type" AnchorOrigin="Origin.BottomCenter" Required="true" RequiredError="Must choose an Account type">
                         @foreach(AccountType type in Enum.GetValues(typeof(AccountType)))
                         {
-                            <MudSelectItem Value="@Enum.GetName(typeof(AccountType), type)" />
+                            <MudSelectItem Value="type" />
                         }
                     </MudSelect>
                 </MudItem>
@@ -41,8 +41,9 @@
 
         if (form.IsValid)
         {
-            //MudDialog.Close<Tuple<string, string>>(Tuple.Create(CategoryName, CategoryColor.Value));
-            MudDialog.Close();
+            // Update the
+
+            MudDialog.Close(Account);
         }
     }
 
