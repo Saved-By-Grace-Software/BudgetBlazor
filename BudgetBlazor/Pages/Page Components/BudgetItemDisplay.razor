@@ -63,7 +63,7 @@
     /// <summary>
     /// Calls the callback to delete the budget
     /// </summary>
-    private async void DeleteBudgetItem()
+    private async Task DeleteBudgetItem()
     {
         bool? result = await DialogService.ShowMessageBox(
             "Warning", 

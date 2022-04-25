@@ -87,7 +87,7 @@ namespace BudgetBlazor.Pages
         /// <summary>
         /// Resets the month to the default budgets
         /// </summary>
-        protected async void ResetMonthToDefault()
+        protected async Task ResetMonthToDefault()
         {
             bool? result = await DialogService.ShowMessageBox(
                 "Warning",

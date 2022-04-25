@@ -5,3 +5,34 @@
 <PageTitle>Accounts</PageTitle>
 
 <PageHeader PageIcon="@Icons.Material.Filled.CreditCard" PageTitleText="Accounts"></PageHeader>
+
+<MudCard Class="my-4" Elevation="3" Style="@($"color:{CurrentTheme.Palette.TextPrimary}; background:{CurrentTheme.Palette.GrayLighter};")">
+    <MudCardContent>
+        <MudTable Items="@_accounts" Hover="true" Breakpoint="Breakpoint.Sm" T="Account">
+            <ColGroup>
+                <col style="width: 30%;" />
+                <col style="width: 20%;" />
+                <col style="width: 20%;" />
+                <col style="width: 25%;" />
+                <col style="width: 5%;" />
+            </ColGroup>
+            <HeaderContent>
+                <MudTh>Name</MudTh>
+                <MudTh>Account Type</MudTh>
+                <MudTh>Current Balance</MudTh>
+                <MudTh>Last Updated</MudTh>
+                <MudTh></MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Name">@context.Name</MudTd>
+                <MudTd DataLabel="Type">@context.AccountType</MudTd>
+                <MudTd DataLabel="Balance">@context.CurrentBalance</MudTd>
+                <MudTd DataLabel="Updated">@context.LastUpdated</MudTd>
+                <MudTd><MudIconButton Icon="@Icons.Filled.Edit" /></MudTd>
+            </RowTemplate>
+        </MudTable>
+    </MudCardContent>
+    <MudCardActions>
+        <MudButton Variant="Variant.Outlined" Color="Color.Primary" StartIcon="@Icons.Filled.Add" OnClick="OpenAddAccountDialog">Add New Account</MudButton>
+    </MudCardActions>
+</MudCard>

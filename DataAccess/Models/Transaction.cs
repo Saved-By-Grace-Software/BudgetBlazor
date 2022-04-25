@@ -8,7 +8,7 @@ namespace DataAccess.Models
 
         public string Name { get; set; }
 
-        public int TransactionId { get; set; }
+        public int FITransactionId { get; set; }
 
         [Column(TypeName = "decimal(12,2)")]
         public decimal Amount { get; set; }
