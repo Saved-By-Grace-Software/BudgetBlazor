@@ -18,6 +18,11 @@ namespace DataAccess.Models
 
         public DateTime LastUpdated { get; set; }
 
+        [Column(TypeName = "decimal(12,2)")]
+        public decimal StartingBalance { get; set; }
+
+        public DateTime StartingBalanceDate { get; set; }
+
         public virtual List<Transaction> Transactions { get; set; }
 
         public Guid User { get; set; }
