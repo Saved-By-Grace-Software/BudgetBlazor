@@ -14,7 +14,7 @@
         }
         else
         {
-            <MudTable Items="@_accounts" Hover="true" Breakpoint="Breakpoint.Sm" T="Account">
+            <MudTable Items="@_accounts" Hover="true" Breakpoint="Breakpoint.Sm" T="Account" OnRowClick="RowClickEvent">
                 <ColGroup>
                     <col style="width: 30%;" />
                     <col style="width: 20%;" />

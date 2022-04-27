@@ -1,0 +1,9 @@
+﻿@attribute [Authorize]
+@page "/Accounts/Edit/{AccountId}"
+@inherits AccountDisplayBase
+
+<PageHeader PageIcon="@Icons.Material.Outlined.CreditCard" PageTitleText="@Account.Name">
+    <PageHeaderActions>
+        <MudBreadcrumbs Items="_items"></MudBreadcrumbs>
+    </PageHeaderActions>
+</PageHeader>

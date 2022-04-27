@@ -134,6 +134,11 @@ namespace DataAccess.Services
 
             return m;
         }
+
+        public Account GetAccount(int accountId, Guid user)
+        {
+            return _db.Accounts.FirstOrDefault(x => x.Id == accountId && x.User == user);
+        }
         #endregion
 
         #region Update

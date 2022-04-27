@@ -22,6 +22,9 @@ namespace BudgetBlazor.Pages
         [Inject]
         protected AuthenticationStateProvider AuthenticationStateProvider { get; set; }
 
+        [Inject]
+        protected NavigationManager NavigationManager { get; set; }
+
         [CascadingParameter]
         protected MudTheme CurrentTheme { get; set; }
         #endregion
@@ -40,7 +43,7 @@ namespace BudgetBlazor.Pages
 
             _accounts = BudgetDataService.GetAllAccounts(_currentUserId);
             BudgetDataService.AccountDataChanged += BudgetDataService_AccountDataChanged;
-        }        
+        }
 
         /// <summary>
         /// Opens the dialog to add a new account
@@ -97,6 +100,15 @@ namespace BudgetBlazor.Pages
                 // Delete the budget
                 BudgetDataService.DeleteAccount(accountToDelete);
             }
+        }
+
+        /// <summary>
+        /// Navigates to the page for the specified account
+        /// </summary>
+        /// <param name="tableRowClickEventArgs"></param>
+        protected void RowClickEvent(TableRowClickEventArgs<Account> tableRowClickEventArgs)
+        {
+            NavigationManager.NavigateTo("/Accounts/Edit/" + tableRowClickEventArgs.Item.Id);
         }
 
         #region Event Functions

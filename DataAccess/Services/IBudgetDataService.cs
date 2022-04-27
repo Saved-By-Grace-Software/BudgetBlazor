@@ -24,6 +24,7 @@ namespace DataAccess.Services
         List<BudgetMonth> GetAllMonths(Guid user);
         BudgetMonth GetDefaultMonth(Guid user);
         List<Account> GetAllAccounts(Guid user);
+        Account GetAccount(int accountId, Guid user);
 
         // Update
         BudgetMonth Update(BudgetMonth budgetMonth);
