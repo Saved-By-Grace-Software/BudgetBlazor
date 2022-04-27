@@ -289,11 +289,11 @@ namespace DataAccess.Services
             decimal totalSpent = 0;
             BudgetItem i = _db.Find<BudgetItem>(budgetItem.Id);
 
-            // Add the total spent in transactions
-            foreach (Transaction transaction in i.Transactions)
-            {
-                totalSpent += transaction.Amount;
-            }
+            // TODO: Add the total spent in transactions
+            //foreach (Transaction transaction in i.Transactions)
+            //{
+            //    totalSpent += transaction.Amount;
+            //}
 
             i.Spent = totalSpent;
             i.Remaining = i.Budget - totalSpent;

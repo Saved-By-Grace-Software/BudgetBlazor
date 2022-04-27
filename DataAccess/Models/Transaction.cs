@@ -21,6 +21,8 @@ namespace DataAccess.Models
 
         public bool IsPartial { get; set; }
 
+        public virtual BudgetItem? Budget { get; set; }
+
         public Guid User { get; set; }
 
         public Transaction(string name)
