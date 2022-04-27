@@ -6,7 +6,8 @@ namespace DataAccess.Services
     public class BudgetDataService : IBudgetDataService
     {
         private readonly ApplicationDbContext _db;
-        public event IBudgetDataService.NotifyDataChange BudgetDataChanged;
+        public event IBudgetDataService.NotifyBudgetDataChange BudgetDataChanged;
+        public event IBudgetDataService.NotifyAccountDataChange AccountDataChanged;
 
         public BudgetDataService(ApplicationDbContext db)
         {
@@ -77,6 +78,9 @@ namespace DataAccess.Services
             // Add the account to the database
             _db.Accounts.Add(account);
             _db.SaveChanges();
+
+            // Notify subscribers that account data has changed
+            RaiseAccountDataChanged();
 
             return _db.Accounts.Where(a => a.User == user).ToList();
         }
@@ -291,6 +295,29 @@ namespace DataAccess.Services
 
             _db.SaveChanges();
         }
+
+        public Account UpdateAccount(Account account)
+        {
+            Account a = _db.Find<Account>(account.Id);
+
+            if (a != default(Account))
+            {
+                // Update the account's data
+                a.LastUpdated = DateTime.Now;
+                a.AccountNumber = account.AccountNumber;
+                a.AccountType = account.AccountType;
+                a.CurrentBalance = account.CurrentBalance;
+                a.Name = account.Name;
+
+                // Save the changes
+                _db.SaveChanges();
+
+                // Notify subscribers than an account has been updated
+                RaiseAccountDataChanged();
+            }
+
+            return a;
+        }
         #endregion
 
         #region Delete
@@ -362,6 +389,21 @@ namespace DataAccess.Services
             // Return a newly created month
             return CreateFromDefault(budgetMonth.Year, budgetMonth.Month, user);
         }
+
+        public void DeleteAccount(Account account)
+        {
+            // Delete the account's transactions
+            _db.RemoveRange(account.Transactions);
+
+            // Delete the account
+            _db.Remove(account);
+            _db.SaveChanges();
+
+            // TODO: Update total calculations because transactions were removed?
+
+            // Notify subscribers that account data has changed
+            RaiseAccountDataChanged();
+        }
         #endregion
 
         #region Private Helper Functions
@@ -371,6 +413,14 @@ namespace DataAccess.Services
         private void RaiseBudgetDataChanged()
         {
             BudgetDataChanged?.Invoke();
+        }
+
+        /// <summary>
+        /// Raises the account data changed event
+        /// </summary>
+        private void RaiseAccountDataChanged()
+        {
+            AccountDataChanged?.Invoke();
         }
 
         /// <summary>

@@ -5,10 +5,13 @@
     <DialogContent>
         <MudForm @ref="form" @bind-IsValid="@success" @bind-Errors="@errors">
             <MudGrid Spacing="4" Justify="Justify.SpaceBetween">
-                <MudItem xs="6">
+                <MudItem sm="12" md="4">
                     <MudTextField @bind-Value="Account.Name" Label="Account Name" Variant="Variant.Outlined" Required="true" RequiredError="Must enter an Account name"></MudTextField>
                 </MudItem>
-                <MudItem xs="6">
+                <MudItem sm="12" md="4">
+                    <MudTextField @bind-Value="Account.AccountNumber" Label="Account Number" Variant="Variant.Outlined" Required="false"></MudTextField>
+                </MudItem>
+                <MudItem sm="12" md="4">
                     <MudSelect T="AccountType" @bind-Value="@Account.AccountType" Label="Account Type" AnchorOrigin="Origin.BottomCenter" Required="true" RequiredError="Must choose an Account type">
                         @foreach(AccountType type in Enum.GetValues(typeof(AccountType)))
                         {

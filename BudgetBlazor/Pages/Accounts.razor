@@ -34,7 +34,21 @@
                     <MudTd DataLabel="Type">@context.AccountType</MudTd>
                     <MudTd DataLabel="Balance">@context.CurrentBalance</MudTd>
                     <MudTd DataLabel="Updated">@context.LastUpdated</MudTd>
-                    <MudTd><MudIconButton Icon="@Icons.Filled.Edit" /></MudTd>
+                    <MudTd>
+                        <MudMenu Icon="@Icons.Material.Filled.MoreVert">
+                            <MudMenuItem OnClick="() => OpenEditAccountDialog(context)">
+                                <MudStack Row="true" Spacing="4" AlignItems="AlignItems.Center">
+                                    <MudIcon Icon="@Icons.Material.Filled.Edit" />
+                                    <MudText>Edit Account</MudText>
+                                </MudStack>
+                            </MudMenuItem>
+                            <MudMenuItem OnClick="() => DeleteAccount(context)">
+                                <MudStack Row="true" Spacing="4" AlignItems="AlignItems.Center">
+                                    <MudIcon Icon="@Icons.Material.Filled.Delete" />
+                                    <MudText>Delete Account</MudText>
+                                </MudStack></MudMenuItem>
+                        </MudMenu>
+                    </MudTd>
                 </RowTemplate>
             </MudTable>
         }
