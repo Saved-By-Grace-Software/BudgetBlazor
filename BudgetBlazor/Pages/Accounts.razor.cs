@@ -73,7 +73,7 @@ namespace BudgetBlazor.Pages
         {
             // Open the dialog
             var parameters = new DialogParameters { ["Account"] = accountToEdit };
-            var dialogRef = DialogService.Show<EditAccountDialog>("Add New Account", parameters);
+            var dialogRef = DialogService.Show<EditAccountDialog>("Edit Account", parameters);
 
             // Wait for a response and add the Account
             var res = await dialogRef.Result;

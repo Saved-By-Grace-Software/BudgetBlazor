@@ -50,6 +50,64 @@ namespace BudgetBlazor.Pages.Page_Components
                 new BreadcrumbItem("Accounts", href: "Accounts", icon: Icons.Material.Filled.CreditCard),
                 new BreadcrumbItem(Account == null ? "Account" : Account.Name, href: null, disabled: true)
             };
+
+            BudgetDataService.AccountDataChanged += BudgetDataService_AccountDataChanged;
         }
+
+        /// <summary>
+        /// Opens the dialog to add a new transaction
+        /// </summary>
+        /// <returns></returns>
+        protected async Task OpenAddTransactionDialog()
+        {
+            // Open the dialog
+            var parameters = new DialogParameters { ["Transaction"] = new Transaction("") };
+            var dialogRef = DialogService.Show<EditTransactionDialog>("Add New Transaction", parameters);
+
+            // Wait for a response and add the Account
+            var res = await dialogRef.Result;
+            if (!res.Cancelled)
+            {
+                // Add the new transaction
+                Transaction transaction = (Transaction)res.Data;
+                Account.Transactions.Add(transaction);
+                BudgetDataService.UpdateAccount(Account);
+            }
+        }
+
+        /// <summary>
+        /// Opens the dialog to edit a transaction
+        /// </summary>
+        /// <returns></returns>
+        protected async Task OpenEditTransactionDialog(Transaction transactionToEdit)
+        {
+            // Open the dialog
+            var parameters = new DialogParameters { ["Transaction"] = transactionToEdit };
+            var dialogRef = DialogService.Show<EditTransactionDialog>("Edit Transaction", parameters);
+
+            // Wait for a response and add the Account
+            var res = await dialogRef.Result;
+            if (!res.Cancelled)
+            {
+                // Update the transaction
+                Transaction transaction = (Transaction)res.Data;
+                int index = Account.Transactions.FindIndex(t => t.Id == transaction.Id);
+                if (index != -1)
+                {
+                    Account.Transactions[index] = transaction;
+                    BudgetDataService.UpdateAccount(Account);
+                }
+            }
+        }
+
+        #region Event Functions
+        /// <summary>
+        /// Subscriber to BudgetDataService account changed event, updates UI when account data has changed
+        /// </summary>
+        private void BudgetDataService_AccountDataChanged()
+        {
+            StateHasChanged();
+        }
+        #endregion
     }
 }

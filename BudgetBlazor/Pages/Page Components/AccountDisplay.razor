@@ -7,3 +7,58 @@
         <MudBreadcrumbs Items="_items"></MudBreadcrumbs>
     </PageHeaderActions>
 </PageHeader>
+
+<MudCard Class="my-4" Elevation="3" Style="@($"color:{CurrentTheme.Palette.TextPrimary}; background:{CurrentTheme.Palette.GrayLighter};")">
+    <MudCardContent>
+        @if (Account.Transactions.Count == 0)
+        {
+            <MudText Typo="Typo.body2" Align="Align.Center"><i>No transactions for this account yet</i></MudText>
+        }
+        else
+        {
+            <MudTable Items="@Account.Transactions" Hover="true" Breakpoint="Breakpoint.Sm" T="Transaction" Dense="true" Striped="true">
+                <ColGroup>
+                    <col style="width: 10%;" />
+                    <col style="width: 40%;" />
+                    <col style="width: 20%;" />
+                    <col style="width: 25%;" />
+                    <col style="width: 5%;" />
+                </ColGroup>
+                <HeaderContent>
+                    <MudTh><MudTableSortLabel InitialDirection="SortDirection.Descending" SortBy="new Func<Transaction, object>(x=>x.TransactionDate)">Date</MudTableSortLabel></MudTh>
+                    <MudTh><MudTableSortLabel SortBy="new Func<Transaction, object>(x=>x.Name)">Description</MudTableSortLabel></MudTh>
+                    <MudTh><MudTableSortLabel SortBy="new Func<Transaction, object>(x=>x.Amount)">Amount</MudTableSortLabel></MudTh>
+                    <MudTh>Budget</MudTh>
+                    <MudTh></MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="Date">@context.TransactionDate.ToString("MM/dd/yyyy")</MudTd>
+                    <MudTd DataLabel="Description">@context.Name</MudTd>
+                    <MudTd DataLabel="Amount">@context.Amount</MudTd>
+                    <MudTd DataLabel="Budget">Budget</MudTd>
+                    <MudTd>
+                        <MudMenu Icon="@Icons.Material.Filled.MoreVert">
+                            <MudMenuItem OnClick="() => OpenEditTransactionDialog(context)">
+                                <MudStack Row="true" Spacing="4" AlignItems="AlignItems.Center">
+                                    <MudIcon Icon="@Icons.Material.Filled.Edit" />
+                                    <MudText>Edit Transaction</MudText>
+                                </MudStack>
+                            </MudMenuItem>
+                            <MudMenuItem>
+                                <MudStack Row="true" Spacing="4" AlignItems="AlignItems.Center">
+                                    <MudIcon Icon="@Icons.Material.Filled.Delete" />
+                                    <MudText>Delete Transaction</MudText>
+                                </MudStack></MudMenuItem>
+                        </MudMenu>
+                    </MudTd>
+                </RowTemplate>
+                <PagerContent>
+                    <MudTablePager />
+                </PagerContent>
+            </MudTable>
+        }
+    </MudCardContent>
+    <MudCardActions>
+        <MudButton Variant="Variant.Outlined" Color="Color.Primary" StartIcon="@Icons.Filled.Add" OnClick="OpenAddTransactionDialog">Add New Transaction</MudButton>
+    </MudCardActions>
+</MudCard>

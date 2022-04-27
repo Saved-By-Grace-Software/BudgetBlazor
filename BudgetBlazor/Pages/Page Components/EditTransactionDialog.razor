@@ -1,0 +1,70 @@
+﻿@using System.ComponentModel;
+@using System.ComponentModel.DataAnnotations.Schema;
+
+<MudDialog>
+    <DialogContent>
+        <MudForm @ref="form" @bind-IsValid="@success" @bind-Errors="@errors">
+            <MudGrid Spacing="4" Justify="Justify.SpaceBetween">
+                <MudItem sm="12" md="3">
+                    <MudTextField @bind-Value="Transaction.Name" Label="Description" Variant="Variant.Outlined" Required="true" RequiredError="Must enter a Transaction description"></MudTextField>
+                </MudItem>
+                <MudItem sm="12" md="3">
+                    <MudTextField @bind-Value="Transaction.Amount" Label="Amount" Variant="Variant.Outlined" Required="true" RequiredError="Must enter a Transaction amount"></MudTextField>
+                </MudItem>
+                <MudItem sm="12" md="3">
+                    <MudSelect T="AccountType" Label="Budget" AnchorOrigin="Origin.BottomCenter" Required="false">
+                        @foreach(AccountType type in Enum.GetValues(typeof(AccountType)))
+                        {
+                            <MudSelectItem Value="type" />
+                        }
+                    </MudSelect>
+                </MudItem>
+                <MudItem sm="12" md="3">
+                    <MudDatePicker Label="Transaction Date" @bind-Date="_transactionDateBinder" DisableToolbar="true" />
+                </MudItem>
+            </MudGrid>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">Ok</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+    [Parameter] public Transaction Transaction { get; set; }
+
+    private DateTime? _transactionDateBinder { get; set; }
+
+    MudForm form;
+    bool success;
+    string[] errors = { };
+
+    /// <summary>
+    /// Lifecycle method called when the page is initialized
+    /// </summary>
+    /// <returns></returns>
+    protected override async Task OnInitializedAsync()
+    {
+        _transactionDateBinder = Transaction.TransactionDate;
+    }
+
+    private async Task Submit()
+    {
+        // Validate the form
+        await form.Validate();
+
+        if (form.IsValid)
+        {
+            // Update the transaction date from the binder
+            Transaction.TransactionDate = (DateTime)_transactionDateBinder;
+
+            // Close the modal and pass back the updated transaction
+            MudDialog.Close(Transaction);
+        }
+    }
+
+    void Cancel() => MudDialog.Cancel();
+}
