@@ -14,5 +14,6 @@ namespace DataAccess.Data
         public DbSet<BudgetMonth> BudgetMonths { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
         public DbSet<Account> Accounts { get; set; }
+        public DbSet<AccountHistory> AccountsHistories { get; set; }
     }
 }
