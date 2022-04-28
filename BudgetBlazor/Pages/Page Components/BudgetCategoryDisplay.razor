@@ -110,7 +110,7 @@
     /// <summary>
     /// Calls the callback to delete the category
     /// </summary>
-    private async void DeleteCategory()
+    private async Task DeleteCategory()
     {
         bool? result = await DialogService.ShowMessageBox(
             "Warning", 

@@ -61,9 +61,9 @@
     }
 
     /// <summary>
-    /// Calls the callback to delete the budget
+    /// Shows a confirmation dialog and then deletes the budget
     /// </summary>
-    private async void DeleteBudgetItem()
+    private async Task DeleteBudgetItem()
     {
         bool? result = await DialogService.ShowMessageBox(
             "Warning", 

@@ -6,7 +6,8 @@ namespace DataAccess.Services
     public class BudgetDataService : IBudgetDataService
     {
         private readonly ApplicationDbContext _db;
-        public event IBudgetDataService.NotifyDataChange BudgetDataChanged;
+        public event IBudgetDataService.NotifyBudgetDataChange BudgetDataChanged;
+        public event IBudgetDataService.NotifyAccountDataChange AccountDataChanged;
 
         public BudgetDataService(ApplicationDbContext db)
         {
@@ -67,6 +68,22 @@ namespace DataAccess.Services
             // Return the new month
             return newMonth;
         }
+
+        public List<Account> CreateAccount(Account account, Guid user)
+        {
+            // Update the account with the given user and last updated time
+            account.User = user;
+            account.LastUpdated = DateTime.Now;
+
+            // Add the account to the database
+            _db.Accounts.Add(account);
+            _db.SaveChanges();
+
+            // Notify subscribers that account data has changed
+            RaiseAccountDataChanged();
+
+            return _db.Accounts.Where(a => a.User == user).ToList();
+        }
         #endregion
 
         #region Get
@@ -94,9 +111,14 @@ namespace DataAccess.Services
             return m;
         }
 
-        public List<BudgetMonth> GetAll(Guid user)
+        public List<BudgetMonth> GetAllMonths(Guid user)
         {
             return _db.BudgetMonths.Where(x => x.User == user).ToList();
+        }
+
+        public List<Account> GetAllAccounts(Guid user)
+        {
+            return _db.Accounts.Where(x => x.User == user).ToList();
         }
 
         public BudgetMonth GetDefaultMonth(Guid user)
@@ -111,6 +133,24 @@ namespace DataAccess.Services
             }
 
             return m;
+        }
+
+        public Account GetAccount(int accountId, Guid user)
+        {
+            return _db.Accounts.FirstOrDefault(x => x.Id == accountId && x.User == user);
+        }
+
+        public List<BudgetItem> GetBudgetItems(int year, int month, Guid user)
+        {
+            BudgetMonth m = Get(year, month, user);
+            if (m != default(BudgetMonth))
+            {
+                return m.BudgetCategories.SelectMany(m => m.BudgetItems).ToList();
+            }
+            else
+            {
+                return null;
+            }
         }
         #endregion
 
@@ -212,19 +252,22 @@ namespace DataAccess.Services
             decimal totalSpent = 0;
             BudgetMonth m = _db.Find<BudgetMonth>(budgetMonthId);
 
-            // Update each category
-            foreach (BudgetCategory category in m.BudgetCategories)
+            if (m != default(BudgetMonth))
             {
-                UpdateCategoryTotals(category);
+                // Update each category
+                foreach (BudgetCategory category in m.BudgetCategories)
+                {
+                    UpdateCategoryTotals(category);
 
-                totalBudgeted += category.Budgeted;
-                totalSpent += category.Spent;
+                    totalBudgeted += category.Budgeted;
+                    totalSpent += category.Spent;
+                }
+
+                m.TotalBudgeted = totalBudgeted;
+                m.TotalSpent = totalSpent;
+
+                _db.SaveChanges();
             }
-
-            m.TotalBudgeted = totalBudgeted;
-            m.TotalSpent = totalSpent;
-
-            _db.SaveChanges();
         }
 
         /// <summary>
@@ -237,20 +280,23 @@ namespace DataAccess.Services
             decimal totalSpent = 0;
             BudgetCategory c = _db.Find<BudgetCategory>(budgetCategory.Id);
 
-            // Update each budget
-            foreach (BudgetItem item in c.BudgetItems)
+            if (c != default(BudgetCategory))
             {
-                UpdateBudgetItemTotals(item);
+                // Update each budget
+                foreach (BudgetItem item in c.BudgetItems)
+                {
+                    UpdateBudgetItemTotals(item);
 
-                totalBudgeted += item.Budget;
-                totalSpent += item.Spent;
+                    totalBudgeted += item.Budget;
+                    totalSpent += item.Spent;
+                }
+
+                c.Budgeted = totalBudgeted;
+                c.Spent = totalSpent;
+                c.Remaining = totalBudgeted - totalSpent;
+
+                _db.SaveChanges();
             }
-
-            c.Budgeted = totalBudgeted;
-            c.Spent = totalSpent;
-            c.Remaining = totalBudgeted - totalSpent;
-
-            _db.SaveChanges();
         }
 
         /// <summary>
@@ -262,16 +308,45 @@ namespace DataAccess.Services
             decimal totalSpent = 0;
             BudgetItem i = _db.Find<BudgetItem>(budgetItem.Id);
 
-            // Add the total spent in transactions
-            foreach (Transaction transaction in i.Transactions)
+            if (i != default(BudgetItem))
             {
-                totalSpent += transaction.Amount;
+                // Get list of transactions for this budget item
+                List<Transaction> transactions = _db.Transactions.Where(t => t.Budget.Id == budgetItem.Id).ToList();
+
+                // Add the total spent in transactions
+                foreach (Transaction transaction in transactions)
+                {
+                    totalSpent += transaction.Amount;
+                }
+
+                i.Spent = totalSpent;
+                i.Remaining = i.Budget - totalSpent;
+
+                _db.SaveChanges();
+            }
+        }
+
+        public Account UpdateAccount(Account account)
+        {
+            Account a = _db.Find<Account>(account.Id);
+
+            if (a != default(Account))
+            {
+                // Update the account's data
+                a.LastUpdated = DateTime.Now;
+                a.AccountNumber = account.AccountNumber;
+                a.AccountType = account.AccountType;
+                a.CurrentBalance = account.CurrentBalance;
+                a.Name = account.Name;
+
+                // Save the changes
+                _db.SaveChanges();
+
+                // Notify subscribers than an account has been updated
+                RaiseAccountDataChanged();
             }
 
-            i.Spent = totalSpent;
-            i.Remaining = i.Budget - totalSpent;
-
-            _db.SaveChanges();
+            return a;
         }
         #endregion
 
@@ -344,6 +419,35 @@ namespace DataAccess.Services
             // Return a newly created month
             return CreateFromDefault(budgetMonth.Year, budgetMonth.Month, user);
         }
+
+        public void DeleteAccount(Account account)
+        {
+            // Delete the account's transactions
+            _db.RemoveRange(account.Transactions);
+
+            // Delete the account
+            _db.Remove(account);
+            _db.SaveChanges();
+
+            // TODO: Update total calculations because transactions were removed?
+
+            // Notify subscribers that account data has changed
+            RaiseAccountDataChanged();
+        }
+
+        public void DeleteTransaction(Transaction transaction)
+        {
+            // Remove the transaction from the parent account
+            Account dbAccount = GetAccountFromTransaction(transaction);
+            dbAccount.Transactions.Remove(transaction);
+
+            // Delete the transaction
+            _db.Remove(transaction);
+            _db.SaveChanges();
+
+            // Notify subscribers that transaction data has changed
+            RaiseAccountDataChanged();
+        }
         #endregion
 
         #region Private Helper Functions
@@ -353,6 +457,14 @@ namespace DataAccess.Services
         private void RaiseBudgetDataChanged()
         {
             BudgetDataChanged?.Invoke();
+        }
+
+        /// <summary>
+        /// Raises the account data changed event
+        /// </summary>
+        private void RaiseAccountDataChanged()
+        {
+            AccountDataChanged?.Invoke();
         }
 
         /// <summary>
@@ -381,6 +493,20 @@ namespace DataAccess.Services
 
             // Get the month from the db based on the category
             return GetMonthFromCategory(_db.Find<BudgetCategory>(catId));
+        }
+
+        /// <summary>
+        /// Gets the parent account from the given transaction
+        /// </summary>
+        /// <param name="transaction"></param>
+        /// <returns></returns>
+        private Account? GetAccountFromTransaction(Transaction transaction)
+        {
+            // Get the category ID from the item's parent
+            int accId = (int)_db.Entry(transaction).Property("AccountId").CurrentValue;
+
+            // Get the Account from the db based on the ID
+            return _db.Find<Account>(accId);
         }
         #endregion
     }

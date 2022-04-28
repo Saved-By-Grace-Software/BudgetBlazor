@@ -1,0 +1,95 @@
+﻿@using System.ComponentModel;
+@using System.ComponentModel.DataAnnotations.Schema;
+
+<MudDialog>
+    <DialogContent>
+        <MudForm @ref="form" @bind-IsValid="@success" @bind-Errors="@errors">
+            <MudGrid Spacing="4" Justify="Justify.SpaceBetween">
+                <MudItem sm="12" md="3">
+                    <MudTextField @bind-Value="Transaction.Name" Label="Description" Variant="Variant.Outlined" Required="true" RequiredError="Must enter a Transaction description"></MudTextField>
+                </MudItem>
+                <MudItem sm="12" md="3">
+                    <MudTextField @bind-Value="Transaction.Amount" Label="Amount" Variant="Variant.Outlined" Required="true" RequiredError="Must enter a Transaction amount"></MudTextField>
+                </MudItem>
+                <MudItem sm="12" md="3">
+                    <MudSelect T="BudgetItem" @bind-Value="@Transaction.Budget" Label="Budget" AnchorOrigin="Origin.BottomCenter" Required="false">
+                        @foreach(BudgetItem budget in budgets)
+                        {
+                            <MudSelectItem Value="budget" />
+                        }
+                    </MudSelect>
+                </MudItem>
+                <MudItem sm="12" md="3">
+                    <MudDatePicker Label="Transaction Date" @bind-Date="_transactionDateBinder" DisableToolbar="true" PickerClosed="MonthChanged" />
+                </MudItem>
+            </MudGrid>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">Ok</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    [Inject] IBudgetDataService BudgetDataService { get; set; }
+    [Inject] AuthenticationStateProvider AuthenticationStateProvider { get; set; }
+    [Parameter] public Transaction Transaction { get; set; }
+
+    private DateTime? _transactionDateBinder { get; set; }
+    private List<BudgetItem> budgets { get; set; }
+    private Guid _currentUserId { get; set; }
+
+    MudForm form;
+    bool success;
+    string[] errors = { };
+
+    /// <summary>
+    /// Lifecycle method called when the page is initialized
+    /// </summary>
+    /// <returns></returns>
+    protected override async Task OnInitializedAsync()
+    {
+        var authstate = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        _currentUserId = Guid.Parse(authstate.User.Claims.First().Value);
+
+        _transactionDateBinder = Transaction.TransactionDate;
+        budgets = BudgetDataService.GetBudgetItems(Transaction.TransactionDate.Year, Transaction.TransactionDate.Month, _currentUserId);
+    }
+
+    private async Task Submit()
+    {
+        // Validate the form
+        await form.Validate();
+
+        if (form.IsValid)
+        {
+            // Update the transaction date from the binder
+            Transaction.TransactionDate = (DateTime)_transactionDateBinder;
+
+            // Clear the budget if the selected budget is not from the list
+            if (!budgets.Contains(Transaction.Budget))
+            {
+                Transaction.Budget = null;
+            }
+
+            // Close the modal and pass back the updated transaction
+            MudDialog.Close(Transaction);
+        }
+    }
+
+    /// <summary>
+    /// Reloads the budget items for the newly selected month
+    /// </summary>
+    private void MonthChanged()
+    {
+        if (((DateTime)_transactionDateBinder).Year != Transaction.TransactionDate.Year || ((DateTime)_transactionDateBinder).Month != Transaction.TransactionDate.Month)
+        {
+            // The date changed to a new month, reload the budget items
+            budgets = BudgetDataService.GetBudgetItems(((DateTime)_transactionDateBinder).Year, ((DateTime)_transactionDateBinder).Month, _currentUserId);
+        }
+    }
+
+    void Cancel() => MudDialog.Cancel();
+}

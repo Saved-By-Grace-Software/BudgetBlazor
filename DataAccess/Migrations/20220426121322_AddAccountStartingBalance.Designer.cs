@@ -4,6 +4,7 @@ using DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220426121322_AddAccountStartingBalance")]
+    partial class AddAccountStartingBalance
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -47,36 +49,18 @@ namespace DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<decimal>("StartingBalance")
+                        .HasColumnType("decimal(12,2)");
+
+                    b.Property<DateTime>("StartingBalanceDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<Guid>("User")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
                     b.ToTable("Accounts");
-                });
-
-            modelBuilder.Entity("DataAccess.Models.AccountHistory", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<int>("AccountId")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("Balance")
-                        .HasColumnType("decimal(12,2)");
-
-                    b.Property<DateTime>("BalanceDate")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AccountId");
-
-                    b.ToTable("AccountsHistories");
                 });
 
             modelBuilder.Entity("DataAccess.Models.BudgetCategory", b =>
@@ -193,7 +177,7 @@ namespace DataAccess.Migrations
                     b.Property<decimal>("Amount")
                         .HasColumnType("decimal(12,2)");
 
-                    b.Property<int?>("BudgetId")
+                    b.Property<int?>("BudgetItemId")
                         .HasColumnType("int");
 
                     b.Property<string>("CheckNumber")
@@ -222,7 +206,7 @@ namespace DataAccess.Migrations
 
                     b.HasIndex("AccountId");
 
-                    b.HasIndex("BudgetId");
+                    b.HasIndex("BudgetItemId");
 
                     b.ToTable("Transactions");
                 });
@@ -429,17 +413,6 @@ namespace DataAccess.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("DataAccess.Models.AccountHistory", b =>
-                {
-                    b.HasOne("DataAccess.Models.Account", "Account")
-                        .WithMany()
-                        .HasForeignKey("AccountId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Account");
-                });
-
             modelBuilder.Entity("DataAccess.Models.BudgetCategory", b =>
                 {
                     b.HasOne("DataAccess.Models.BudgetMonth", null)
@@ -460,11 +433,9 @@ namespace DataAccess.Migrations
                         .WithMany("Transactions")
                         .HasForeignKey("AccountId");
 
-                    b.HasOne("DataAccess.Models.BudgetItem", "Budget")
-                        .WithMany()
-                        .HasForeignKey("BudgetId");
-
-                    b.Navigation("Budget");
+                    b.HasOne("DataAccess.Models.BudgetItem", null)
+                        .WithMany("Transactions")
+                        .HasForeignKey("BudgetItemId");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -526,6 +497,11 @@ namespace DataAccess.Migrations
             modelBuilder.Entity("DataAccess.Models.BudgetCategory", b =>
                 {
                     b.Navigation("BudgetItems");
+                });
+
+            modelBuilder.Entity("DataAccess.Models.BudgetItem", b =>
+                {
+                    b.Navigation("Transactions");
                 });
 
             modelBuilder.Entity("DataAccess.Models.BudgetMonth", b =>

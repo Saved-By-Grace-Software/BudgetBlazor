@@ -1,0 +1,75 @@
+﻿@attribute [Authorize]
+@page "/Accounts/Edit/{AccountId}"
+@inherits AccountDisplayBase
+
+<PageHeader PageIcon="@Icons.Material.Outlined.CreditCard" PageTitleText="@Account.Name">
+    <PageHeaderActions>
+        <MudBreadcrumbs Items="_items"></MudBreadcrumbs>
+    </PageHeaderActions>
+</PageHeader>
+
+<MudCard Class="my-4" Elevation="3" Style="@($"color:{CurrentTheme.Palette.TextPrimary}; background:{CurrentTheme.Palette.GrayLighter};")">
+    <MudCardContent>
+        @if (Account.Transactions.Count == 0)
+        {
+            <MudText Typo="Typo.body2" Align="Align.Center"><i>No transactions for this account yet</i></MudText>
+        }
+        else
+        {
+            <MudTable Items="@Account.Transactions" Hover="true" Breakpoint="Breakpoint.Sm" T="Transaction" Dense="true" Striped="true" Filter="new Func<Transaction,bool>(FilterFunc1)">
+                <ToolBarContent>
+                    <MudText Typo="Typo.h6">Transactions</MudText>
+                    <MudSpacer />
+                    <MudTextField @bind-Value="searchString" 
+                        Placeholder="Search" 
+                        Clearable="true"
+                        Adornment="Adornment.Start" 
+                        AdornmentIcon="@Icons.Material.Filled.Search" 
+                        IconSize="Size.Medium" 
+                        Class="mt-0"></MudTextField>
+                </ToolBarContent>
+                <ColGroup>
+                    <col style="width: 10%;" />
+                    <col style="width: 40%;" />
+                    <col style="width: 20%;" />
+                    <col style="width: 25%;" />
+                    <col style="width: 5%;" />
+                </ColGroup>
+                <HeaderContent>
+                    <MudTh><MudTableSortLabel InitialDirection="SortDirection.Descending" SortBy="new Func<Transaction, object>(x=>x.TransactionDate)">Date</MudTableSortLabel></MudTh>
+                    <MudTh><MudTableSortLabel SortBy="new Func<Transaction, object>(x=>x.Name)">Description</MudTableSortLabel></MudTh>
+                    <MudTh><MudTableSortLabel SortBy="new Func<Transaction, object>(x=>x.Amount)">Amount</MudTableSortLabel></MudTh>
+                    <MudTh>Budget</MudTh>
+                    <MudTh></MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="Date">@context.TransactionDate.ToString("MM/dd/yyyy")</MudTd>
+                    <MudTd DataLabel="Description">@context.Name</MudTd>
+                    <MudTd DataLabel="Amount">@context.Amount</MudTd>
+                    <MudTd DataLabel="Budget">@context.Budget</MudTd>
+                    <MudTd>
+                        <MudMenu Icon="@Icons.Material.Filled.MoreVert">
+                            <MudMenuItem OnClick="() => OpenEditTransactionDialog(context)">
+                                <MudStack Row="true" Spacing="4" AlignItems="AlignItems.Center">
+                                    <MudIcon Icon="@Icons.Material.Filled.Edit" />
+                                    <MudText>Edit Transaction</MudText>
+                                </MudStack>
+                            </MudMenuItem>
+                            <MudMenuItem OnClick="() => DeleteTransaction(context)">
+                                <MudStack Row="true" Spacing="4" AlignItems="AlignItems.Center">
+                                    <MudIcon Icon="@Icons.Material.Filled.Delete" />
+                                    <MudText>Delete Transaction</MudText>
+                                </MudStack></MudMenuItem>
+                        </MudMenu>
+                    </MudTd>
+                </RowTemplate>
+                <PagerContent>
+                    <MudTablePager />
+                </PagerContent>
+            </MudTable>
+        }
+    </MudCardContent>
+    <MudCardActions>
+        <MudButton Variant="Variant.Outlined" Color="Color.Primary" StartIcon="@Icons.Filled.Add" OnClick="OpenAddTransactionDialog">Add New Transaction</MudButton>
+    </MudCardActions>
+</MudCard>

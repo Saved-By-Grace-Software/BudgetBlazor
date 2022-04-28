@@ -11,8 +11,6 @@ namespace DataAccess.Models
         [Column(TypeName = "decimal(12,2)")]
         public decimal Budget { get; set; }
 
-        public virtual List<Transaction> Transactions { get; set; }
-
         [Column(TypeName = "decimal(12,2)")]
         public decimal Spent { get; set; }
 
@@ -21,8 +19,12 @@ namespace DataAccess.Models
 
         public BudgetItem(string name)
         {
-            Transactions = new List<Transaction>();
             Name = name;
+        }
+
+        public override string ToString()
+        {
+            return Name;
         }
     }
 }
