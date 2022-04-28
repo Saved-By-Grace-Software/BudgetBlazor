@@ -2,6 +2,7 @@
 using DataAccess.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Components.Forms;
 using MudBlazor;
 
 namespace BudgetBlazor.Pages.Page_Components
@@ -139,6 +140,14 @@ namespace BudgetBlazor.Pages.Page_Components
         private void BudgetDataService_AccountDataChanged()
         {
             StateHasChanged();
+        }
+        #endregion
+
+        #region Import Transactions Functions
+        protected void UploadFiles(InputFileChangeEventArgs e)
+        {
+            //TODO upload the files to the server
+            var tmp = e.File;
         }
         #endregion
     }

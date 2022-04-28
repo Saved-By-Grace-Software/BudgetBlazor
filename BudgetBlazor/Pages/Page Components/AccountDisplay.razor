@@ -70,6 +70,16 @@
         }
     </MudCardContent>
     <MudCardActions>
+        <MudButton HtmlTag="label"
+                   Variant="Variant.Filled"
+                   Color="Color.Primary"
+                   StartIcon="@Icons.Filled.CloudUpload"
+                   for="fileInput">
+            Import Transactions
+        </MudButton>
+        <MudSpacer />
         <MudButton Variant="Variant.Outlined" Color="Color.Primary" StartIcon="@Icons.Filled.Add" OnClick="OpenAddTransactionDialog">Add New Transaction</MudButton>
     </MudCardActions>
 </MudCard>
+
+<InputFile id="fileInput" OnChange="UploadFiles" hidden multiple />
