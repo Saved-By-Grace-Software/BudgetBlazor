@@ -28,7 +28,7 @@ namespace BudgetBlazor.Pages.Page_Components
         [Parameter] public string AccountId { get; set; }
         protected Account? Account { get; set; }
         protected Guid _currentUserId;
-
+        protected string searchString = "";
         protected List<BreadcrumbItem> _items = new List<BreadcrumbItem>();
 
         /// <summary>
@@ -116,6 +116,21 @@ namespace BudgetBlazor.Pages.Page_Components
                 BudgetDataService.DeleteTransaction(transactionToDelete);
             }
         }
+
+        #region Table Filter Functions
+        protected bool FilterFunc1(Transaction transaction) => FilterFunc(transaction, searchString);
+
+        protected bool FilterFunc(Transaction transaction, string searchString)
+        {
+            if (string.IsNullOrWhiteSpace(searchString))
+                return true;
+            if (transaction.Name.Contains(searchString, StringComparison.CurrentCultureIgnoreCase))
+                return true;
+            if (transaction.Budget != null && transaction.Budget.Name.Contains(searchString, StringComparison.CurrentCultureIgnoreCase))
+                return true;
+            return false;
+        }
+        #endregion
 
         #region Event Functions
         /// <summary>
