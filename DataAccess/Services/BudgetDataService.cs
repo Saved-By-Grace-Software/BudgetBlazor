@@ -252,19 +252,22 @@ namespace DataAccess.Services
             decimal totalSpent = 0;
             BudgetMonth m = _db.Find<BudgetMonth>(budgetMonthId);
 
-            // Update each category
-            foreach (BudgetCategory category in m.BudgetCategories)
+            if (m != default(BudgetMonth))
             {
-                UpdateCategoryTotals(category);
+                // Update each category
+                foreach (BudgetCategory category in m.BudgetCategories)
+                {
+                    UpdateCategoryTotals(category);
 
-                totalBudgeted += category.Budgeted;
-                totalSpent += category.Spent;
+                    totalBudgeted += category.Budgeted;
+                    totalSpent += category.Spent;
+                }
+
+                m.TotalBudgeted = totalBudgeted;
+                m.TotalSpent = totalSpent;
+
+                _db.SaveChanges();
             }
-
-            m.TotalBudgeted = totalBudgeted;
-            m.TotalSpent = totalSpent;
-
-            _db.SaveChanges();
         }
 
         /// <summary>
@@ -277,20 +280,23 @@ namespace DataAccess.Services
             decimal totalSpent = 0;
             BudgetCategory c = _db.Find<BudgetCategory>(budgetCategory.Id);
 
-            // Update each budget
-            foreach (BudgetItem item in c.BudgetItems)
+            if (c != default(BudgetCategory))
             {
-                UpdateBudgetItemTotals(item);
+                // Update each budget
+                foreach (BudgetItem item in c.BudgetItems)
+                {
+                    UpdateBudgetItemTotals(item);
 
-                totalBudgeted += item.Budget;
-                totalSpent += item.Spent;
+                    totalBudgeted += item.Budget;
+                    totalSpent += item.Spent;
+                }
+
+                c.Budgeted = totalBudgeted;
+                c.Spent = totalSpent;
+                c.Remaining = totalBudgeted - totalSpent;
+
+                _db.SaveChanges();
             }
-
-            c.Budgeted = totalBudgeted;
-            c.Spent = totalSpent;
-            c.Remaining = totalBudgeted - totalSpent;
-
-            _db.SaveChanges();
         }
 
         /// <summary>
@@ -302,16 +308,22 @@ namespace DataAccess.Services
             decimal totalSpent = 0;
             BudgetItem i = _db.Find<BudgetItem>(budgetItem.Id);
 
-            // TODO: Add the total spent in transactions
-            //foreach (Transaction transaction in i.Transactions)
-            //{
-            //    totalSpent += transaction.Amount;
-            //}
+            if (i != default(BudgetItem))
+            {
+                // Get list of transactions for this budget item
+                List<Transaction> transactions = _db.Transactions.Where(t => t.Budget.Id == budgetItem.Id).ToList();
 
-            i.Spent = totalSpent;
-            i.Remaining = i.Budget - totalSpent;
+                // Add the total spent in transactions
+                foreach (Transaction transaction in transactions)
+                {
+                    totalSpent += transaction.Amount;
+                }
 
-            _db.SaveChanges();
+                i.Spent = totalSpent;
+                i.Remaining = i.Budget - totalSpent;
+
+                _db.SaveChanges();
+            }
         }
 
         public Account UpdateAccount(Account account)

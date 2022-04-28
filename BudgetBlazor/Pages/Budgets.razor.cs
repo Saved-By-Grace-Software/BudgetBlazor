@@ -42,6 +42,8 @@ namespace BudgetBlazor.Pages
 
             _currentMonth = BudgetDataService.GetOrCreate(((DateTime)_currentMonthDate).Year, ((DateTime)_currentMonthDate).Month, _currentUserId);
             BudgetDataService.BudgetDataChanged += BudgetDataService_BudgetDataChanged;
+
+            BudgetDataService.UpdateMonthTotals(_currentMonth);
         }
 
         /// <summary>

@@ -30,5 +30,12 @@ namespace DataAccess.Models
             Name = name;
             TransactionDate = DateTime.Now;
         }
+
+        public Transaction(string name, Guid user)
+        {
+            Name = name;
+            TransactionDate = DateTime.Now;
+            User = user;
+        }
     }
 }

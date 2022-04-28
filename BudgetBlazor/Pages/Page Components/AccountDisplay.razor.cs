@@ -61,7 +61,7 @@ namespace BudgetBlazor.Pages.Page_Components
         protected async Task OpenAddTransactionDialog()
         {
             // Open the dialog
-            var parameters = new DialogParameters { ["Transaction"] = new Transaction("") };
+            var parameters = new DialogParameters { ["Transaction"] = new Transaction("", _currentUserId) };
             var dialogRef = DialogService.Show<EditTransactionDialog>("Add New Transaction", parameters);
 
             // Wait for a response and add the Account
