@@ -43,6 +43,7 @@ namespace BudgetBlazor.Pages
             _currentMonth = BudgetDataService.GetOrCreate(((DateTime)_currentMonthDate).Year, ((DateTime)_currentMonthDate).Month, _currentUserId);
             BudgetDataService.BudgetDataChanged += BudgetDataService_BudgetDataChanged;
 
+            // Update the month totals on page load
             BudgetDataService.UpdateMonthTotals(_currentMonth);
         }
 
@@ -112,7 +113,7 @@ namespace BudgetBlazor.Pages
             if (_currentMonthDate.HasValue)
             {
                 // Trigger the change to the next month's data
-                MonthChanged(((DateTime)_currentMonthDate).AddMonths(1));
+                ChangeMonth(((DateTime)_currentMonthDate).AddMonths(1));
             }
         }
 
@@ -124,7 +125,19 @@ namespace BudgetBlazor.Pages
             if (_currentMonthDate.HasValue)
             {
                 // Trigger the change to the previous month's data
-                MonthChanged(((DateTime)_currentMonthDate).AddMonths(-1));
+                ChangeMonth(((DateTime)_currentMonthDate).AddMonths(-1));
+            }
+        }
+
+        /// <summary>
+        /// Event to handle when the date picker chooses a new month
+        /// </summary>
+        protected void MonthChanged()
+        {
+            if (_currentMonthDate.HasValue)
+            {
+                // Trigger the change to the month's data
+                ChangeMonth(_currentMonthDate);
             }
         }
 
@@ -132,12 +145,15 @@ namespace BudgetBlazor.Pages
         /// Reloads the data for the newly selected month
         /// </summary>
         /// <param name="newDate">The new month</param>
-        protected void MonthChanged(DateTime? newDate)
+        protected void ChangeMonth(DateTime? newDate)
         {
             if (newDate.HasValue)
             {
                 _currentMonthDate = newDate;
                 _currentMonth = BudgetDataService.GetOrCreate(((DateTime)_currentMonthDate).Year, ((DateTime)_currentMonthDate).Month, _currentUserId);
+
+                // Update the month totals on changing month
+                BudgetDataService.UpdateMonthTotals(_currentMonth);
 
                 Snackbar.Add("Loaded: " + ((DateTime)_currentMonthDate).ToString("MMMM yyyy"));
             }

@@ -20,7 +20,7 @@
                     </MudSelect>
                 </MudItem>
                 <MudItem sm="12" md="3">
-                    <MudDatePicker Label="Transaction Date" @bind-Date="_transactionDateBinder" DisableToolbar="true" />
+                    <MudDatePicker Label="Transaction Date" @bind-Date="_transactionDateBinder" DisableToolbar="true" PickerClosed="MonthChanged" />
                 </MudItem>
             </MudGrid>
         </MudForm>
@@ -68,8 +68,26 @@
             // Update the transaction date from the binder
             Transaction.TransactionDate = (DateTime)_transactionDateBinder;
 
+            // Clear the budget if the selected budget is not from the list
+            if (!budgets.Contains(Transaction.Budget))
+            {
+                Transaction.Budget = null;
+            }
+
             // Close the modal and pass back the updated transaction
             MudDialog.Close(Transaction);
+        }
+    }
+
+    /// <summary>
+    /// Reloads the budget items for the newly selected month
+    /// </summary>
+    private void MonthChanged()
+    {
+        if (((DateTime)_transactionDateBinder).Year != Transaction.TransactionDate.Year || ((DateTime)_transactionDateBinder).Month != Transaction.TransactionDate.Month)
+        {
+            // The date changed to a new month, reload the budget items
+            budgets = BudgetDataService.GetBudgetItems(((DateTime)_transactionDateBinder).Year, ((DateTime)_transactionDateBinder).Month, _currentUserId);
         }
     }
 
