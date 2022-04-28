@@ -38,5 +38,27 @@ namespace DataAccess.Models
             IsPartial = false;
             IsSplit = false;
         }
+
+        public override bool Equals(object? obj)
+        {
+            //Check for null 
+            if (obj == null)
+            {
+                return false;
+            }
+            else
+            {
+                // Try cast and then evaluate
+                try
+                {
+                    Transaction t = (Transaction)obj;
+                    return (Name == t.Name) && (Amount == t.Amount) && (TransactionDate == t.TransactionDate) && (FITransactionId == t.FITransactionId);
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
+            }
+        }
     }
 }

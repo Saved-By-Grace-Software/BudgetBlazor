@@ -21,7 +21,7 @@ namespace BudgetBlazor.Helpers
                 account.LastUpdated = ofxDocument.StatementEnd;
 
                 // Import the transactions
-                foreach(Transaction transaction in ofxDocument.Transactions)
+                foreach (Transaction transaction in ofxDocument.Transactions)
                 {
                     // Create a new budget transaction
                     BudgetTransaction t = new BudgetTransaction(transaction.Name, account.User);
@@ -30,8 +30,11 @@ namespace BudgetBlazor.Helpers
                     t.FITransactionId = transaction.TransactionId;
                     t.TransactionDate = transaction.Date;
 
-                    // Add the transaction to the account
-                    account.Transactions.Add(t);
+                    // Add the transaction to the account if it is unique
+                    if (!account.Transactions.Contains(t))
+                    {
+                        account.Transactions.Add(t);
+                    }
                 }
 
                 // Update the account in the database

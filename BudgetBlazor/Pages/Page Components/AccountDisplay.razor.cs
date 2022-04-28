@@ -130,6 +130,8 @@ namespace BudgetBlazor.Pages.Page_Components
                 return true;
             if (transaction.Budget != null && transaction.Budget.Name.Contains(searchString, StringComparison.CurrentCultureIgnoreCase))
                 return true;
+            if (transaction.Amount.ToString().Contains(searchString, StringComparison.CurrentCultureIgnoreCase))
+                return true;
             return false;
         }
         #endregion

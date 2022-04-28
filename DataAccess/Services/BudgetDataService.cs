@@ -1,5 +1,6 @@
 ﻿using DataAccess.Data;
 using DataAccess.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.Services
 {
@@ -340,10 +341,18 @@ namespace DataAccess.Services
                 a.Name = account.Name;
 
                 // Save the changes
-                _db.SaveChanges();
+                try
+                {
+                    _db.SaveChanges();
 
-                // Notify subscribers than an account has been updated
-                RaiseAccountDataChanged();
+                    // Notify subscribers than an account has been updated
+                    RaiseAccountDataChanged();
+                }
+                catch (DbUpdateException ex)
+                {
+                    // Failed to update, return null
+                    a = default(Account);
+                }
             }
 
             return a;
@@ -360,8 +369,15 @@ namespace DataAccess.Services
             };
 
             // Add the history to the database
-            _db.AccountsHistories.Add(history);
-            _db.SaveChanges();
+            try
+            {
+                _db.AccountsHistories.Add(history);
+                _db.SaveChanges();
+            }
+            catch (DbUpdateException ex)
+            {
+                // Tried to insert duplicate, we can ignore this and move on
+            }
         }
         #endregion
 
@@ -454,14 +470,18 @@ namespace DataAccess.Services
         {
             // Remove the transaction from the parent account
             Account dbAccount = GetAccountFromTransaction(transaction);
-            dbAccount.Transactions.Remove(transaction);
 
-            // Delete the transaction
-            _db.Remove(transaction);
-            _db.SaveChanges();
+            if (dbAccount != default(Account))
+            {
+                dbAccount.Transactions.Remove(transaction);
 
-            // Notify subscribers that transaction data has changed
-            RaiseAccountDataChanged();
+                // Delete the transaction
+                _db.Remove(transaction);
+                _db.SaveChanges();
+
+                // Notify subscribers that transaction data has changed
+                RaiseAccountDataChanged();
+            }
         }
         #endregion
 
