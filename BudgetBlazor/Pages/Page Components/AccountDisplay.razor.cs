@@ -144,10 +144,9 @@ namespace BudgetBlazor.Pages.Page_Components
         #endregion
 
         #region Import Transactions Functions
-        protected void UploadFiles(InputFileChangeEventArgs e)
+        protected async Task UploadFiles(InputFileChangeEventArgs e)
         {
-            //TODO upload the files to the server
-            var tmp = e.File;
+            var reader = await new StreamReader(e.File.OpenReadStream()).ReadToEndAsync();
         }
         #endregion
     }
