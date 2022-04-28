@@ -139,6 +139,19 @@ namespace DataAccess.Services
         {
             return _db.Accounts.FirstOrDefault(x => x.Id == accountId && x.User == user);
         }
+
+        public List<BudgetItem> GetBudgetItems(int year, int month, Guid user)
+        {
+            BudgetMonth m = Get(year, month, user);
+            if (m != default(BudgetMonth))
+            {
+                return m.BudgetCategories.SelectMany(m => m.BudgetItems).ToList();
+            }
+            else
+            {
+                return null;
+            }
+        }
         #endregion
 
         #region Update

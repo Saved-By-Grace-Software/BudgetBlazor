@@ -12,10 +12,10 @@
                     <MudTextField @bind-Value="Transaction.Amount" Label="Amount" Variant="Variant.Outlined" Required="true" RequiredError="Must enter a Transaction amount"></MudTextField>
                 </MudItem>
                 <MudItem sm="12" md="3">
-                    <MudSelect T="AccountType" Label="Budget" AnchorOrigin="Origin.BottomCenter" Required="false">
-                        @foreach(AccountType type in Enum.GetValues(typeof(AccountType)))
+                    <MudSelect T="BudgetItem" @bind-Value="@Transaction.Budget" Label="Budget" AnchorOrigin="Origin.BottomCenter" Required="false">
+                        @foreach(BudgetItem budget in budgets)
                         {
-                            <MudSelectItem Value="type" />
+                            <MudSelectItem Value="budget" />
                         }
                     </MudSelect>
                 </MudItem>
@@ -33,10 +33,13 @@
 
 @code {
     [CascadingParameter] MudDialogInstance MudDialog { get; set; }
-
+    [Inject] IBudgetDataService BudgetDataService { get; set; }
+    [Inject] AuthenticationStateProvider AuthenticationStateProvider { get; set; }
     [Parameter] public Transaction Transaction { get; set; }
 
     private DateTime? _transactionDateBinder { get; set; }
+    private List<BudgetItem> budgets { get; set; }
+    private Guid _currentUserId { get; set; }
 
     MudForm form;
     bool success;
@@ -48,7 +51,11 @@
     /// <returns></returns>
     protected override async Task OnInitializedAsync()
     {
+        var authstate = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        _currentUserId = Guid.Parse(authstate.User.Claims.First().Value);
+
         _transactionDateBinder = Transaction.TransactionDate;
+        budgets = BudgetDataService.GetBudgetItems(Transaction.TransactionDate.Year, Transaction.TransactionDate.Month, _currentUserId);
     }
 
     private async Task Submit()

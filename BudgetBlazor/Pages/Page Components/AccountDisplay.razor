@@ -35,7 +35,7 @@
                     <MudTd DataLabel="Date">@context.TransactionDate.ToString("MM/dd/yyyy")</MudTd>
                     <MudTd DataLabel="Description">@context.Name</MudTd>
                     <MudTd DataLabel="Amount">@context.Amount</MudTd>
-                    <MudTd DataLabel="Budget">Budget</MudTd>
+                    <MudTd DataLabel="Budget">@context.Budget</MudTd>
                     <MudTd>
                         <MudMenu Icon="@Icons.Material.Filled.MoreVert">
                             <MudMenuItem OnClick="() => OpenEditTransactionDialog(context)">
