@@ -1,4 +1,5 @@
-﻿using DataAccess.Models;
+﻿using BudgetBlazor.Helpers;
+using DataAccess.Models;
 using DataAccess.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -146,7 +147,18 @@ namespace BudgetBlazor.Pages.Page_Components
         #region Import Transactions Functions
         protected async Task UploadFiles(InputFileChangeEventArgs e)
         {
-            var reader = await new StreamReader(e.File.OpenReadStream()).ReadToEndAsync();
+            // Copy the uploaded file into a string buffer
+            string transactionsFile = await new StreamReader(e.File.OpenReadStream()).ReadToEndAsync();
+
+            // Import the transactions
+            if (Account != default(Account) && TransactionImporter.ImportTransactions(transactionsFile, (Account)Account, BudgetDataService))
+            {
+                Snackbar.Add("Successfully imported transactions!");
+            }
+            else
+            {
+                Snackbar.Add("Error importing transactions!");
+            }
         }
         #endregion
     }

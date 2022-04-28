@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DataAccess.Models
 {
@@ -8,11 +9,13 @@ namespace DataAccess.Models
 
         public string Name { get; set; }
 
-        public int FITransactionId { get; set; }
+        [StringLength(50)]
+        public string FITransactionId { get; set; }
 
         [Column(TypeName = "decimal(12,2)")]
         public decimal Amount { get; set; }
 
+        [StringLength(50)]
         public string? CheckNumber { get; set; }
 
         public DateTime TransactionDate { get; set; }
@@ -25,17 +28,13 @@ namespace DataAccess.Models
 
         public Guid User { get; set; }
 
-        public Transaction(string name)
-        {
-            Name = name;
-            TransactionDate = DateTime.Now;
-        }
-
         public Transaction(string name, Guid user)
         {
             Name = name;
             TransactionDate = DateTime.Now;
             User = user;
+            IsPartial = false;
+            IsSplit = false;
         }
     }
 }

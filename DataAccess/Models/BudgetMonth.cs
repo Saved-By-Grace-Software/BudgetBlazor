@@ -4,7 +4,6 @@ namespace DataAccess.Models
 {
     public class BudgetMonth
     {
-        #region Public Data Parameters
         public int Id { get; set; }
 
         public int Month { get; set; }
@@ -50,7 +49,6 @@ namespace DataAccess.Models
                     return (int)(TotalSpent / ActualIncome * 100);
             }
         }
-        #endregion
 
         public BudgetMonth(int year, int month, Guid user)
         {

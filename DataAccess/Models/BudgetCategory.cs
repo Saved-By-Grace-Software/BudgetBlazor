@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DataAccess.Models
 {
@@ -8,6 +9,7 @@ namespace DataAccess.Models
 
         public string Name { get; set; }
 
+        [StringLength(50)]
         public string Color { get; set; }
 
         public virtual List<BudgetItem> BudgetItems { get; set; }
