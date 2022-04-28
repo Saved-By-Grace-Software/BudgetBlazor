@@ -1,7 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DataAccess.Models
 {
+    [Index(nameof(BalanceDate), nameof(Balance), IsUnique = true)]
     public class AccountHistory
     {
         public int Id { get; set; }

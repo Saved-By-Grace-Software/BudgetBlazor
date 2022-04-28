@@ -348,6 +348,21 @@ namespace DataAccess.Services
 
             return a;
         }
+
+        public void UpdateAccountHistory(Account account, DateTime balanceDate, decimal balance)
+        {
+            // Create a new account history
+            AccountHistory history = new AccountHistory()
+            {
+                Account = account,
+                Balance = balance,
+                BalanceDate = balanceDate
+            };
+
+            // Add the history to the database
+            _db.AccountsHistories.Add(history);
+            _db.SaveChanges();
+        }
         #endregion
 
         #region Delete
