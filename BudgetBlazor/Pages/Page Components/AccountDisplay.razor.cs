@@ -100,6 +100,23 @@ namespace BudgetBlazor.Pages.Page_Components
             }
         }
 
+        /// <summary>
+        /// Shows a confirmation dialog and then deletes the budget
+        /// </summary>
+        protected async Task DeleteTransaction(Transaction transactionToDelete)
+        {
+            bool? result = await DialogService.ShowMessageBox(
+                "Warning",
+                "Deleting a transaction cannot be undone!",
+                yesText: "Delete!", cancelText: "Cancel");
+
+            if (result != null && result == true)
+            {
+                // Delete the transaction 
+                BudgetDataService.DeleteTransaction(transactionToDelete);
+            }
+        }
+
         #region Event Functions
         /// <summary>
         /// Subscriber to BudgetDataService account changed event, updates UI when account data has changed

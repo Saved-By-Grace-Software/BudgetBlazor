@@ -434,6 +434,20 @@ namespace DataAccess.Services
             // Notify subscribers that account data has changed
             RaiseAccountDataChanged();
         }
+
+        public void DeleteTransaction(Transaction transaction)
+        {
+            // Remove the transaction from the parent account
+            Account dbAccount = GetAccountFromTransaction(transaction);
+            dbAccount.Transactions.Remove(transaction);
+
+            // Delete the transaction
+            _db.Remove(transaction);
+            _db.SaveChanges();
+
+            // Notify subscribers that transaction data has changed
+            RaiseAccountDataChanged();
+        }
         #endregion
 
         #region Private Helper Functions
@@ -479,6 +493,20 @@ namespace DataAccess.Services
 
             // Get the month from the db based on the category
             return GetMonthFromCategory(_db.Find<BudgetCategory>(catId));
+        }
+
+        /// <summary>
+        /// Gets the parent account from the given transaction
+        /// </summary>
+        /// <param name="transaction"></param>
+        /// <returns></returns>
+        private Account? GetAccountFromTransaction(Transaction transaction)
+        {
+            // Get the category ID from the item's parent
+            int accId = (int)_db.Entry(transaction).Property("AccountId").CurrentValue;
+
+            // Get the Account from the db based on the ID
+            return _db.Find<Account>(accId);
         }
         #endregion
     }

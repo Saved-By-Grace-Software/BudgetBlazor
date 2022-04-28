@@ -41,5 +41,6 @@ namespace DataAccess.Services
         void Delete(BudgetCategory budgetCategory);
         BudgetMonth ResetMonthToDefault(BudgetMonth budgetMonth, Guid user);
         void DeleteAccount(Account account);
+        void DeleteTransaction(Transaction transaction);
     }
 }
