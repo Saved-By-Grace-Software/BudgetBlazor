@@ -1,6 +1,7 @@
 ﻿using DataAccess.Data;
 using DataAccess.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace DataAccess.Services
 {
@@ -496,6 +497,24 @@ namespace DataAccess.Services
 
                 // Notify subscribers that transaction data has changed
                 RaiseAccountDataChanged();
+            }
+        }
+
+        public void RejectChanges()
+        {
+            foreach (var entry in _db.ChangeTracker.Entries())
+            {
+                switch (entry.State)
+                {
+                    case EntityState.Modified:
+                    case EntityState.Deleted:
+                        entry.State = EntityState.Modified; //Revert changes made to deleted entity.
+                        entry.State = EntityState.Unchanged;
+                        break;
+                    case EntityState.Added:
+                        entry.State = EntityState.Detached;
+                        break;
+                }
             }
         }
         #endregion

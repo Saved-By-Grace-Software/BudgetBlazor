@@ -76,6 +76,7 @@
     [CascadingParameter] MudDialogInstance MudDialog { get; set; }
     [Inject] IBudgetDataService BudgetDataService { get; set; }
     [Inject] AuthenticationStateProvider AuthenticationStateProvider { get; set; }
+    [Inject] NavigationManager NavigationManager { get; set; }
     [Parameter] public Transaction Transaction { get; set; }
 
     private DateTime? _transactionDateBinder { get; set; }
@@ -99,6 +100,8 @@
 
         _transactionDateBinder = Transaction.TransactionDate;
         _parentBudgets = BudgetDataService.GetBudgetItems(Transaction.TransactionDate.Year, Transaction.TransactionDate.Month, _currentUserId);
+
+
         _splitBudgets = new Dictionary<Transaction, List<BudgetItem>>();
         _splitDateBinders = new Dictionary<Transaction, DateTime?>();
         foreach (Transaction split in Transaction.Splits)
@@ -153,7 +156,14 @@
         }
     }
 
-    void Cancel() => MudDialog.Cancel();
+    void Cancel()
+    {
+        // TODO: Fix this refresh to properly clear the cache and revert to the db transaction
+        NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true);
+
+        // Close the dialog
+        MudDialog.Cancel();   
+    }
 
     /// <summary>
     /// Reloads the budget items for the newly selected month
