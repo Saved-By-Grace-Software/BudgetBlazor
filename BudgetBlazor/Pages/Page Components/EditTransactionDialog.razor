@@ -18,7 +18,7 @@
                     <MudTextField @bind-Value="Transaction.Amount" Label="Amount" Variant="Variant.Outlined" Required="true" RequiredError="Must enter a Transaction amount"></MudTextField>
                 </MudItem>
                 <MudItem sm="12" md="4">
-                    <MudSelect T="BudgetItem" @bind-Value="@Transaction.Budget" Label="Budget" AnchorOrigin="Origin.BottomCenter" Required="false" Disabled="@_tempIsIncome">
+                    <MudSelect T="BudgetItem" @bind-Value="@Transaction.Budget" Label="Budget" AnchorOrigin="Origin.BottomCenter" Required="false" Disabled="@Transaction.IsIncome">
                         @foreach(BudgetItem budget in budgets)
                         {
                             <MudSelectItem Value="budget" />
@@ -26,7 +26,7 @@
                     </MudSelect>
                 </MudItem>
                 <MudItem sm="12" md="12" Class="d-flex align-center justify-end">
-                    <MudCheckBox @bind-Checked="@_tempIsIncome" Label="Is Income?"></MudCheckBox>
+                    <MudCheckBox @bind-Checked="@Transaction.IsIncome" Label="Is Income?"></MudCheckBox>
                 </MudItem>
             </MudGrid>
         </MudForm>
@@ -46,7 +46,6 @@
     private DateTime? _transactionDateBinder { get; set; }
     private List<BudgetItem> budgets { get; set; }
     private Guid _currentUserId { get; set; }
-    private bool _tempIsIncome { get; set; }
 
     MudForm form;
     bool success;
@@ -75,8 +74,8 @@
             // Update the transaction date from the binder
             Transaction.TransactionDate = (DateTime)_transactionDateBinder;
 
-            // Clear the budget if the selected budget is not from the list
-            if (!budgets.Contains(Transaction.Budget))
+            // Clear the budget if the selected budget is not from the list or IsIncome is checked
+            if (!budgets.Contains(Transaction.Budget) || Transaction.IsIncome)
             {
                 Transaction.Budget = null;
             }

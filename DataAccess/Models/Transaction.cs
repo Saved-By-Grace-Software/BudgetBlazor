@@ -26,6 +26,8 @@ namespace DataAccess.Models
 
         public bool IsPartial { get; set; }
 
+        public bool IsIncome { get; set; }
+
         public virtual BudgetItem? Budget { get; set; }
 
         public Guid User { get; set; }
@@ -37,6 +39,7 @@ namespace DataAccess.Models
             User = user;
             IsPartial = false;
             IsSplit = false;
+            IsIncome = false;
         }
 
         public override bool Equals(object? obj)
