@@ -19,7 +19,7 @@
                 </MudItem>
                 <MudItem sm="12" md="4">
                     <MudSelect T="BudgetItem" @bind-Value="@Transaction.Budget" Label="Budget" AnchorOrigin="Origin.BottomCenter" Required="false" Disabled="@(Transaction.IsIncome || Transaction.IsSplit)">
-                        @foreach(BudgetItem budget in parentBudgets)
+                        @foreach(BudgetItem budget in _parentBudgets)
                         {
                             <MudSelectItem Value="budget" />
                         }
@@ -36,7 +36,7 @@
                             {
                                 <MudGrid Justify="@Justify.SpaceAround">
                                     <MudItem sm="6" md="2">
-                                        <MudDatePicker Label="Transaction Date" Date="@t.TransactionDate" DisableToolbar="true" PickerClosed="MonthChanged" />
+                                        <MudDatePicker Label="Transaction Date" @bind-Date="@_splitDateBinders[t]" DisableToolbar="true" PickerClosed="() => SplitMonthChanged(t)" />
                                     </MudItem>
                                     <MudItem sm="6" md="4">
                                         <MudTextField @bind-Value="t.Name" Label="Split Name" Variant="Variant.Outlined"></MudTextField>
@@ -46,7 +46,7 @@
                                     </MudItem>
                                     <MudItem sm="5" md="3">
                                         <MudSelect T="BudgetItem" @bind-Value="@t.Budget" Label="Split Budget" AnchorOrigin="Origin.BottomCenter" Required="false">
-                                            @foreach(BudgetItem budget in parentBudgets)
+                                            @foreach(BudgetItem budget in _splitBudgets[t])
                                             {
                                                 <MudSelectItem Value="budget" />
                                             }
@@ -79,8 +79,10 @@
     [Parameter] public Transaction Transaction { get; set; }
 
     private DateTime? _transactionDateBinder { get; set; }
-    private List<BudgetItem> parentBudgets { get; set; }
+    private List<BudgetItem> _parentBudgets { get; set; }
     private Guid _currentUserId { get; set; }
+    private Dictionary<Transaction, List<BudgetItem>> _splitBudgets { get; set; }
+    private Dictionary<Transaction, DateTime?> _splitDateBinders { get; set; }
 
     MudForm form;
     bool success;
@@ -96,7 +98,14 @@
         _currentUserId = Guid.Parse(authstate.User.Claims.First().Value);
 
         _transactionDateBinder = Transaction.TransactionDate;
-        parentBudgets = BudgetDataService.GetBudgetItems(Transaction.TransactionDate.Year, Transaction.TransactionDate.Month, _currentUserId);
+        _parentBudgets = BudgetDataService.GetBudgetItems(Transaction.TransactionDate.Year, Transaction.TransactionDate.Month, _currentUserId);
+        _splitBudgets = new Dictionary<Transaction, List<BudgetItem>>();
+        _splitDateBinders = new Dictionary<Transaction, DateTime?>();
+        foreach (Transaction split in Transaction.Splits)
+        {
+            _splitBudgets.TryAdd(split, BudgetDataService.GetBudgetItems(split.TransactionDate.Year, split.TransactionDate.Month, _currentUserId));
+            _splitDateBinders.TryAdd(split, new DateTime?(split.TransactionDate));
+        }
     }
 
     private async Task Submit()
@@ -110,7 +119,7 @@
             Transaction.TransactionDate = (DateTime)_transactionDateBinder;
 
             // Clear the budget if the selected budget is not from the list
-            if (!parentBudgets.Contains(Transaction.Budget))
+            if (!_parentBudgets.Contains(Transaction.Budget))
             {
                 Transaction.Budget = null;
             }
@@ -122,16 +131,20 @@
                 Transaction.Splits.Clear();
             }
 
-            // If split, remove budget from parent and check split budgets
+            // If split, remove budget from parent and update the splits
             if (Transaction.IsSplit)
             {
                 Transaction.Budget = null;
+
+                // Check each split budget and update the date
                 foreach (Transaction t in Transaction.Splits)
                 {
-                    if (!parentBudgets.Contains(t.Budget))
+                    if (!_splitBudgets[t].Contains(t.Budget))
                     {
                         t.Budget = null;
                     }
+
+                    t.TransactionDate = (DateTime)_splitDateBinders[t].Value;
                 }
             }
 
@@ -150,10 +163,27 @@
         if (((DateTime)_transactionDateBinder).Year != Transaction.TransactionDate.Year || ((DateTime)_transactionDateBinder).Month != Transaction.TransactionDate.Month)
         {
             // The date changed to a new month, reload the budget items
-            parentBudgets = BudgetDataService.GetBudgetItems(((DateTime)_transactionDateBinder).Year, ((DateTime)_transactionDateBinder).Month, _currentUserId);
+            _parentBudgets = BudgetDataService.GetBudgetItems(((DateTime)_transactionDateBinder).Year, ((DateTime)_transactionDateBinder).Month, _currentUserId);
         }
+    }
 
-        //parentBudgets = BudgetDataService.GetBudgetItems(((DateTime)_transactionDateBinder).Year, ((DateTime)_transactionDateBinder).Month, _currentUserId);
+    /// <summary>
+    /// Reloads the budget items for the newly selected month of the split
+    /// </summary>
+    /// <param name="split"></param>
+    private void SplitMonthChanged(Transaction split)
+    {
+        // Check for an existing entry
+        if (_splitBudgets.ContainsKey(split))
+        {
+            // Update the existing entry
+            _splitBudgets[split] = BudgetDataService.GetBudgetItems(((DateTime)_splitDateBinders[split]).Year, ((DateTime)_splitDateBinders[split]).Month, _currentUserId);
+        }
+        else
+        {
+            // No existing entry, add one
+            _splitBudgets.TryAdd(split, BudgetDataService.GetBudgetItems(((DateTime)_splitDateBinders[split]).Year, ((DateTime)_splitDateBinders[split]).Month, _currentUserId));
+        }
     }
 
     /// <summary>
@@ -162,8 +192,15 @@
     /// <returns></returns>
     private async Task AddNewTransactionSplit()
     {
+        // Create a new transaction
+        Transaction transactionToAdd = new Transaction(Transaction.Name, _currentUserId, Transaction.TransactionDate);
+
         // Add the transaction to the splits
-        Transaction.Splits.Add(new Transaction(Transaction.Name, _currentUserId, Transaction.TransactionDate));
+        Transaction.Splits.Add(transactionToAdd);
+
+        // Update the splits dictionaries
+        _splitBudgets.TryAdd(transactionToAdd, BudgetDataService.GetBudgetItems(transactionToAdd.TransactionDate.Year, transactionToAdd.TransactionDate.Month, _currentUserId));
+        _splitDateBinders.TryAdd(transactionToAdd, new DateTime?(transactionToAdd.TransactionDate));
     }
 
     /// <summary>
