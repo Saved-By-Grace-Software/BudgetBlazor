@@ -251,11 +251,12 @@ namespace DataAccess.Services
         {
             decimal totalBudgeted = 0;
             decimal totalSpent = 0;
+            decimal totalIncome = 0;
             BudgetMonth m = _db.Find<BudgetMonth>(budgetMonthId);
 
             if (m != default(BudgetMonth))
             {
-                // Update each category
+                // Update each category and get their total budgeted and spent
                 foreach (BudgetCategory category in m.BudgetCategories)
                 {
                     UpdateCategoryTotals(category);
@@ -264,8 +265,22 @@ namespace DataAccess.Services
                     totalSpent += category.Spent;
                 }
 
+                // Get the total income for the month
+                List<Transaction> incomeTransactions = _db.Transactions
+                    .Where(t => t.TransactionDate.Year == m.Year &&
+                                t.TransactionDate.Month == m.Month &&
+                                t.User == m.User &&
+                                t.IsIncome)
+                    .ToList();
+                foreach (Transaction transaction in incomeTransactions)
+                {
+                    totalIncome += transaction.Amount;
+                }
+
+                // Update the month's totals
                 m.TotalBudgeted = totalBudgeted;
                 m.TotalSpent = totalSpent;
+                m.ActualIncome = totalIncome;
 
                 _db.SaveChanges();
             }
