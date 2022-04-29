@@ -45,7 +45,7 @@
                 <RowTemplate>
                     <MudTd DataLabel="Date">@context.TransactionDate.ToString("MM/dd/yyyy")</MudTd>
                     <MudTd DataLabel="Description">@context.Name</MudTd>
-                    <MudTd DataLabel="Amount">@context.Amount</MudTd>
+                    <MudTd DataLabel="Amount">@string.Format("{0:C}", context.Amount)</MudTd>
                     <MudTd DataLabel="Budget">@context.Budget</MudTd>
                     <MudTd>
                         <MudMenu Icon="@Icons.Material.Filled.MoreVert">

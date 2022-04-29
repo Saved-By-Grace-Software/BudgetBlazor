@@ -32,7 +32,7 @@
                 <RowTemplate>
                     <MudTd DataLabel="Name">@context.Name</MudTd>
                     <MudTd DataLabel="Type">@context.AccountType</MudTd>
-                    <MudTd DataLabel="Balance">@context.CurrentBalance</MudTd>
+                    <MudTd DataLabel="Balance">@string.Format("{0:C}", context.CurrentBalance)</MudTd>
                     <MudTd DataLabel="Updated">@context.LastUpdated</MudTd>
                     <MudTd>
                         <MudMenu Icon="@Icons.Material.Filled.MoreVert">

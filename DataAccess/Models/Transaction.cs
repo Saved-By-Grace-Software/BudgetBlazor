@@ -12,7 +12,7 @@ namespace DataAccess.Models
         public string Name { get; set; }
 
         [StringLength(50)]
-        public string FITransactionId { get; set; }
+        public string? FITransactionId { get; set; }
 
         [Column(TypeName = "decimal(12,2)")]
         public decimal Amount { get; set; }
