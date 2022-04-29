@@ -53,7 +53,7 @@
         <MudPaper Class="my-2 pa-1" Elevation="1" Style="@($"color:{CurrentTheme.Palette.TextPrimary}; background:{CurrentTheme.Palette.GrayLighter};")">
             <MudText Typo="Typo.subtitle2"><i>Actual Income - </i>@String.Format("{0:C}", _currentMonth.ActualIncome)</MudText>
             <MudProgressLinear Color="@ColorHelpers.ProgressBarColor(_currentMonth.PercentSpent)" Rounded="true" Size="Size.Large" Value="@_currentMonth.PercentSpent" />
-            <MudText Typo="Typo.subtitle2"><i>Total Spent - </i>@String.Format("{0:C}", _currentMonth.TotalSpent)</MudText>
+            <MudText Typo="Typo.subtitle2"><i>Total Spent - </i>@String.Format("{0:C}", (_currentMonth.TotalSpent * -1))</MudText>
         </MudPaper>
     </MudCardContent>
 </MudCard>

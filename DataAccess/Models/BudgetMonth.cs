@@ -43,10 +43,12 @@ namespace DataAccess.Models
         {
             get
             {
-                if (ActualIncome == 0)
+                if (TotalSpent == 0)
                     return 0;
+                else if (ActualIncome == 0)
+                    return 100;
                 else
-                    return (int)(TotalSpent / ActualIncome * 100);
+                    return (int)(-TotalSpent / ActualIncome * 100);
             }
         }
 
