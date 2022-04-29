@@ -18,15 +18,50 @@
                     <MudTextField @bind-Value="Transaction.Amount" Label="Amount" Variant="Variant.Outlined" Required="true" RequiredError="Must enter a Transaction amount"></MudTextField>
                 </MudItem>
                 <MudItem sm="12" md="4">
-                    <MudSelect T="BudgetItem" @bind-Value="@Transaction.Budget" Label="Budget" AnchorOrigin="Origin.BottomCenter" Required="false" Disabled="@Transaction.IsIncome">
-                        @foreach(BudgetItem budget in budgets)
+                    <MudSelect T="BudgetItem" @bind-Value="@Transaction.Budget" Label="Budget" AnchorOrigin="Origin.BottomCenter" Required="false" Disabled="@(Transaction.IsIncome || Transaction.IsSplit)">
+                        @foreach(BudgetItem budget in parentBudgets)
                         {
                             <MudSelectItem Value="budget" />
                         }
                     </MudSelect>
                 </MudItem>
-                <MudItem sm="12" md="12" Class="d-flex align-center justify-end">
-                    <MudCheckBox @bind-Checked="@Transaction.IsIncome" Label="Is Income?"></MudCheckBox>
+                <MudItem sm="12" md="12">
+                    <MudCheckBox @bind-Checked="@Transaction.IsIncome" Label="Is Income?" Disabled="@Transaction.IsSplit"></MudCheckBox>
+                    <MudCheckBox @bind-Checked="@Transaction.IsSplit" Label="Split Transaction?" Disabled="@Transaction.IsIncome"></MudCheckBox>
+                </MudItem>
+                <MudItem sm="12" md="12">
+                    <MudExpansionPanels DisableBorders="false" Elevation="2">
+                        <MudExpansionPanel Text="Split Information" Disabled="true" IsExpanded="@(Transaction.IsSplit)">
+                            @foreach (Transaction t in Transaction.Splits)
+                            {
+                                <MudGrid Justify="@Justify.SpaceAround">
+                                    <MudItem sm="6" md="2">
+                                        <MudDatePicker Label="Transaction Date" Date="@t.TransactionDate" DisableToolbar="true" PickerClosed="MonthChanged" />
+                                    </MudItem>
+                                    <MudItem sm="6" md="4">
+                                        <MudTextField @bind-Value="t.Name" Label="Split Name" Variant="Variant.Outlined"></MudTextField>
+                                    </MudItem>
+                                    <MudItem sm="6" md="2">
+                                        <MudTextField @bind-Value="t.Amount" Label="Split Amount" Variant="Variant.Outlined"></MudTextField>
+                                    </MudItem>
+                                    <MudItem sm="5" md="3">
+                                        <MudSelect T="BudgetItem" @bind-Value="@t.Budget" Label="Split Budget" AnchorOrigin="Origin.BottomCenter" Required="false">
+                                            @foreach(BudgetItem budget in parentBudgets)
+                                            {
+                                                <MudSelectItem Value="budget" />
+                                            }
+                                        </MudSelect>
+                                    </MudItem>
+                                    <MudItem sm="1" md="1">
+                                        <MudIconButton Class="mt-4" Icon="@Icons.Material.Filled.Delete" Color="Color.Error" OnClick="() => DeleteTransactionSplit(t)" />
+                                    </MudItem>
+                                </MudGrid>
+                            }
+                            <MudTooltip Text="Add New Split">
+                                <MudIconButton Class="mt-4" Icon="@Icons.Material.Filled.Add" Color="Color.Success" Variant="Variant.Outlined" OnClick="AddNewTransactionSplit" />
+                            </MudTooltip>
+                        </MudExpansionPanel>
+                    </MudExpansionPanels>
                 </MudItem>
             </MudGrid>
         </MudForm>
@@ -44,7 +79,7 @@
     [Parameter] public Transaction Transaction { get; set; }
 
     private DateTime? _transactionDateBinder { get; set; }
-    private List<BudgetItem> budgets { get; set; }
+    private List<BudgetItem> parentBudgets { get; set; }
     private Guid _currentUserId { get; set; }
 
     MudForm form;
@@ -61,7 +96,7 @@
         _currentUserId = Guid.Parse(authstate.User.Claims.First().Value);
 
         _transactionDateBinder = Transaction.TransactionDate;
-        budgets = BudgetDataService.GetBudgetItems(Transaction.TransactionDate.Year, Transaction.TransactionDate.Month, _currentUserId);
+        parentBudgets = BudgetDataService.GetBudgetItems(Transaction.TransactionDate.Year, Transaction.TransactionDate.Month, _currentUserId);
     }
 
     private async Task Submit()
@@ -74,16 +109,38 @@
             // Update the transaction date from the binder
             Transaction.TransactionDate = (DateTime)_transactionDateBinder;
 
-            // Clear the budget if the selected budget is not from the list or IsIncome is checked
-            if (!budgets.Contains(Transaction.Budget) || Transaction.IsIncome)
+            // Clear the budget if the selected budget is not from the list
+            if (!parentBudgets.Contains(Transaction.Budget))
             {
                 Transaction.Budget = null;
+            }
+
+            // If income, clear the splits and the budget
+            if (Transaction.IsIncome)
+            {
+                Transaction.Budget = null;
+                Transaction.Splits.Clear();
+            }
+
+            // If split, remove budget from parent and check split budgets
+            if (Transaction.IsSplit)
+            {
+                Transaction.Budget = null;
+                foreach (Transaction t in Transaction.Splits)
+                {
+                    if (!parentBudgets.Contains(t.Budget))
+                    {
+                        t.Budget = null;
+                    }
+                }
             }
 
             // Close the modal and pass back the updated transaction
             MudDialog.Close(Transaction);
         }
     }
+
+    void Cancel() => MudDialog.Cancel();
 
     /// <summary>
     /// Reloads the budget items for the newly selected month
@@ -93,9 +150,30 @@
         if (((DateTime)_transactionDateBinder).Year != Transaction.TransactionDate.Year || ((DateTime)_transactionDateBinder).Month != Transaction.TransactionDate.Month)
         {
             // The date changed to a new month, reload the budget items
-            budgets = BudgetDataService.GetBudgetItems(((DateTime)_transactionDateBinder).Year, ((DateTime)_transactionDateBinder).Month, _currentUserId);
+            parentBudgets = BudgetDataService.GetBudgetItems(((DateTime)_transactionDateBinder).Year, ((DateTime)_transactionDateBinder).Month, _currentUserId);
         }
+
+        //parentBudgets = BudgetDataService.GetBudgetItems(((DateTime)_transactionDateBinder).Year, ((DateTime)_transactionDateBinder).Month, _currentUserId);
     }
 
-    void Cancel() => MudDialog.Cancel();
+    /// <summary>
+    /// Adds a new split to the transaction splits (does not save to the database here)
+    /// </summary>
+    /// <returns></returns>
+    private async Task AddNewTransactionSplit()
+    {
+        // Add the transaction to the splits
+        Transaction.Splits.Add(new Transaction(Transaction.Name, _currentUserId, Transaction.TransactionDate));
+    }
+
+    /// <summary>
+    /// Deletes the specified split from the transaction (does not remove it from the database here)
+    /// </summary>
+    /// <param name="splitToDelete"></param>
+    /// <returns></returns>
+    private async Task DeleteTransactionSplit(Transaction splitToDelete)
+    {
+        // Remove the split from the transaction splits
+        Transaction.Splits.Remove(splitToDelete);
+    }
 }

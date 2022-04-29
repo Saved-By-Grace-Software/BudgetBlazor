@@ -34,10 +34,12 @@ namespace DataAccess.Models
 
         public Guid User { get; set; }
 
-        public Transaction(string name, Guid user)
+        public Transaction(string name, Guid user) : this(name, user, DateTime.Now) { }
+
+        public Transaction(string name, Guid user, DateTime transactionDate)
         {
             Name = name;
-            TransactionDate = DateTime.Now;
+            TransactionDate = transactionDate;
             User = user;
             IsPartial = false;
             IsSplit = false;
