@@ -8,27 +8,21 @@
 <PageHeader PageIcon="@Icons.Material.Filled.PieChartOutline" PageTitleText="Budgets">
     <PageHeaderActions>
         <MudGrid Spacing="0" Justify="Justify.Center">
-            <MudItem xs="2" md="1" Style="padding: 1rem 0;">
+            <MudItem xs="6" md="3">
                 <MudTooltip Text="Reset Month To Default">
                     <MudIconButton Icon="@Icons.Filled.RestartAlt" OnClick="ResetMonthToDefault" />
                 </MudTooltip>
             </MudItem>
             <MudHidden Breakpoint="Breakpoint.SmAndDown">
-                <MudItem md="2" Style="text-align: right !important; padding: 1rem 0;">
+                <MudItem md="3">
                     <MudIconButton Icon="@Icons.Filled.ArrowLeft" OnClick="LastMonth" />
                 </MudItem>
             </MudHidden>
-            <MudItem xs="10" md="6">
-                <MudDatePicker 
-                    PickerVariant="PickerVariant.Dialog"
-                    DateFormat="MMMM yyyy" 
-                    FixDay="1" 
-                    OpenTo="OpenTo.Month"
-                    PickerClosed="MonthChanged"
-                    @bind-Date="_currentMonthDate" />
+            <MudItem xs="6" md="3">
+                <MudIconButton Icon="@Icons.Material.Filled.EditCalendar" OnClick="OpenDatePicker" />
             </MudItem>
             <MudHidden Breakpoint="Breakpoint.SmAndDown">
-                <MudItem md="2" Style="text-align: left !important; padding: 1rem 0;">
+                <MudItem md="3">
                     <MudIconButton Icon="@Icons.Filled.ArrowRight" OnClick="NextMonth" />
                 </MudItem>
             </MudHidden>
@@ -87,3 +81,14 @@
         }
     </MudCardContent>
 </MudCard>
+
+<!-- Hidden Date Picker -->
+<MudDatePicker 
+    PickerVariant="PickerVariant.Dialog"
+    DateFormat="MMMM yyyy" 
+    FixDay="1" 
+    OpenTo="OpenTo.Month"
+    PickerClosed="MonthChanged"
+    @ref="_datePicker"
+    @bind-Date="_currentMonthDate"
+    Style="@($"display: none;")"/>

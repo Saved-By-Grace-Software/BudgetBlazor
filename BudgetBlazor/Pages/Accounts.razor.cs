@@ -97,7 +97,8 @@ namespace BudgetBlazor.Pages
 
             if (result != null && result == true)
             {
-                // Delete the budget
+                // Delete the account
+                _accounts.Remove(accountToDelete);
                 BudgetDataService.DeleteAccount(accountToDelete);
             }
         }

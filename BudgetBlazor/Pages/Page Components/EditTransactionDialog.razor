@@ -2,25 +2,31 @@
 @using System.ComponentModel.DataAnnotations.Schema;
 
 <MudDialog>
+    <DialogActions>
+
+    </DialogActions>
     <DialogContent>
         <MudForm @ref="form" @bind-IsValid="@success" @bind-Errors="@errors">
             <MudGrid Spacing="4" Justify="Justify.SpaceBetween">
-                <MudItem sm="12" md="3">
+                <MudItem sm="12" md="2">
+                    <MudDatePicker Label="Transaction Date" @bind-Date="_transactionDateBinder" DisableToolbar="true" PickerClosed="MonthChanged" />
+                </MudItem>
+                <MudItem sm="12" md="4">
                     <MudTextField @bind-Value="Transaction.Name" Label="Description" Variant="Variant.Outlined" Required="true" RequiredError="Must enter a Transaction description"></MudTextField>
                 </MudItem>
-                <MudItem sm="12" md="3">
+                <MudItem sm="12" md="2">
                     <MudTextField @bind-Value="Transaction.Amount" Label="Amount" Variant="Variant.Outlined" Required="true" RequiredError="Must enter a Transaction amount"></MudTextField>
                 </MudItem>
-                <MudItem sm="12" md="3">
-                    <MudSelect T="BudgetItem" @bind-Value="@Transaction.Budget" Label="Budget" AnchorOrigin="Origin.BottomCenter" Required="false">
+                <MudItem sm="12" md="4">
+                    <MudSelect T="BudgetItem" @bind-Value="@Transaction.Budget" Label="Budget" AnchorOrigin="Origin.BottomCenter" Required="false" Disabled="@Transaction.IsIncome">
                         @foreach(BudgetItem budget in budgets)
                         {
                             <MudSelectItem Value="budget" />
                         }
                     </MudSelect>
                 </MudItem>
-                <MudItem sm="12" md="3">
-                    <MudDatePicker Label="Transaction Date" @bind-Date="_transactionDateBinder" DisableToolbar="true" PickerClosed="MonthChanged" />
+                <MudItem sm="12" md="12" Class="d-flex align-center justify-end">
+                    <MudCheckBox @bind-Checked="@Transaction.IsIncome" Label="Is Income?"></MudCheckBox>
                 </MudItem>
             </MudGrid>
         </MudForm>
@@ -68,8 +74,8 @@
             // Update the transaction date from the binder
             Transaction.TransactionDate = (DateTime)_transactionDateBinder;
 
-            // Clear the budget if the selected budget is not from the list
-            if (!budgets.Contains(Transaction.Budget))
+            // Clear the budget if the selected budget is not from the list or IsIncome is checked
+            if (!budgets.Contains(Transaction.Budget) || Transaction.IsIncome)
             {
                 Transaction.Budget = null;
             }
