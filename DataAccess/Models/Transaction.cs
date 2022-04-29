@@ -30,6 +30,8 @@ namespace DataAccess.Models
 
         public virtual BudgetItem? Budget { get; set; }
 
+        public virtual List<Transaction> Splits { get; set; }
+
         public Guid User { get; set; }
 
         public Transaction(string name, Guid user)
@@ -40,6 +42,7 @@ namespace DataAccess.Models
             IsPartial = false;
             IsSplit = false;
             IsIncome = false;
+            Splits = new List<Transaction>();
         }
 
         public override bool Equals(object? obj)

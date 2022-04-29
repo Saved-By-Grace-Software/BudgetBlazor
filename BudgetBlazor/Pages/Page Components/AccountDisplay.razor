@@ -63,6 +63,47 @@
                         </MudMenu>
                     </MudTd>
                 </RowTemplate>
+                <ChildRowContent>
+                    @if(context.Splits.Count > 0)
+                    {
+                        <MudTr>
+                            <td colspan="5">
+                                <MudCard Elevation="1" Class="ma-2">
+                                    <MudCardHeader>
+                                        <CardHeaderContent>
+                                            <MudText Typo="Typo.body1"><i>Split Transactions for </i><strong>@context.Name</strong></MudText>
+                                        </CardHeaderContent>
+                                    </MudCardHeader>
+                                    <MudCardContent>
+                                        <MudTable Items="@context.Splits" Context="SplitsContext" Hover="false" T="Transaction" Dense="true" Striped="true">
+                                            <ColGroup>
+                                                <col style="width: 10%;" />
+                                                <col style="width: 40%;" />
+                                                <col style="width: 20%;" />
+                                                <col style="width: 25%;" />
+                                                <col style="width: 5%;" />
+                                            </ColGroup>
+                                            <HeaderContent>
+                                                <MudTh><MudTableSortLabel InitialDirection="SortDirection.Descending" SortBy="new Func<Transaction, object>(x=>x.TransactionDate)">Date</MudTableSortLabel></MudTh>
+                                                <MudTh>Description</MudTh>
+                                                <MudTh>Amount</MudTh>
+                                                <MudTh>Budget</MudTh>
+                                                <MudTh></MudTh>
+                                            </HeaderContent>
+                                            <RowTemplate>
+                                                <MudTd DataLabel="Date">@SplitsContext.TransactionDate.ToString("MM/dd/yyyy")</MudTd>
+                                                <MudTd DataLabel="Description">@SplitsContext.Name</MudTd>
+                                                <MudTd DataLabel="Amount">@string.Format("{0:C}", SplitsContext.Amount)</MudTd>
+                                                <MudTd DataLabel="Budget">@(SplitsContext.IsIncome ? "INCOME" : SplitsContext.Budget)</MudTd>
+                                                <MudTd></MudTd>
+                                            </RowTemplate>
+                                        </MudTable>
+                                    </MudCardContent>
+                                </MudCard>
+                            </td>
+                        </MudTr>
+                    }
+	            </ChildRowContent>
                 <PagerContent>
                     <MudTablePager />
                 </PagerContent>
