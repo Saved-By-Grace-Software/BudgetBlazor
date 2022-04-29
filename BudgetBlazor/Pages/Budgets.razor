@@ -45,15 +45,15 @@
     </MudCardHeader>
     <MudCardContent Class="my-n4">
         <MudPaper Class="my-2 pa-1" Elevation="1" Style="@($"color:{CurrentTheme.Palette.TextPrimary}; background:{CurrentTheme.Palette.GrayLighter};")">
-            <MudText Typo="Typo.subtitle2"><i>Expected Income - </i>$@String.Format("{0:0.00}", _currentMonth.ExpectedIncome)</MudText>
+            <MudText Typo="Typo.subtitle2"><i>Expected Income - </i>@String.Format("{0:C}", _currentMonth.ExpectedIncome)</MudText>
             <MudProgressLinear Color="@ColorHelpers.ProgressBarColorReverse(_currentMonth.PercentBudgeted)" Rounded="true" Size="Size.Large" Value="@_currentMonth.PercentBudgeted" />
-            <MudText Typo="Typo.subtitle2"><i>Total Budgeted - </i>$@String.Format("{0:0.00}", _currentMonth.TotalBudgeted)</MudText>
+            <MudText Typo="Typo.subtitle2"><i>Total Budgeted - </i>@String.Format("{0:C}", _currentMonth.TotalBudgeted)</MudText>
         </MudPaper>
         
         <MudPaper Class="my-2 pa-1" Elevation="1" Style="@($"color:{CurrentTheme.Palette.TextPrimary}; background:{CurrentTheme.Palette.GrayLighter};")">
-            <MudText Typo="Typo.subtitle2"><i>Actual Income - </i>$@String.Format("{0:0.00}", _currentMonth.ActualIncome)</MudText>
+            <MudText Typo="Typo.subtitle2"><i>Actual Income - </i>@String.Format("{0:C}", _currentMonth.ActualIncome)</MudText>
             <MudProgressLinear Color="@ColorHelpers.ProgressBarColor(_currentMonth.PercentSpent)" Rounded="true" Size="Size.Large" Value="@_currentMonth.PercentSpent" />
-            <MudText Typo="Typo.subtitle2"><i>Total Spent - </i>$@String.Format("{0:0.00}", _currentMonth.TotalSpent)</MudText>
+            <MudText Typo="Typo.subtitle2"><i>Total Spent - </i>@String.Format("{0:C}", _currentMonth.TotalSpent)</MudText>
         </MudPaper>
     </MudCardContent>
 </MudCard>

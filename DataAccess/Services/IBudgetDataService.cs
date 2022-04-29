@@ -34,6 +34,7 @@ namespace DataAccess.Services
         void UpdateMonthTotals(BudgetMonth budgetMonth);
         void UpdateMonthTotals(int budgetMonthId);
         Account UpdateAccount(Account account);
+        void UpdateAccountHistory(Account account, DateTime balanceDate, decimal balance);
 
         // Delete
         void Delete(int budgetMonthId);

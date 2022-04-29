@@ -1,7 +1,9 @@
-﻿using DataAccess.Models;
+﻿using BudgetBlazor.Helpers;
+using DataAccess.Models;
 using DataAccess.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Components.Forms;
 using MudBlazor;
 
 namespace BudgetBlazor.Pages.Page_Components
@@ -128,6 +130,8 @@ namespace BudgetBlazor.Pages.Page_Components
                 return true;
             if (transaction.Budget != null && transaction.Budget.Name.Contains(searchString, StringComparison.CurrentCultureIgnoreCase))
                 return true;
+            if (transaction.Amount.ToString().Contains(searchString, StringComparison.CurrentCultureIgnoreCase))
+                return true;
             return false;
         }
         #endregion
@@ -139,6 +143,24 @@ namespace BudgetBlazor.Pages.Page_Components
         private void BudgetDataService_AccountDataChanged()
         {
             StateHasChanged();
+        }
+        #endregion
+
+        #region Import Transactions Functions
+        protected async Task UploadFiles(InputFileChangeEventArgs e)
+        {
+            // Copy the uploaded file into a string buffer
+            string transactionsFile = await new StreamReader(e.File.OpenReadStream()).ReadToEndAsync();
+
+            // Import the transactions
+            if (Account != default(Account) && TransactionImporter.ImportTransactions(transactionsFile, (Account)Account, BudgetDataService))
+            {
+                Snackbar.Add("Successfully imported transactions!");
+            }
+            else
+            {
+                Snackbar.Add("Error importing transactions!");
+            }
         }
         #endregion
     }

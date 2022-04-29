@@ -1,5 +1,6 @@
 ﻿using DataAccess.Data;
 using DataAccess.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.Services
 {
@@ -293,7 +294,7 @@ namespace DataAccess.Services
 
                 c.Budgeted = totalBudgeted;
                 c.Spent = totalSpent;
-                c.Remaining = totalBudgeted - totalSpent;
+                c.Remaining = totalBudgeted + totalSpent;
 
                 _db.SaveChanges();
             }
@@ -320,7 +321,7 @@ namespace DataAccess.Services
                 }
 
                 i.Spent = totalSpent;
-                i.Remaining = i.Budget - totalSpent;
+                i.Remaining = i.Budget + totalSpent;
 
                 _db.SaveChanges();
             }
@@ -340,13 +341,43 @@ namespace DataAccess.Services
                 a.Name = account.Name;
 
                 // Save the changes
-                _db.SaveChanges();
+                try
+                {
+                    _db.SaveChanges();
 
-                // Notify subscribers than an account has been updated
-                RaiseAccountDataChanged();
+                    // Notify subscribers than an account has been updated
+                    RaiseAccountDataChanged();
+                }
+                catch (DbUpdateException ex)
+                {
+                    // Failed to update, return null
+                    a = default(Account);
+                }
             }
 
             return a;
+        }
+
+        public void UpdateAccountHistory(Account account, DateTime balanceDate, decimal balance)
+        {
+            // Create a new account history
+            AccountHistory history = new AccountHistory()
+            {
+                Account = account,
+                Balance = balance,
+                BalanceDate = balanceDate
+            };
+
+            // Add the history to the database
+            try
+            {
+                _db.AccountsHistories.Add(history);
+                _db.SaveChanges();
+            }
+            catch (DbUpdateException ex)
+            {
+                // Tried to insert duplicate, we can ignore this and move on
+            }
         }
         #endregion
 
@@ -439,14 +470,18 @@ namespace DataAccess.Services
         {
             // Remove the transaction from the parent account
             Account dbAccount = GetAccountFromTransaction(transaction);
-            dbAccount.Transactions.Remove(transaction);
 
-            // Delete the transaction
-            _db.Remove(transaction);
-            _db.SaveChanges();
+            if (dbAccount != default(Account))
+            {
+                dbAccount.Transactions.Remove(transaction);
 
-            // Notify subscribers that transaction data has changed
-            RaiseAccountDataChanged();
+                // Delete the transaction
+                _db.Remove(transaction);
+                _db.SaveChanges();
+
+                // Notify subscribers that transaction data has changed
+                RaiseAccountDataChanged();
+            }
         }
         #endregion
 

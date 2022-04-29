@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DataAccess.Models
@@ -9,6 +10,7 @@ namespace DataAccess.Models
 
         public string Name { get; set; }
 
+        [StringLength(50)]
         public string AccountNumber { get; set; }
 
         [Column(TypeName = "decimal(12,2)")]

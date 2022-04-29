@@ -15,7 +15,7 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.4" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.4" />
     <PackageReference Include="MudBlazor" Version="6.0.9" />
-    <PackageReference Include="OfxNet" Version="1.2.0" />
+    <PackageReference Include="OfxSharp.NetStandard" Version="1.0.0" />
   </ItemGroup>
 
   <ItemGroup>
