@@ -30,6 +30,7 @@ namespace BudgetBlazor.Pages
         protected DateTime? _currentMonthDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
         protected BudgetMonth _currentMonth;
         protected Guid _currentUserId;
+        protected MudDatePicker _datePicker;
 
         /// <summary>
         /// Lifecycle method called when the page is initialized
@@ -101,6 +102,18 @@ namespace BudgetBlazor.Pages
             {
                 // Reset the month
                 _currentMonth = BudgetDataService.ResetMonthToDefault(_currentMonth, _currentUserId);
+            }
+        }
+
+        /// <summary>
+        /// Opens the date picker dialog to choose the month to view
+        /// </summary>
+        /// <returns></returns>
+        protected async Task OpenDatePicker()
+        {
+            if (_datePicker != default(MudDatePicker))
+            {
+                _datePicker.Open();
             }
         }
 
