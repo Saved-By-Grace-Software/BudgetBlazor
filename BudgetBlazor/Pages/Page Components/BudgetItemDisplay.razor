@@ -7,7 +7,7 @@
             <MudTextField @bind-Value="Item.Budget" Label="Budget" Variant="@budgetVariant" Format="C2" Margin="Margin.Dense" ReadOnly="!IsBudgetEditable" OnBlur="UpdateItemTotal" OnKeyPress="OnEnterPressed"></MudTextField>
         </MudItem>
         <MudItem md="3" xs="4">
-            <MudTextField Value="Item.Spent" Label="Spent" Variant="Variant.Text" Format="C2" Margin="Margin.Dense" ReadOnly="true"></MudTextField>
+            <MudTextField Value="@(Item.Spent * -1)" Label="Spent" Variant="Variant.Text" Format="C2" Margin="Margin.Dense" ReadOnly="true"></MudTextField>
         </MudItem>
         <MudItem md="3" xs="4">
             <MudTextField Value="Item.Remaining" Label="Remaining" Variant="Variant.Text" Format="C2" Margin="Margin.Dense" ReadOnly="true" 

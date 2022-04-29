@@ -48,7 +48,7 @@
                                 <MudTextField Value="Category.Budgeted" Label="Budget" Variant="Variant.Text" Format="C2" Margin="Margin.Dense" ReadOnly="true"></MudTextField>
                             </MudItem>
                             <MudItem md="3" xs="4">
-                                <MudTextField Value="Category.Spent" Label="Spent" Variant="Variant.Text" Format="C2" Margin="Margin.Dense" ReadOnly="true"></MudTextField>
+                                <MudTextField Value="@(Category.Spent * -1)" Label="Spent" Variant="Variant.Text" Format="C2" Margin="Margin.Dense" ReadOnly="true"></MudTextField>
                             </MudItem>
                             <MudItem md="3" xs="4">
                                 <MudTextField Value="Category.Remaining" Label="Remaining" Variant="Variant.Text" Format="C2" Margin="Margin.Dense" ReadOnly="true"

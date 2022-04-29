@@ -294,7 +294,7 @@ namespace DataAccess.Services
 
                 c.Budgeted = totalBudgeted;
                 c.Spent = totalSpent;
-                c.Remaining = totalBudgeted - totalSpent;
+                c.Remaining = totalBudgeted + totalSpent;
 
                 _db.SaveChanges();
             }
@@ -321,7 +321,7 @@ namespace DataAccess.Services
                 }
 
                 i.Spent = totalSpent;
-                i.Remaining = i.Budget - totalSpent;
+                i.Remaining = i.Budget + totalSpent;
 
                 _db.SaveChanges();
             }
