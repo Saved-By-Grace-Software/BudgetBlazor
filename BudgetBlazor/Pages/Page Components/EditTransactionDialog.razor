@@ -1,5 +1,6 @@
 ﻿@using System.ComponentModel;
 @using System.ComponentModel.DataAnnotations.Schema;
+@inherits EditTransactionDialogBase;
 
 <MudDialog>
     <DialogActions>
@@ -39,10 +40,17 @@
                                         <MudDatePicker Label="Transaction Date" @bind-Date="@_splitDateBinders[t]" DisableToolbar="true" PickerClosed="() => SplitMonthChanged(t)" />
                                     </MudItem>
                                     <MudItem sm="6" md="4">
-                                        <MudTextField @bind-Value="t.Name" Label="Split Name" Variant="Variant.Outlined"></MudTextField>
+                                        <MudTextField @bind-Value="t.Name" Label="Split Name" Variant="Variant.Outlined" Required="true" RequiredError="Must enter a Transaction description"></MudTextField>
                                     </MudItem>
                                     <MudItem sm="6" md="2">
-                                        <MudTextField @bind-Value="t.Amount" Label="Split Amount" Variant="Variant.Outlined"></MudTextField>
+                                        <MudTextField Label="Split Amount" 
+                                            @bind-Value="t.Amount"
+                                            T=decimal
+                                            Variant="Variant.Outlined" 
+                                            Required="true" 
+                                            RequiredError="Must enter a Transaction amount" 
+                                            Immediate="true"
+                                            Validation="@(new Func<decimal, string>(VerifySplitAmounts))" />
                                     </MudItem>
                                     <MudItem sm="5" md="3">
                                         <MudSelect T="BudgetItem" @bind-Value="@t.Budget" Label="Split Budget" AnchorOrigin="Origin.BottomCenter" Required="false">
@@ -71,156 +79,3 @@
         <MudButton Color="Color.Primary" OnClick="Submit">Ok</MudButton>
     </DialogActions>
 </MudDialog>
-
-@code {
-    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
-    [Inject] IBudgetDataService BudgetDataService { get; set; }
-    [Inject] AuthenticationStateProvider AuthenticationStateProvider { get; set; }
-    [Inject] NavigationManager NavigationManager { get; set; }
-    [Parameter] public Transaction Transaction { get; set; }
-
-    private DateTime? _transactionDateBinder { get; set; }
-    private List<BudgetItem> _parentBudgets { get; set; }
-    private Guid _currentUserId { get; set; }
-    private Dictionary<Transaction, List<BudgetItem>> _splitBudgets { get; set; }
-    private Dictionary<Transaction, DateTime?> _splitDateBinders { get; set; }
-
-    MudForm form;
-    bool success;
-    string[] errors = { };
-
-    /// <summary>
-    /// Lifecycle method called when the page is initialized
-    /// </summary>
-    /// <returns></returns>
-    protected override async Task OnInitializedAsync()
-    {
-        var authstate = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        _currentUserId = Guid.Parse(authstate.User.Claims.First().Value);
-
-        _transactionDateBinder = Transaction.TransactionDate;
-        _parentBudgets = BudgetDataService.GetBudgetItems(Transaction.TransactionDate.Year, Transaction.TransactionDate.Month, _currentUserId);
-
-
-        _splitBudgets = new Dictionary<Transaction, List<BudgetItem>>();
-        _splitDateBinders = new Dictionary<Transaction, DateTime?>();
-        foreach (Transaction split in Transaction.Splits)
-        {
-            _splitBudgets.TryAdd(split, BudgetDataService.GetBudgetItems(split.TransactionDate.Year, split.TransactionDate.Month, _currentUserId));
-            _splitDateBinders.TryAdd(split, new DateTime?(split.TransactionDate));
-        }
-    }
-
-    private async Task Submit()
-    {
-        // Validate the form
-        await form.Validate();
-
-        if (form.IsValid)
-        {
-            // Update the transaction date from the binder
-            Transaction.TransactionDate = (DateTime)_transactionDateBinder;
-
-            // Clear the budget if the selected budget is not from the list
-            if (!_parentBudgets.Contains(Transaction.Budget))
-            {
-                Transaction.Budget = null;
-            }
-
-            // If income, clear the splits and the budget
-            if (Transaction.IsIncome)
-            {
-                Transaction.Budget = null;
-                Transaction.Splits.Clear();
-            }
-
-            // If split, remove budget from parent and update the splits
-            if (Transaction.IsSplit)
-            {
-                Transaction.Budget = null;
-
-                // Check each split budget and update the date
-                foreach (Transaction t in Transaction.Splits)
-                {
-                    if (!_splitBudgets[t].Contains(t.Budget))
-                    {
-                        t.Budget = null;
-                    }
-
-                    t.TransactionDate = (DateTime)_splitDateBinders[t].Value;
-                }
-            }
-
-            // Close the modal and pass back the updated transaction
-            MudDialog.Close(Transaction);
-        }
-    }
-
-    void Cancel()
-    {
-        // TODO: Fix this refresh to properly clear the cache and revert to the db transaction
-        NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true);
-
-        // Close the dialog
-        MudDialog.Cancel();   
-    }
-
-    /// <summary>
-    /// Reloads the budget items for the newly selected month
-    /// </summary>
-    private void MonthChanged()
-    {
-        if (((DateTime)_transactionDateBinder).Year != Transaction.TransactionDate.Year || ((DateTime)_transactionDateBinder).Month != Transaction.TransactionDate.Month)
-        {
-            // The date changed to a new month, reload the budget items
-            _parentBudgets = BudgetDataService.GetBudgetItems(((DateTime)_transactionDateBinder).Year, ((DateTime)_transactionDateBinder).Month, _currentUserId);
-        }
-    }
-
-    /// <summary>
-    /// Reloads the budget items for the newly selected month of the split
-    /// </summary>
-    /// <param name="split"></param>
-    private void SplitMonthChanged(Transaction split)
-    {
-        // Check for an existing entry
-        if (_splitBudgets.ContainsKey(split))
-        {
-            // Update the existing entry
-            _splitBudgets[split] = BudgetDataService.GetBudgetItems(((DateTime)_splitDateBinders[split]).Year, ((DateTime)_splitDateBinders[split]).Month, _currentUserId);
-        }
-        else
-        {
-            // No existing entry, add one
-            _splitBudgets.TryAdd(split, BudgetDataService.GetBudgetItems(((DateTime)_splitDateBinders[split]).Year, ((DateTime)_splitDateBinders[split]).Month, _currentUserId));
-        }
-    }
-
-    /// <summary>
-    /// Adds a new split to the transaction splits (does not save to the database here)
-    /// </summary>
-    /// <returns></returns>
-    private async Task AddNewTransactionSplit()
-    {
-        // Create a new transaction
-        Transaction transactionToAdd = new Transaction(Transaction.Name, _currentUserId, Transaction.TransactionDate);
-
-        // Add the transaction to the splits
-        Transaction.Splits.Add(transactionToAdd);
-
-        // Update the splits dictionaries
-        _splitBudgets.TryAdd(transactionToAdd, BudgetDataService.GetBudgetItems(transactionToAdd.TransactionDate.Year, transactionToAdd.TransactionDate.Month, _currentUserId));
-        _splitDateBinders.TryAdd(transactionToAdd, new DateTime?(transactionToAdd.TransactionDate));
-    }
-
-    /// <summary>
-    /// Deletes the specified split from the transaction (does not remove it from the database here)
-    /// </summary>
-    /// <param name="splitToDelete"></param>
-    /// <returns></returns>
-    private async Task DeleteTransactionSplit(Transaction splitToDelete)
-    {
-        // Remove the split from the transaction splits
-        Transaction.Splits.Remove(splitToDelete);
-    }
-}
