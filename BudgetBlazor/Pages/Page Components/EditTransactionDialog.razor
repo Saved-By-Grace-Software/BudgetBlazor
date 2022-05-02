@@ -49,8 +49,10 @@
                                             Variant="Variant.Outlined" 
                                             Required="true" 
                                             RequiredError="Must enter a Transaction amount" 
-                                            Immediate="true"
-                                            Validation="@(new Func<decimal, string>(VerifySplitAmounts))" />
+                                            Error="_isSplitsError"
+                                            ErrorText="@_splitsErrorMessage"
+                                            TextChanged="VerifySplitAmounts"
+                                            Validation="@(new Func<decimal, string>(VerifySplitAmounts))"/>
                                     </MudItem>
                                     <MudItem sm="5" md="3">
                                         <MudSelect T="BudgetItem" @bind-Value="@t.Budget" Label="Split Budget" AnchorOrigin="Origin.BottomCenter" Required="false">

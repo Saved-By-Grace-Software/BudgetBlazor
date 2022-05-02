@@ -23,6 +23,8 @@ namespace BudgetBlazor.Pages.Page_Components
         protected MudForm form;
         protected bool success;
         protected string[] errors = { };
+        protected bool _isSplitsError = false;
+        protected readonly string _splitsErrorMessage = "Splits must add to total";
 
         /// <summary>
         /// Lifecycle method called when the page is initialized
@@ -164,11 +166,8 @@ namespace BudgetBlazor.Pages.Page_Components
         /// </summary>
         /// <param name="arg"></param>
         /// <returns></returns>
-        protected string VerifySplitAmounts(decimal arg)
+        protected void VerifySplitAmounts(string arg)
         {
-            if (arg == 0)
-                return "Each split must have an amount specified";
-
             // Check that all of the split amounts add up to the total
             decimal totalSplits = 0;
             foreach(Transaction split in Transaction.Splits)
@@ -178,7 +177,34 @@ namespace BudgetBlazor.Pages.Page_Components
 
             if (totalSplits != Transaction.Amount)
             {
-                return "Splits must add to total";
+                _isSplitsError = true;
+            }
+            else
+            {
+                _isSplitsError = false;
+            }
+        }
+
+        /// <summary>
+        /// Verifies that the split amounts add up to the total transaction amount
+        /// </summary>
+        /// <param name="arg"></param>
+        /// <returns></returns>
+        protected string VerifySplitAmounts(decimal arg)
+        {
+            if (arg == 0)
+                return "Each split must have an amount specified";
+
+            // Check that all of the split amounts add up to the total
+            decimal totalSplits = 0;
+            foreach (Transaction split in Transaction.Splits)
+            {
+                totalSplits += split.Amount;
+            }
+
+            if (totalSplits != Transaction.Amount)
+            {
+                return _splitsErrorMessage;
             }
 
             return null;
