@@ -1,6 +1,7 @@
 ﻿using DataAccess.Data;
 using DataAccess.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace DataAccess.Services
 {
@@ -326,8 +327,12 @@ namespace DataAccess.Services
 
             if (i != default(BudgetItem))
             {
-                // Get list of transactions for this budget item
-                List<Transaction> transactions = _db.Transactions.Where(t => t.Budget.Id == budgetItem.Id).ToList();
+                // Get list of transactions for this budget item (skip split parents and income)
+                List<Transaction> transactions = _db.Transactions
+                                                        .Where(t => t.Budget.Id == budgetItem.Id && 
+                                                                !t.IsSplit && 
+                                                                !t.IsIncome)
+                                                        .ToList();
 
                 // Add the total spent in transactions
                 foreach (Transaction transaction in transactions)
@@ -496,6 +501,29 @@ namespace DataAccess.Services
 
                 // Notify subscribers that transaction data has changed
                 RaiseAccountDataChanged();
+            }
+        }
+
+        public void DeleteSplitTransactions(Transaction transaction)
+        {
+            _db.Transactions.RemoveRange(transaction.Splits);
+        }
+
+        public void RejectChanges()
+        {
+            foreach (var entry in _db.ChangeTracker.Entries())
+            {
+                switch (entry.State)
+                {
+                    case EntityState.Modified:
+                    case EntityState.Deleted:
+                        entry.State = EntityState.Modified; //Revert changes made to deleted entity.
+                        entry.State = EntityState.Unchanged;
+                        break;
+                    case EntityState.Added:
+                        entry.State = EntityState.Detached;
+                        break;
+                }
             }
         }
         #endregion

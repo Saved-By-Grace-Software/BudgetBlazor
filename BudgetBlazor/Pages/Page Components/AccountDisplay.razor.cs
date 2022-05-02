@@ -1,4 +1,4 @@
-﻿using BudgetBlazor.Helpers;
+using BudgetBlazor.Helpers;
 using DataAccess.Models;
 using DataAccess.Services;
 using Microsoft.AspNetCore.Components;
@@ -132,6 +132,22 @@ namespace BudgetBlazor.Pages.Page_Components
                 return true;
             if (transaction.Amount.ToString().Contains(searchString, StringComparison.CurrentCultureIgnoreCase))
                 return true;
+
+            // Check within splits
+            if (transaction.Splits.Count > 0)
+            {
+                if (transaction.Splits.Where(s => s.Budget != null &&
+                                s.Budget.Name.Contains(searchString, StringComparison.CurrentCultureIgnoreCase)).Count() > 0)
+                {
+                    return true;
+                }
+
+                if (transaction.Splits.Where(s => s.Amount.ToString().Contains(searchString, StringComparison.CurrentCultureIgnoreCase)).Count() > 0)
+                {
+                    return true;
+                }
+            }
+
             return false;
         }
         #endregion
