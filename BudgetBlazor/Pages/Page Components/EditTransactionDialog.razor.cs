@@ -58,24 +58,21 @@ namespace BudgetBlazor.Pages.Page_Components
                 // Update the transaction date from the binder
                 Transaction.TransactionDate = (DateTime)_transactionDateBinder;
 
-                // Clear the budget if the selected budget is not from the list
-                if (!_parentBudgets.Contains(Transaction.Budget))
+                // Clear the budget if the selected budget is not from the list, or if this is income/split
+                if (!_parentBudgets.Contains(Transaction.Budget) || Transaction.IsIncome || Transaction.IsSplit)
                 {
                     Transaction.Budget = null;
                 }
 
-                // If income, clear the splits and the budget
-                if (Transaction.IsIncome)
+                // If income or not a split, clear any splits that may have been created before
+                if (Transaction.IsIncome || !Transaction.IsSplit)
                 {
-                    Transaction.Budget = null;
-                    Transaction.Splits.Clear();
+                    BudgetDataService.DeleteSplitTransactions(Transaction);
                 }
 
                 // If split, remove budget from parent and update the splits
                 if (Transaction.IsSplit)
                 {
-                    Transaction.Budget = null;
-
                     // Check each split budget and update the date
                     foreach (Transaction t in Transaction.Splits)
                     {
@@ -183,31 +180,6 @@ namespace BudgetBlazor.Pages.Page_Components
             {
                 _isSplitsError = false;
             }
-        }
-
-        /// <summary>
-        /// Verifies that the split amounts add up to the total transaction amount
-        /// </summary>
-        /// <param name="arg"></param>
-        /// <returns></returns>
-        protected string VerifySplitAmounts(decimal arg)
-        {
-            if (arg == 0)
-                return "Each split must have an amount specified";
-
-            // Check that all of the split amounts add up to the total
-            decimal totalSplits = 0;
-            foreach (Transaction split in Transaction.Splits)
-            {
-                totalSplits += split.Amount;
-            }
-
-            if (totalSplits != Transaction.Amount)
-            {
-                return _splitsErrorMessage;
-            }
-
-            return null;
         }
     }
 }

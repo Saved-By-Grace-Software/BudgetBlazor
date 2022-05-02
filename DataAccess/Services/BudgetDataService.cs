@@ -327,8 +327,12 @@ namespace DataAccess.Services
 
             if (i != default(BudgetItem))
             {
-                // Get list of transactions for this budget item
-                List<Transaction> transactions = _db.Transactions.Where(t => t.Budget.Id == budgetItem.Id).ToList();
+                // Get list of transactions for this budget item (skip split parents and income)
+                List<Transaction> transactions = _db.Transactions
+                                                        .Where(t => t.Budget.Id == budgetItem.Id && 
+                                                                !t.IsSplit && 
+                                                                !t.IsIncome)
+                                                        .ToList();
 
                 // Add the total spent in transactions
                 foreach (Transaction transaction in transactions)
@@ -498,6 +502,11 @@ namespace DataAccess.Services
                 // Notify subscribers that transaction data has changed
                 RaiseAccountDataChanged();
             }
+        }
+
+        public void DeleteSplitTransactions(Transaction transaction)
+        {
+            _db.Transactions.RemoveRange(transaction.Splits);
         }
 
         public void RejectChanges()
