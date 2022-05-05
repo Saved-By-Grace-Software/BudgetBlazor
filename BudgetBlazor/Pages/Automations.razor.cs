@@ -1,4 +1,5 @@
-﻿using BudgetBlazor.Pages.Page_Components;
+﻿using BudgetBlazor.Helpers;
+using BudgetBlazor.Pages.Page_Components;
 using DataAccess.Models;
 using DataAccess.Services;
 using Microsoft.AspNetCore.Components;
@@ -64,6 +65,17 @@ namespace BudgetBlazor.Pages
                 category = BudgetDataService.CreateAutomationCategory(category);
                 AutomationCategories.Add(category);
             }
+        }
+
+        /// <summary>
+        /// Executes all of the automations against all of the transactions for the user
+        /// </summary>
+        /// <returns></returns>
+        protected async Task ExecuteAllAutomations()
+        {
+            await AutomationEngine.ExecuteAllAutomations(_currentUserId, BudgetDataService);
+
+            Snackbar.Add("Done Executing Automations");
         }
 
         #region Event Functions

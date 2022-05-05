@@ -67,7 +67,7 @@
                     <MudTd>
                         <MudToolBar>
                             <MudTooltip Text="Execute Rule Now">
-                                <MudIconButton Icon="@Icons.Material.Filled.PlayArrow" />
+                                <MudIconButton Icon="@Icons.Material.Filled.PlayArrow" OnClick="() => ExecuteAutomation(context)" />
                             </MudTooltip>
                             <MudTooltip Text="Edit Rule">
                                 <MudIconButton Icon="@Icons.Material.Filled.Edit" OnClick="() => OpenEditAutomationDialog(context)" />
@@ -88,7 +88,17 @@
     [CascadingParameter] private MudTheme CurrentTheme { get; set; }
     [Inject] private IDialogService DialogService { get; set; }
     [Inject] private IBudgetDataService BudgetDataService { get; set; }
+    [Inject] private AuthenticationStateProvider AuthenticationStateProvider { get; set; }
+    [Inject] private ISnackbar Snackbar { get; set; }
     [Parameter] public AutomationCategory Category { get; set; }
+
+    Guid _currentUserId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authstate = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        _currentUserId = Guid.Parse(authstate.User.Claims.First().Value);
+    }
 
     /// <summary>
     /// Opens the dialog to edit an automation category
@@ -190,5 +200,17 @@
             // Delete the automation
             BudgetDataService.Delete(automationToDelete);
         }
+    }
+
+    /// <summary>
+    /// Executes the given automation against all transactions for the user
+    /// </summary>
+    /// <param name="automationToExecute"></param>
+    /// <returns></returns>
+    private async Task ExecuteAutomation(Automation automationToExecute)
+    {
+        await AutomationEngine.ExecuteSingleAutomation(automationToExecute, _currentUserId, BudgetDataService);
+
+        Snackbar.Add("Done Executing Automation: " + automationToExecute.Name);
     }
 }
