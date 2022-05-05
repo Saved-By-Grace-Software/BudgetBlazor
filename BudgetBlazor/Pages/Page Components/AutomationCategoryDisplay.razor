@@ -49,12 +49,19 @@
                 <RowTemplate>
                     <MudTd>@context.Name</MudTd>
                     <MudTd>
-                        <ul>
-                            @foreach(AutomationRule rule in @context.Rules)
-                            {
-                                <li>@rule.ContainsText</li>
-                            }
-                        </ul>
+                        @if (context.Rules.Count == 0)
+                        {
+                            <i>No checks for this rule yet</i>
+                        }
+                        else
+                        {
+                            <ul>
+                                @foreach(AutomationRule rule in @context.Rules)
+                                {
+                                    <li>@rule.ContainsText</li>
+                                }
+                            </ul>
+                        }
                     </MudTd>
                     <MudTd>@context.DefaultBudgetToSet.Name</MudTd>
                     <MudTd>
