@@ -250,6 +250,31 @@ namespace DataAccess.Services
             return i;
         }
 
+        public AutomationCategory Update(AutomationCategory category)
+        {
+            AutomationCategory dbCat = _db.Find<AutomationCategory>(category.Id);
+
+            if (dbCat != default(AutomationCategory))
+            {
+                // Update the category's details
+                dbCat.Name = category.Name;
+                dbCat.Color = category.Color;
+
+                // Save the changes
+                try
+                {
+                    _db.SaveChanges();
+                }
+                catch (DbUpdateException ex)
+                {
+                    // Failed to update, return null
+                    dbCat = default(AutomationCategory);
+                }
+            }
+
+            return dbCat;
+        }
+
         /// <summary>
         /// Updates the totals for the given month
         /// </summary>
@@ -414,31 +439,6 @@ namespace DataAccess.Services
                 // Tried to insert duplicate, we can ignore this and move on
             }
         }
-
-        public AutomationCategory UpdateAutomationCategory(AutomationCategory category)
-        {
-            AutomationCategory dbCat = _db.Find<AutomationCategory>(category.Id);
-
-            if (dbCat != default(AutomationCategory))
-            {
-                // Update the category's details
-                dbCat.Name = category.Name;
-                dbCat.Color = category.Color;
-
-                // Save the changes
-                try
-                {
-                    _db.SaveChanges();
-                }
-                catch (DbUpdateException ex)
-                {
-                    // Failed to update, return null
-                    dbCat = default(AutomationCategory);
-                }
-            }
-
-            return dbCat;
-        }
         #endregion
 
         #region Delete
@@ -515,6 +515,16 @@ namespace DataAccess.Services
             _db.SaveChanges();
 
             // Trigger the data changed event
+            RaiseAutomationDataChanged();
+        }
+
+        public void Delete(Automation automation)
+        {
+            _db.RemoveRange(automation.Rules);
+            _db.Remove(automation);
+            _db.SaveChanges();
+
+            // Trigger the updated event
             RaiseAutomationDataChanged();
         }
 
@@ -649,6 +659,20 @@ namespace DataAccess.Services
 
             // Get the Account from the db based on the ID
             return _db.Find<Account>(accId);
+        }
+
+        /// <summary>
+        /// Gets the parent automation category from the automation
+        /// </summary>
+        /// <param name="automation"></param>
+        /// <returns></returns>
+        private AutomationCategory? GetAutomationCategoryFromAutomation(Automation automation)
+        {
+            // Get the category ID from the automation's parent
+            int acId = (int)_db.Entry(automation).Property("AutomationCategoryId").CurrentValue;
+
+            // Get the Account from the db based on the ID
+            return _db.Find<AutomationCategory>(acId);
         }
         #endregion
     }

@@ -5,7 +5,7 @@
         </CardHeaderContent>
         <CardHeaderActions>
             <MudMenu Icon="@Icons.Material.Filled.MoreVert">
-                <MudMenuItem>
+                <MudMenuItem OnClick="OpenAddAutomationDialog">
                     <MudStack Row="true" Spacing="4" AlignItems="AlignItems.Center">
                         <MudIcon Icon="@Icons.Material.Filled.Add" />
                         <MudText>Add Automation Rule</MudText>
@@ -70,10 +70,10 @@
                                 <MudIconButton Icon="@Icons.Material.Filled.PlayArrow" />
                             </MudTooltip>
                             <MudTooltip Text="Edit Rule">
-                                <MudIconButton Icon="@Icons.Material.Filled.Edit" />
+                                <MudIconButton Icon="@Icons.Material.Filled.Edit" OnClick="() => OpenEditAutomationDialog(context)" />
                             </MudTooltip>
                             <MudTooltip Text="Delete Rule">
-                                <MudIconButton Icon="@Icons.Material.Filled.Delete" />
+                                <MudIconButton Icon="@Icons.Material.Filled.Delete" OnClick="() => DeleteAutomation(context)" />
                             </MudTooltip>
                         </MudToolBar>
                     </MudTd>
@@ -98,7 +98,8 @@
     {
         // Open the dialog
         var parameters = new DialogParameters { ["CategoryName"] = Category.Name, ["CategoryColor"] = new MudColor(Category.Color) };
-        var dialogRef = DialogService.Show<EditCategoryDialog>("Edit Category", parameters);
+        var options = new DialogOptions() { MaxWidth = MaxWidth.Medium, FullWidth = true };
+        var dialogRef = DialogService.Show<EditCategoryDialog>("Edit Category", parameters, options);
 
         // Wait for a response and update the Category name and color
         var res = await dialogRef.Result;
@@ -107,7 +108,7 @@
             Tuple<string, string> data = (Tuple<string, string>)res.Data;
             Category.Name = data.Item1;
             Category.Color = data.Item2;
-            Category = BudgetDataService.UpdateAutomationCategory(Category);
+            Category = BudgetDataService.Update(Category);
         }
     }
 
@@ -125,6 +126,69 @@
         {
             // Delete the category
             BudgetDataService.Delete(Category);
+        }
+    }
+
+    /// <summary>
+    /// Opens the dialog to add an automation to the category
+    /// </summary>
+    /// <returns></returns>
+    private async Task OpenAddAutomationDialog()
+    {
+        // Create a new Automation for the dialog
+        Automation newAutomation = new Automation("");
+        newAutomation.Rules.Add(new AutomationRule(""));
+
+        // Open the dialog
+        var parameters = new DialogParameters { ["Automation"] = newAutomation };
+        var options = new DialogOptions() { MaxWidth = MaxWidth.Large, FullWidth = true };
+        var dialogRef = DialogService.Show<EditAutomationDialog>("Add New Automation", parameters, options);
+
+        // Wait for a response and add the new budget item
+        var res = await dialogRef.Result;
+        if (!res.Cancelled)
+        {
+            // Add the new automation
+            Automation automationToAdd = (Automation)res.Data;
+            Category.Automations.Add(automationToAdd);
+            BudgetDataService.Update(Category);
+        }
+    }
+
+    /// <summary>
+    /// Opens the dialog to edit an automation
+    /// </summary>
+    /// <returns></returns>
+    private async Task OpenEditAutomationDialog(Automation automationToEdit)
+    {
+        // Open the dialog
+        var parameters = new DialogParameters { ["Automation"] = automationToEdit };
+        var options = new DialogOptions() { MaxWidth = MaxWidth.Large, FullWidth = true };
+        var dialogRef = DialogService.Show<EditAutomationDialog>("Add New Automation", parameters, options);
+
+        // Wait for a response and add the new budget item
+        var res = await dialogRef.Result;
+        if (!res.Cancelled)
+        {
+            // Update the category with the updated automation
+            BudgetDataService.Update(Category);
+        }
+    }
+
+    /// <summary>
+    /// Deletes the selected automation
+    /// </summary>
+    private async Task DeleteAutomation(Automation automationToDelete)
+    {
+        bool? result = await DialogService.ShowMessageBox(
+            "Warning", 
+            "Deleting an automation cannot be undone!", 
+            yesText:"Delete!", cancelText:"Cancel");
+
+        if (result != null && result == true)
+        {
+            // Delete the automation
+            BudgetDataService.Delete(automationToDelete);
         }
     }
 }

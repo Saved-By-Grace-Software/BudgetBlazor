@@ -37,17 +37,18 @@ namespace DataAccess.Services
         BudgetMonth Update(BudgetMonth budgetMonth);
         BudgetCategory Update(BudgetCategory budgetCategory);
         BudgetItem Update(BudgetItem budgetItem);
+        AutomationCategory Update(AutomationCategory category);
         void UpdateMonthTotals(BudgetMonth budgetMonth);
         void UpdateMonthTotals(int budgetMonthId);
         Account UpdateAccount(Account account);
         void UpdateAccountHistory(Account account, DateTime balanceDate, decimal balance);
-        AutomationCategory UpdateAutomationCategory(AutomationCategory category);
 
         // Delete
         void Delete(int budgetMonthId);
         void Delete(BudgetItem budgetItem);
         void Delete(BudgetCategory budgetCategory);
         void Delete(AutomationCategory category);
+        void Delete(Automation automation);
         BudgetMonth ResetMonthToDefault(BudgetMonth budgetMonth, Guid user);
         void DeleteAccount(Account account);
         void DeleteTransaction(Transaction transaction);

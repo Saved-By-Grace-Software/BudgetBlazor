@@ -39,30 +39,6 @@ namespace BudgetBlazor.Pages
             _currentUserId = Guid.Parse(authstate.User.Claims.First().Value);
             BudgetDataService.AutomationDataChanged += BudgetDataService_AutomationDataChanged;
 
-            //// DEBUG
-            //BudgetMonth mon = BudgetDataService.GetDefaultMonth(_currentUserId);
-            //for (int i = 0; i < 2; i++)
-            //{
-            //    AutomationCategory cat = new AutomationCategory("Category " + i, _currentUserId);
-
-            //    for (int j = 0; j < 3; j++)
-            //    {
-            //        Automation aut = new Automation("Automation Rule " + j);
-            //        aut.DefaultBudgetToSet = mon.BudgetCategories[0].BudgetItems[0];
-
-            //        for (int k = 0; k < 2; k++)
-            //        {
-            //            AutomationRule rule = new AutomationRule("TEST " + k);
-            //            aut.Rules.Add(rule);
-            //        }
-
-            //        cat.Automations.Add(aut);
-            //    }
-
-            //    BudgetDataService.CreateAutomationCategory(cat);
-            //}
-            //// END DEBUG
-
             // Get the list of automations on load
             AutomationCategories = BudgetDataService.GetAutomationCategories(_currentUserId);
         }
@@ -75,7 +51,8 @@ namespace BudgetBlazor.Pages
         {
             // Open the dialog
             var parameters = new DialogParameters { ["CategoryName"] = "", ["CategoryColor"] = null };
-            var dialogRef = DialogService.Show<EditCategoryDialog>("Add New Category", parameters);
+            var options = new DialogOptions() { MaxWidth = MaxWidth.Medium, FullWidth = true };
+            var dialogRef = DialogService.Show<EditCategoryDialog>("Add New Category", parameters, options);
 
             // Wait for a response and add the Category
             var res = await dialogRef.Result;
