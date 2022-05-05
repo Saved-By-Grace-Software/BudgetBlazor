@@ -1,4 +1,5 @@
-﻿using DataAccess.Models;
+﻿using BudgetBlazor.Pages.Page_Components;
+using DataAccess.Models;
 using DataAccess.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -36,8 +37,9 @@ namespace BudgetBlazor.Pages
         {
             var authstate = await AuthenticationStateProvider.GetAuthenticationStateAsync();
             _currentUserId = Guid.Parse(authstate.User.Claims.First().Value);
+            BudgetDataService.AutomationDataChanged += BudgetDataService_AutomationDataChanged;
 
-            // DEBUG
+            //// DEBUG
             //BudgetMonth mon = BudgetDataService.GetDefaultMonth(_currentUserId);
             //for (int i = 0; i < 2; i++)
             //{
@@ -59,10 +61,44 @@ namespace BudgetBlazor.Pages
 
             //    BudgetDataService.CreateAutomationCategory(cat);
             //}
-            // END DEBUG
+            //// END DEBUG
 
             // Get the list of automations on load
             AutomationCategories = BudgetDataService.GetAutomationCategories(_currentUserId);
         }
+
+        /// <summary>
+        /// Opens the dialog to add a new budget category
+        /// </summary>
+        /// <returns></returns>
+        protected async Task OpenAddCategoryDialog()
+        {
+            // Open the dialog
+            var parameters = new DialogParameters { ["CategoryName"] = "", ["CategoryColor"] = null };
+            var dialogRef = DialogService.Show<EditCategoryDialog>("Add New Category", parameters);
+
+            // Wait for a response and add the Category
+            var res = await dialogRef.Result;
+            if (!res.Cancelled)
+            {
+                // Add the new category to the month
+                Tuple<string, string> data = (Tuple<string, string>)res.Data;
+                AutomationCategory category = new AutomationCategory(data.Item1, _currentUserId, data.Item2);
+                category = BudgetDataService.CreateAutomationCategory(category);
+                AutomationCategories.Add(category);
+            }
+        }
+
+        #region Event Functions
+        /// <summary>
+        /// Subscriber to BudgetDataService changed event, updates UI when data has changed
+        /// </summary>
+        private void BudgetDataService_AutomationDataChanged()
+        {
+            // Model data has changed, reload the categories
+            AutomationCategories = BudgetDataService.GetAutomationCategories(_currentUserId);
+            StateHasChanged();
+        }
+        #endregion
     }
 }

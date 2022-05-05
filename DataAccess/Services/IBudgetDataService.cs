@@ -12,6 +12,10 @@ namespace DataAccess.Services
         public delegate void NotifyAccountDataChange();
         public event NotifyAccountDataChange AccountDataChanged;
 
+        // Event to notify subscribers when automation changes occur
+        public delegate void NotifyAutomationDataChange();
+        public event NotifyAutomationDataChange AutomationDataChanged;
+
         // Create
         BudgetMonth Create(int year, int month, Guid user);
         BudgetMonth CreateFromDefault(int year, int month, Guid user);
@@ -37,11 +41,13 @@ namespace DataAccess.Services
         void UpdateMonthTotals(int budgetMonthId);
         Account UpdateAccount(Account account);
         void UpdateAccountHistory(Account account, DateTime balanceDate, decimal balance);
+        AutomationCategory UpdateAutomationCategory(AutomationCategory category);
 
         // Delete
         void Delete(int budgetMonthId);
         void Delete(BudgetItem budgetItem);
         void Delete(BudgetCategory budgetCategory);
+        void Delete(AutomationCategory category);
         BudgetMonth ResetMonthToDefault(BudgetMonth budgetMonth, Guid user);
         void DeleteAccount(Account account);
         void DeleteTransaction(Transaction transaction);

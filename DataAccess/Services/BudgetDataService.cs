@@ -9,6 +9,7 @@ namespace DataAccess.Services
         private readonly ApplicationDbContext _db;
         public event IBudgetDataService.NotifyBudgetDataChange BudgetDataChanged;
         public event IBudgetDataService.NotifyAccountDataChange AccountDataChanged;
+        public event IBudgetDataService.NotifyAutomationDataChange AutomationDataChanged;
 
         public BudgetDataService(ApplicationDbContext db)
         {
@@ -413,6 +414,31 @@ namespace DataAccess.Services
                 // Tried to insert duplicate, we can ignore this and move on
             }
         }
+
+        public AutomationCategory UpdateAutomationCategory(AutomationCategory category)
+        {
+            AutomationCategory dbCat = _db.Find<AutomationCategory>(category.Id);
+
+            if (dbCat != default(AutomationCategory))
+            {
+                // Update the category's details
+                dbCat.Name = category.Name;
+                dbCat.Color = category.Color;
+
+                // Save the changes
+                try
+                {
+                    _db.SaveChanges();
+                }
+                catch (DbUpdateException ex)
+                {
+                    // Failed to update, return null
+                    dbCat = default(AutomationCategory);
+                }
+            }
+
+            return dbCat;
+        }
         #endregion
 
         #region Delete
@@ -474,6 +500,22 @@ namespace DataAccess.Services
 
             // Trigger the updated event
             RaiseBudgetDataChanged();
+        }
+
+        public void Delete(AutomationCategory category)
+        {
+            // Delete the automation rules
+            _db.RemoveRange(category.Automations.SelectMany(a => a.Rules));
+
+            // Delete the category's automations
+            _db.RemoveRange(category.Automations);
+
+            // Delete the category
+            _db.Remove(category);
+            _db.SaveChanges();
+
+            // Trigger the data changed event
+            RaiseAutomationDataChanged();
         }
 
         public BudgetMonth ResetMonthToDefault(BudgetMonth budgetMonth, Guid user)
@@ -557,6 +599,14 @@ namespace DataAccess.Services
         private void RaiseAccountDataChanged()
         {
             AccountDataChanged?.Invoke();
+        }
+
+        /// <summary>
+        /// Raises the automation data changed event
+        /// </summary>
+        private void RaiseAutomationDataChanged()
+        {
+            AutomationDataChanged?.Invoke();
         }
 
         /// <summary>

@@ -11,13 +11,13 @@
                         <MudText>Add Automation Rule</MudText>
                     </MudStack>
                 </MudMenuItem>
-                <MudMenuItem>
+                <MudMenuItem OnClick="OpenEditDialog">
                     <MudStack Row="true" Spacing="4" AlignItems="AlignItems.Center">
                         <MudIcon Icon="@Icons.Material.Filled.Edit" />
                         <MudText>Edit Category</MudText>
                     </MudStack>
                 </MudMenuItem>
-                <MudMenuItem>
+                <MudMenuItem OnClick="DeleteCategory">
                     <MudStack Row="true" Spacing="4" AlignItems="AlignItems.Center">
                         <MudIcon Icon="@Icons.Material.Filled.Delete" />
                         <MudText>Delete Category</MudText>
@@ -89,4 +89,42 @@
     [Inject] private IDialogService DialogService { get; set; }
     [Inject] private IBudgetDataService BudgetDataService { get; set; }
     [Parameter] public AutomationCategory Category { get; set; }
+
+    /// <summary>
+    /// Opens the dialog to edit an automation category
+    /// </summary>
+    /// <returns></returns>
+    private async Task OpenEditDialog()
+    {
+        // Open the dialog
+        var parameters = new DialogParameters { ["CategoryName"] = Category.Name, ["CategoryColor"] = new MudColor(Category.Color) };
+        var dialogRef = DialogService.Show<EditCategoryDialog>("Edit Category", parameters);
+
+        // Wait for a response and update the Category name and color
+        var res = await dialogRef.Result;
+        if (!res.Cancelled)
+        {
+            Tuple<string, string> data = (Tuple<string, string>)res.Data;
+            Category.Name = data.Item1;
+            Category.Color = data.Item2;
+            Category = BudgetDataService.UpdateAutomationCategory(Category);
+        }
+    }
+
+    /// <summary>
+    /// Calls the callback to delete the category
+    /// </summary>
+    private async Task DeleteCategory()
+    {
+        bool? result = await DialogService.ShowMessageBox(
+            "Warning", 
+            "Deleting a category will delete all budgets inside of it and cannot be undone!", 
+            yesText:"Delete!", cancelText:"Cancel");
+
+        if (result != null && result == true)
+        {
+            // Delete the category
+            BudgetDataService.Delete(Category);
+        }
+    }
 }
