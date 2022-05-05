@@ -15,12 +15,13 @@ namespace DataAccess.Models
 
         public Guid User { get; set; }
 
-        public AutomationCategory(string name) : this(name, "#1ec8a54d") { }
+        public AutomationCategory(string name, Guid user) : this(name, user, "#9d9d9d41") { }
 
-        public AutomationCategory(string name, string color)
+        public AutomationCategory(string name, Guid user, string color)
         {
             Automations = new List<Automation>();
             Name = name;
+            User = user;
             Color = color;
         }
     }

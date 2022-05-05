@@ -14,12 +14,10 @@
 
         public virtual BudgetItem DefaultBudgetToSet { get; set; }
 
-        public Guid User { get; set; }
-
-        public Automation(string name, Guid user)
+        public Automation(string name)
         {
+            Rules = new List<AutomationRule>();
             Name = name;
-            User = user;
             IsActive = true;
             IsStrict = false;
         }

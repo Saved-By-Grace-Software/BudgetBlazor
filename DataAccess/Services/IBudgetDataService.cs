@@ -16,6 +16,7 @@ namespace DataAccess.Services
         BudgetMonth Create(int year, int month, Guid user);
         BudgetMonth CreateFromDefault(int year, int month, Guid user);
         List<Account> CreateAccount(Account account, Guid user);
+        AutomationCategory CreateAutomationCategory(AutomationCategory category);
 
         // Get
         BudgetMonth Get(int budgetMonthId, Guid user);
@@ -26,6 +27,7 @@ namespace DataAccess.Services
         List<Account> GetAllAccounts(Guid user);
         Account GetAccount(int accountId, Guid user);
         List<BudgetItem> GetBudgetItems(int year, int month, Guid user);
+        List<AutomationCategory> GetAutomationCategories(Guid user);
 
         // Update
         BudgetMonth Update(BudgetMonth budgetMonth);

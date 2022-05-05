@@ -1,0 +1,85 @@
+﻿<MudCard Elevation="1" Style="@($"color:{CurrentTheme.Palette.TextPrimary}; background:{Category.Color};")">
+    <MudCardHeader Class="mb-n4">
+        <CardHeaderContent>
+            <MudText Typo="Typo.body1"><strong>@Category.Name</strong></MudText>
+        </CardHeaderContent>
+        <CardHeaderActions>
+            <MudMenu Icon="@Icons.Material.Filled.MoreVert">
+                <MudMenuItem>
+                    <MudStack Row="true" Spacing="4" AlignItems="AlignItems.Center">
+                        <MudIcon Icon="@Icons.Material.Filled.Add" />
+                        <MudText>Add Automation Rule</MudText>
+                    </MudStack>
+                </MudMenuItem>
+                <MudMenuItem>
+                    <MudStack Row="true" Spacing="4" AlignItems="AlignItems.Center">
+                        <MudIcon Icon="@Icons.Material.Filled.Edit" />
+                        <MudText>Edit Category</MudText>
+                    </MudStack>
+                </MudMenuItem>
+                <MudMenuItem>
+                    <MudStack Row="true" Spacing="4" AlignItems="AlignItems.Center">
+                        <MudIcon Icon="@Icons.Material.Filled.Delete" />
+                        <MudText>Delete Category</MudText>
+                    </MudStack>
+                </MudMenuItem>
+            </MudMenu>
+        </CardHeaderActions>
+    </MudCardHeader>
+    <MudCardContent>
+        @if (Category.Automations.Count == 0)
+        {
+            <MudText Typo="Typo.body2" Align="Align.Center"><i>No automations to display for this category</i></MudText>
+        }
+        else
+        {
+            <MudTable Items="@Category.Automations" T="Automation" Hover="true" Breakpoint="Breakpoint.Sm">
+                <ColGroup>
+                    <col style="width: 25%;" />
+                    <col style="width: 40%;" />
+                    <col style="width: 25%;" />
+                    <col style="width: 10%;" />
+                </ColGroup>
+                <HeaderContent>
+                    <MudTh><strong>Name</strong></MudTh>
+                    <MudTh><strong>Triggers When Desc. Contains..</strong></MudTh>
+                    <MudTh><strong>Sets Budget To..</strong></MudTh>
+                    <MudTh></MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd>@context.Name</MudTd>
+                    <MudTd>
+                        <ul>
+                            @foreach(AutomationRule rule in @context.Rules)
+                            {
+                                <li>@rule.ContainsText</li>
+                            }
+                        </ul>
+                    </MudTd>
+                    <MudTd>@context.DefaultBudgetToSet.Name</MudTd>
+                    <MudTd>
+                        <MudToolBar>
+                            <MudTooltip Text="Execute Rule Now">
+                                <MudIconButton Icon="@Icons.Material.Filled.PlayArrow" />
+                            </MudTooltip>
+                            <MudTooltip Text="Edit Rule">
+                                <MudIconButton Icon="@Icons.Material.Filled.Edit" />
+                            </MudTooltip>
+                            <MudTooltip Text="Delete Rule">
+                                <MudIconButton Icon="@Icons.Material.Filled.Delete" />
+                            </MudTooltip>
+                        </MudToolBar>
+                    </MudTd>
+                </RowTemplate>
+            </MudTable>
+        }
+    </MudCardContent>
+</MudCard>
+
+@code
+{
+    [CascadingParameter] private MudTheme CurrentTheme { get; set; }
+    [Inject] private IDialogService DialogService { get; set; }
+    [Inject] private IBudgetDataService BudgetDataService { get; set; }
+    [Parameter] public AutomationCategory Category { get; set; }
+}

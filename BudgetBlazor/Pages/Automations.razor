@@ -4,6 +4,27 @@
 
 <PageTitle>Automations</PageTitle>
 
-<PageHeader PageIcon="@Icons.Material.Filled.Code" PageTitleText="Automations" />
+<PageHeader PageIcon="@Icons.Material.Filled.Code" PageTitleText="Automations">
+    <PageHeaderActions>
+        <MudToolBar>
+            <MudTooltip Text="Add New Automation Category">
+                <MudIconButton Icon="@Icons.Material.Filled.Add" />
+            </MudTooltip>
+        </MudToolBar>
+    </PageHeaderActions>
+</PageHeader>
 
 <!-- Automations Lists -->
+@if (AutomationCategories.Count == 0)
+{
+    <MudText Typo="Typo.body2" Align="Align.Center"><i>No automations have been created yet</i></MudText>
+}
+else
+{
+    <MudStack Class="mb-4">
+        @foreach(AutomationCategory category in AutomationCategories)
+        {
+            <AutomationCategoryDisplay Category="@category" />
+        }
+    </MudStack>
+}

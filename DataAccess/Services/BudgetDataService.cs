@@ -85,6 +85,16 @@ namespace DataAccess.Services
 
             return _db.Accounts.Where(a => a.User == user).ToList();
         }
+
+        public AutomationCategory CreateAutomationCategory(AutomationCategory category)
+        {
+            // Add the category
+            _db.AutomationCategories.Add(category);
+            _db.SaveChanges();
+
+            // Return the updated category
+            return category;
+        }
         #endregion
 
         #region Get
@@ -152,6 +162,11 @@ namespace DataAccess.Services
             {
                 return null;
             }
+        }
+
+        public List<AutomationCategory> GetAutomationCategories(Guid user)
+        {
+            return _db.AutomationCategories.Where(x => x.User == user).ToList();
         }
         #endregion
 
