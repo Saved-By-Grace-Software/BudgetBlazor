@@ -169,6 +169,34 @@ namespace DataAccess.Services
         {
             return _db.AutomationCategories.Where(x => x.User == user).ToList();
         }
+
+        public List<Automation> GetAutomations(Guid user)
+        {
+            return _db.AutomationCategories.Where(x => x.User == user).SelectMany(c => c.Automations).ToList();
+        }
+
+        public List<Transaction> GetTransactions(Guid user)
+        {
+            return _db.Transactions.Where(x => x.User == user).ToList();
+        }
+
+        public BudgetItem GetMatchingBudgetItem(BudgetItem defaultMonthBudgetItem, int month, int year, Guid user)
+        {
+            // Get budget month for the requested date
+            BudgetMonth dbMonth = _db.BudgetMonths.FirstOrDefault(m => m.Month == month && m.Year == year && m.User == user);
+
+            if (dbMonth != default(BudgetMonth))
+            {
+                // Find the budget item that matches
+                return dbMonth.BudgetCategories
+                    .SelectMany(c => c.BudgetItems)
+                    .FirstOrDefault(b => b.Name == defaultMonthBudgetItem.Name);
+            }
+            else
+            {
+                return default(BudgetItem);
+            }
+        }
         #endregion
 
         #region Update
@@ -273,6 +301,71 @@ namespace DataAccess.Services
             }
 
             return dbCat;
+        }
+
+        public Account Update(Account account)
+        {
+            Account a = _db.Find<Account>(account.Id);
+
+            if (a != default(Account))
+            {
+                // Update the account's data
+                a.LastUpdated = DateTime.Now;
+                a.AccountNumber = account.AccountNumber;
+                a.AccountType = account.AccountType;
+                a.CurrentBalance = account.CurrentBalance;
+                a.Name = account.Name;
+
+                // Save the changes
+                try
+                {
+                    _db.SaveChanges();
+
+                    // Notify subscribers than an account has been updated
+                    RaiseAccountDataChanged();
+                }
+                catch (DbUpdateException ex)
+                {
+                    // Failed to update, return null
+                    a = default(Account);
+                }
+            }
+
+            return a;
+        }
+
+        public Transaction Update(Transaction transaction)
+        {
+            Transaction t = _db.Find<Transaction>(transaction.Id);
+
+            if (t != default(Transaction))
+            {
+                t.TransactionDate = transaction.TransactionDate;
+                t.FITransactionId = transaction.FITransactionId;
+                t.IsPartial = transaction.IsPartial;
+                t.Amount = transaction.Amount;
+                t.CheckNumber = transaction.CheckNumber;
+                t.IsIncome = transaction.IsIncome;
+                t.IsSplit = transaction.IsSplit;
+                t.Name = transaction.Name;
+                t.Budget = transaction.Budget;
+
+                // Save the changes
+                try
+                {
+                    _db.SaveChanges();
+
+                    // Notify subscribers than an account has been updated
+                    RaiseAccountDataChanged();
+                }
+                catch (DbUpdateException ex)
+                {
+                    // Failed to update, return null
+                    t = default(Transaction);
+                }
+            }
+
+            return t;
         }
 
         /// <summary>
@@ -385,37 +478,6 @@ namespace DataAccess.Services
 
                 _db.SaveChanges();
             }
-        }
-
-        public Account UpdateAccount(Account account)
-        {
-            Account a = _db.Find<Account>(account.Id);
-
-            if (a != default(Account))
-            {
-                // Update the account's data
-                a.LastUpdated = DateTime.Now;
-                a.AccountNumber = account.AccountNumber;
-                a.AccountType = account.AccountType;
-                a.CurrentBalance = account.CurrentBalance;
-                a.Name = account.Name;
-
-                // Save the changes
-                try
-                {
-                    _db.SaveChanges();
-
-                    // Notify subscribers than an account has been updated
-                    RaiseAccountDataChanged();
-                }
-                catch (DbUpdateException ex)
-                {
-                    // Failed to update, return null
-                    a = default(Account);
-                }
-            }
-
-            return a;
         }
 
         public void UpdateAccountHistory(Account account, DateTime balanceDate, decimal balance)

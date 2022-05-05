@@ -73,9 +73,9 @@ namespace BudgetBlazor.Pages
         /// <returns></returns>
         protected async Task ExecuteAllAutomations()
         {
-            await AutomationEngine.ExecuteAllAutomations(_currentUserId, BudgetDataService);
+            int numUpdated = await AutomationEngine.ExecuteAllAutomations(_currentUserId, BudgetDataService);
 
-            Snackbar.Add("Done Executing Automations");
+            Snackbar.Add("Done! Updated " + numUpdated + " transactions");
         }
 
         #region Event Functions

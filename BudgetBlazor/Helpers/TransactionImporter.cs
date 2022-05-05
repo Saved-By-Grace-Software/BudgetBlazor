@@ -38,7 +38,7 @@ namespace BudgetBlazor.Helpers
                 }
 
                 // Update the account in the database
-                dataService.UpdateAccount(account);
+                dataService.Update(account);
 
                 // Add the account history to the database
                 dataService.UpdateAccountHistory(account, ofxDocument.StatementEnd, ofxDocument.Balance.LedgerBalance);

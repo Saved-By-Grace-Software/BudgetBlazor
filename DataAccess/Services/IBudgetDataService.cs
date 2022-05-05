@@ -32,15 +32,19 @@ namespace DataAccess.Services
         Account GetAccount(int accountId, Guid user);
         List<BudgetItem> GetBudgetItems(int year, int month, Guid user);
         List<AutomationCategory> GetAutomationCategories(Guid user);
+        List<Automation> GetAutomations(Guid user);
+        List<Transaction> GetTransactions(Guid user);
+        BudgetItem GetMatchingBudgetItem(BudgetItem defaultMonthBudgetItem, int month, int year, Guid user);
 
         // Update
         BudgetMonth Update(BudgetMonth budgetMonth);
         BudgetCategory Update(BudgetCategory budgetCategory);
         BudgetItem Update(BudgetItem budgetItem);
         AutomationCategory Update(AutomationCategory category);
+        Account Update(Account account);
+        Transaction Update(Transaction transaction);
         void UpdateMonthTotals(BudgetMonth budgetMonth);
         void UpdateMonthTotals(int budgetMonthId);
-        Account UpdateAccount(Account account);
         void UpdateAccountHistory(Account account, DateTime balanceDate, decimal balance);
 
         // Delete
