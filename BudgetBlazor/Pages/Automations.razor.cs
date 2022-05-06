@@ -73,7 +73,7 @@ namespace BudgetBlazor.Pages
         /// <returns></returns>
         protected async Task ExecuteAllAutomations()
         {
-            int numUpdated = await AutomationEngine.ExecuteAllAutomations(_currentUserId, BudgetDataService);
+            int numUpdated = AutomationEngine.ExecuteAllAutomations(_currentUserId, BudgetDataService);
 
             Snackbar.Add("Done! Updated " + numUpdated + " transactions");
         }

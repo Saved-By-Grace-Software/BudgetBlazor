@@ -209,7 +209,7 @@
     /// <returns></returns>
     private async Task ExecuteAutomation(Automation automationToExecute)
     {
-        int numUpdated = await AutomationEngine.ExecuteSingleAutomation(automationToExecute, _currentUserId, BudgetDataService);
+        int numUpdated = AutomationEngine.ExecuteSingleAutomation(automationToExecute, _currentUserId, BudgetDataService);
 
         Snackbar.Add("Done! \"" + automationToExecute.Name + "\" updated " + numUpdated + " transactions");
     }

@@ -33,6 +33,10 @@ namespace BudgetBlazor.Helpers
                     // Add the transaction to the account if it is unique
                     if (!account.Transactions.Contains(t))
                     {
+                        // Run automations against the transaction
+                        t = AutomationEngine.ExecuteAllAutomations(t, account.User, dataService);
+
+                        // Add the transaction to the account
                         account.Transactions.Add(t);
                     }
                 }
