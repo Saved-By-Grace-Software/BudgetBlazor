@@ -63,7 +63,9 @@
                             </ul>
                         }
                     </MudTd>
-                    <MudTd>@context.DefaultBudgetToSet.Name</MudTd>
+                    <MudTd>
+                        @(context.DefaultBudgetToSet == null && context.SetToIncome ? "INCOME" : @context.DefaultBudgetToSet.Name)
+                    </MudTd>
                     <MudTd>
                         <MudToolBar>
                             <MudTooltip Text="Execute Rule Now">

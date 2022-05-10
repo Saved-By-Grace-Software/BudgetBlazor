@@ -35,20 +35,34 @@ namespace BudgetBlazor.Helpers
                 {
                     if (transaction.Name.Contains(rule.ContainsText, StringComparison.CurrentCultureIgnoreCase))
                     {
-                        // Transaction is a match, find the budget that matches the selected budget in the transaction date
-                        BudgetItem item = dataService.GetMatchingBudgetItem(
-                                                            automationToExecute.DefaultBudgetToSet, 
-                                                            transaction.TransactionDate.Month, 
-                                                            transaction.TransactionDate.Year, 
-                                                            user);
-
-                        if (item != default(BudgetItem))
+                        // Transaction is a match, is this income?
+                        if(automationToExecute.SetToIncome)
                         {
-                            // Set the transaction budget and update it
-                            transaction.Budget = item;
+                            // Set the transaction to income
+                            transaction.IsIncome = true;
+                            transaction.Budget = null;
                             dataService.Update(transaction);
                             updateCounter++;
                         }
+                        else
+                        {
+                            // Find the budget that matches the selected budget in the transaction date
+                            BudgetItem item = dataService.GetMatchingBudgetItem(
+                                                                automationToExecute.DefaultBudgetToSet,
+                                                                transaction.TransactionDate.Month,
+                                                                transaction.TransactionDate.Year,
+                                                                user);
+
+                            // Set the budget of the transaction
+                            if (item != default(BudgetItem))
+                            {
+                                // Set the transaction budget and update it
+                                transaction.Budget = item;
+                                transaction.IsIncome = false;
+                                dataService.Update(transaction);
+                                updateCounter++;
+                            }
+                        } 
                     }
                 }
             }
@@ -101,17 +115,29 @@ namespace BudgetBlazor.Helpers
                 {
                     if (transaction.Name.Contains(rule.ContainsText, StringComparison.CurrentCultureIgnoreCase))
                     {
-                        // Transaction is a match, find the budget that matches the selected budget in the transaction date
-                        BudgetItem item = dataService.GetMatchingBudgetItem(
+                        // Transaction is a match, is this income?
+                        if (automation.SetToIncome)
+                        {
+                            // Set the transaction to income
+                            transaction.IsIncome = true;
+                            transaction.Budget = null;
+                        }
+                        else
+                        {
+                            // Find the budget that matches the selected budget in the transaction date
+                            BudgetItem item = dataService.GetMatchingBudgetItem(
                                                             automation.DefaultBudgetToSet,
                                                             transaction.TransactionDate.Month,
                                                             transaction.TransactionDate.Year,
                                                             user);
 
-                        if (item != default(BudgetItem))
-                        {
-                            // Set the transaction budget and update it
-                            transaction.Budget = item;
+                            // Set the budget of the transaction
+                            if (item != default(BudgetItem))
+                            {
+                                // Set the transaction budget and update it
+                                transaction.Budget = item;
+                                transaction.IsIncome = false;
+                            }
                         }
                     }
                 }

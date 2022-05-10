@@ -12,7 +12,9 @@
 
         public virtual List<AutomationRule> Rules { get; set; }
 
-        public virtual BudgetItem DefaultBudgetToSet { get; set; }
+        public virtual BudgetItem? DefaultBudgetToSet { get; set; }
+
+        public bool SetToIncome { get; set; }
 
         public Automation(string name)
         {
@@ -20,6 +22,7 @@
             Name = name;
             IsActive = true;
             IsStrict = false;
+            SetToIncome = false;
         }
     }
 }

@@ -29,12 +29,23 @@
                     </MudStack>
                 </MudItem>
                 <MudItem sm="12" md="3">
-                    <MudSelect T="BudgetItem" @bind-Value="@Automation.DefaultBudgetToSet" Label="Set budget to..." AnchorOrigin="Origin.BottomCenter" Required="true" RequiredError="Must select a budget to set">
-                        @foreach(BudgetItem budget in _defaultBudgetItems)
-                        {
-                            <MudSelectItem Value="budget" />
-                        }
-                    </MudSelect>
+                    <MudStack>
+                        <MudItem>
+                            <MudSelect T="BudgetItem" @bind-Value="@Automation.DefaultBudgetToSet" 
+                                Disabled="@Automation.SetToIncome" 
+                                Label="Set budget to..." 
+                                AnchorOrigin="Origin.BottomCenter"
+                                Validation="@(new Func<BudgetItem, string>(ValidateBudget))">
+                                @foreach(BudgetItem budget in _defaultBudgetItems)
+                                {
+                                    <MudSelectItem Value="budget" />
+                                }
+                            </MudSelect>
+                        </MudItem>
+                        <MudItem>
+                            <MudCheckBox @bind-Checked="@Automation.SetToIncome" Label="Set To Income"></MudCheckBox>
+                        </MudItem>
+                    </MudStack>
                 </MudItem>
             </MudGrid>
         </MudForm>
@@ -84,6 +95,13 @@
         Automation.Rules.Remove(ruleToDelete);
     }
 
+    private string ValidateBudget(BudgetItem arg)
+    {
+        if (!Automation.SetToIncome && arg == null)
+            return "Must select a budget to set";
+        return null;
+    }
+
     private async Task Submit()
     {
         // Validate the form
@@ -92,6 +110,12 @@
         // Manually validate that there is at least one rule
         if (form.IsValid && Automation.Rules.Count > 0)
         {
+            // Remove the budget if Income is selected
+            if (Automation.SetToIncome)
+            {
+                Automation.DefaultBudgetToSet = null;
+            }
+
             MudDialog.Close(Automation);
         }
     }
