@@ -58,7 +58,9 @@
                             <ul>
                                 @foreach(AutomationRule rule in @context.Rules)
                                 {
-                                    <li>@rule.ContainsText</li>
+                                    <li>
+                                        @(rule.IsExactMatch ? rule.ContainsText + " (EXACT)" : rule.ContainsText)
+                                    </li>
                                 }
                             </ul>
                         }

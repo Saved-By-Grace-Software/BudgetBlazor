@@ -12,17 +12,23 @@
                     <MudStack>
                         @foreach (AutomationRule rule in Automation.Rules)
                         {
-                            <MudTextField @bind-Value="rule.ContainsText" 
-                                Label="Triggers when desc. contains..." 
-                                FullWidth="true"
-                                Variant="Variant.Outlined"
-                                Adornment="Adornment.End"
-                                AdornmentIcon="@Icons.Material.Filled.Delete"
-                                OnAdornmentClick="() => DeleteTrigger(rule)"
-                                Required="true"
-                                RequiredError="Cannot have an empty trigger"/>
+                            <MudGrid Class="d-flex align-center flex-wrap flex-grow-1">
+                                <MudItem sm="8">
+                                    <MudTextField @bind-Value="rule.ContainsText" 
+                                        Label="Triggers when desc. contains..." 
+                                        FullWidth="true"
+                                        Variant="Variant.Outlined"
+                                        Adornment="Adornment.End"
+                                        AdornmentIcon="@Icons.Material.Filled.Delete"
+                                        OnAdornmentClick="() => DeleteTrigger(rule)"
+                                        Required="true"
+                                        RequiredError="Cannot have an empty trigger"/>
+                                </MudItem>
+                                <MudItem sm="4">
+                                    <MudCheckBox @bind-Checked="@rule.IsExactMatch" Label="Exact Match?"></MudCheckBox>
+                                </MudItem>
+                            </MudGrid>
                         }
-
                         <MudButton StartIcon="@Icons.Material.Filled.Add" Color="Color.Primary" Variant="Variant.Outlined" OnClick="AddNewTrigger">
                             Add New Trigger
                         </MudButton>

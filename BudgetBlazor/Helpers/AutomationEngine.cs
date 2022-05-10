@@ -33,7 +33,7 @@ namespace BudgetBlazor.Helpers
                 // Check each automation rule for a match
                 foreach(AutomationRule rule in automationToExecute.Rules)
                 {
-                    if (transaction.Name.Contains(rule.ContainsText, StringComparison.CurrentCultureIgnoreCase))
+                    if (CheckRule(transaction.Name, rule))
                     {
                         // Transaction is a match, is this income?
                         if(automationToExecute.SetToIncome)
@@ -113,7 +113,7 @@ namespace BudgetBlazor.Helpers
                 // Check each automation rule for a match
                 foreach (AutomationRule rule in automation.Rules)
                 {
-                    if (transaction.Name.Contains(rule.ContainsText, StringComparison.CurrentCultureIgnoreCase))
+                    if (CheckRule(transaction.Name, rule))
                     {
                         // Transaction is a match, is this income?
                         if (automation.SetToIncome)
@@ -144,6 +144,28 @@ namespace BudgetBlazor.Helpers
             }
 
             return transaction;
+        }
+
+        /// <summary>
+        /// Checks to see if the transaction contains/equals the rule text
+        /// </summary>
+        /// <param name="transactionName"></param>
+        /// <param name="rule"></param>
+        /// <returns></returns>
+        private static bool CheckRule(string transactionName, AutomationRule rule)
+        {
+            bool ret;
+
+            if (rule.IsExactMatch)
+            {
+                ret = transactionName.Trim().Equals(rule.ContainsText);
+            }
+            else
+            {
+                ret = transactionName.Contains(rule.ContainsText, StringComparison.CurrentCultureIgnoreCase);
+            }
+
+            return ret;
         }
     }
 }
