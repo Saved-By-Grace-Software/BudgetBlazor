@@ -8,10 +8,13 @@
 
         public bool StopAfterTrigger { get; set; }
 
+        public bool IsExactMatch { get; set; }
+
         public AutomationRule(string containsText)
         {
             ContainsText = containsText;
             StopAfterTrigger = false;
+            IsExactMatch = false;
         }
     }
 }
