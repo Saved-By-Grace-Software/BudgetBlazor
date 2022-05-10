@@ -1,7 +1,6 @@
 ﻿using DataAccess.Data;
 using DataAccess.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace DataAccess.Services
 {
@@ -10,6 +9,7 @@ namespace DataAccess.Services
         private readonly ApplicationDbContext _db;
         public event IBudgetDataService.NotifyBudgetDataChange BudgetDataChanged;
         public event IBudgetDataService.NotifyAccountDataChange AccountDataChanged;
+        public event IBudgetDataService.NotifyAutomationDataChange AutomationDataChanged;
 
         public BudgetDataService(ApplicationDbContext db)
         {
@@ -86,6 +86,16 @@ namespace DataAccess.Services
 
             return _db.Accounts.Where(a => a.User == user).ToList();
         }
+
+        public AutomationCategory CreateAutomationCategory(AutomationCategory category)
+        {
+            // Add the category
+            _db.AutomationCategories.Add(category);
+            _db.SaveChanges();
+
+            // Return the updated category
+            return category;
+        }
         #endregion
 
         #region Get
@@ -152,6 +162,39 @@ namespace DataAccess.Services
             else
             {
                 return null;
+            }
+        }
+
+        public List<AutomationCategory> GetAutomationCategories(Guid user)
+        {
+            return _db.AutomationCategories.Where(x => x.User == user).ToList();
+        }
+
+        public List<Automation> GetAutomations(Guid user)
+        {
+            return _db.AutomationCategories.Where(x => x.User == user).SelectMany(c => c.Automations).ToList();
+        }
+
+        public List<Transaction> GetTransactions(Guid user)
+        {
+            return _db.Transactions.Where(x => x.User == user).ToList();
+        }
+
+        public BudgetItem GetMatchingBudgetItem(BudgetItem defaultMonthBudgetItem, int month, int year, Guid user)
+        {
+            // Get budget month for the requested date
+            BudgetMonth dbMonth = _db.BudgetMonths.FirstOrDefault(m => m.Month == month && m.Year == year && m.User == user);
+
+            if (dbMonth != default(BudgetMonth))
+            {
+                // Find the budget item that matches
+                return dbMonth.BudgetCategories
+                    .SelectMany(c => c.BudgetItems)
+                    .FirstOrDefault(b => b.Name == defaultMonthBudgetItem.Name);
+            }
+            else
+            {
+                return default(BudgetItem);
             }
         }
         #endregion
@@ -233,6 +276,96 @@ namespace DataAccess.Services
             }
 
             return i;
+        }
+
+        public AutomationCategory Update(AutomationCategory category)
+        {
+            AutomationCategory dbCat = _db.Find<AutomationCategory>(category.Id);
+
+            if (dbCat != default(AutomationCategory))
+            {
+                // Update the category's details
+                dbCat.Name = category.Name;
+                dbCat.Color = category.Color;
+
+                // Save the changes
+                try
+                {
+                    _db.SaveChanges();
+                }
+                catch (DbUpdateException ex)
+                {
+                    // Failed to update, return null
+                    dbCat = default(AutomationCategory);
+                }
+            }
+
+            return dbCat;
+        }
+
+        public Account Update(Account account)
+        {
+            Account a = _db.Find<Account>(account.Id);
+
+            if (a != default(Account))
+            {
+                // Update the account's data
+                a.LastUpdated = DateTime.Now;
+                a.AccountNumber = account.AccountNumber;
+                a.AccountType = account.AccountType;
+                a.CurrentBalance = account.CurrentBalance;
+                a.Name = account.Name;
+
+                // Save the changes
+                try
+                {
+                    _db.SaveChanges();
+
+                    // Notify subscribers than an account has been updated
+                    RaiseAccountDataChanged();
+                }
+                catch (DbUpdateException ex)
+                {
+                    // Failed to update, return null
+                    a = default(Account);
+                }
+            }
+
+            return a;
+        }
+
+        public Transaction Update(Transaction transaction)
+        {
+            Transaction t = _db.Find<Transaction>(transaction.Id);
+
+            if (t != default(Transaction))
+            {
+                t.TransactionDate = transaction.TransactionDate;
+                t.FITransactionId = transaction.FITransactionId;
+                t.IsPartial = transaction.IsPartial;
+                t.Amount = transaction.Amount;
+                t.CheckNumber = transaction.CheckNumber;
+                t.IsIncome = transaction.IsIncome;
+                t.IsSplit = transaction.IsSplit;
+                t.Name = transaction.Name;
+                t.Budget = transaction.Budget;
+
+                // Save the changes
+                try
+                {
+                    _db.SaveChanges();
+
+                    // Notify subscribers than an account has been updated
+                    RaiseAccountDataChanged();
+                }
+                catch (DbUpdateException ex)
+                {
+                    // Failed to update, return null
+                    t = default(Transaction);
+                }
+            }
+
+            return t;
         }
 
         /// <summary>
@@ -347,37 +480,6 @@ namespace DataAccess.Services
             }
         }
 
-        public Account UpdateAccount(Account account)
-        {
-            Account a = _db.Find<Account>(account.Id);
-
-            if (a != default(Account))
-            {
-                // Update the account's data
-                a.LastUpdated = DateTime.Now;
-                a.AccountNumber = account.AccountNumber;
-                a.AccountType = account.AccountType;
-                a.CurrentBalance = account.CurrentBalance;
-                a.Name = account.Name;
-
-                // Save the changes
-                try
-                {
-                    _db.SaveChanges();
-
-                    // Notify subscribers than an account has been updated
-                    RaiseAccountDataChanged();
-                }
-                catch (DbUpdateException ex)
-                {
-                    // Failed to update, return null
-                    a = default(Account);
-                }
-            }
-
-            return a;
-        }
-
         public void UpdateAccountHistory(Account account, DateTime balanceDate, decimal balance)
         {
             // Create a new account history
@@ -460,6 +562,32 @@ namespace DataAccess.Services
 
             // Trigger the updated event
             RaiseBudgetDataChanged();
+        }
+
+        public void Delete(AutomationCategory category)
+        {
+            // Delete the automation rules
+            _db.RemoveRange(category.Automations.SelectMany(a => a.Rules));
+
+            // Delete the category's automations
+            _db.RemoveRange(category.Automations);
+
+            // Delete the category
+            _db.Remove(category);
+            _db.SaveChanges();
+
+            // Trigger the data changed event
+            RaiseAutomationDataChanged();
+        }
+
+        public void Delete(Automation automation)
+        {
+            _db.RemoveRange(automation.Rules);
+            _db.Remove(automation);
+            _db.SaveChanges();
+
+            // Trigger the updated event
+            RaiseAutomationDataChanged();
         }
 
         public BudgetMonth ResetMonthToDefault(BudgetMonth budgetMonth, Guid user)
@@ -546,6 +674,14 @@ namespace DataAccess.Services
         }
 
         /// <summary>
+        /// Raises the automation data changed event
+        /// </summary>
+        private void RaiseAutomationDataChanged()
+        {
+            AutomationDataChanged?.Invoke();
+        }
+
+        /// <summary>
         /// Gets the parent month from the given category
         /// </summary>
         /// <param name="category"></param>
@@ -585,6 +721,20 @@ namespace DataAccess.Services
 
             // Get the Account from the db based on the ID
             return _db.Find<Account>(accId);
+        }
+
+        /// <summary>
+        /// Gets the parent automation category from the automation
+        /// </summary>
+        /// <param name="automation"></param>
+        /// <returns></returns>
+        private AutomationCategory? GetAutomationCategoryFromAutomation(Automation automation)
+        {
+            // Get the category ID from the automation's parent
+            int acId = (int)_db.Entry(automation).Property("AutomationCategoryId").CurrentValue;
+
+            // Get the Account from the db based on the ID
+            return _db.Find<AutomationCategory>(acId);
         }
         #endregion
     }

@@ -12,10 +12,15 @@ namespace DataAccess.Services
         public delegate void NotifyAccountDataChange();
         public event NotifyAccountDataChange AccountDataChanged;
 
+        // Event to notify subscribers when automation changes occur
+        public delegate void NotifyAutomationDataChange();
+        public event NotifyAutomationDataChange AutomationDataChanged;
+
         // Create
         BudgetMonth Create(int year, int month, Guid user);
         BudgetMonth CreateFromDefault(int year, int month, Guid user);
         List<Account> CreateAccount(Account account, Guid user);
+        AutomationCategory CreateAutomationCategory(AutomationCategory category);
 
         // Get
         BudgetMonth Get(int budgetMonthId, Guid user);
@@ -26,20 +31,28 @@ namespace DataAccess.Services
         List<Account> GetAllAccounts(Guid user);
         Account GetAccount(int accountId, Guid user);
         List<BudgetItem> GetBudgetItems(int year, int month, Guid user);
+        List<AutomationCategory> GetAutomationCategories(Guid user);
+        List<Automation> GetAutomations(Guid user);
+        List<Transaction> GetTransactions(Guid user);
+        BudgetItem GetMatchingBudgetItem(BudgetItem defaultMonthBudgetItem, int month, int year, Guid user);
 
         // Update
         BudgetMonth Update(BudgetMonth budgetMonth);
         BudgetCategory Update(BudgetCategory budgetCategory);
         BudgetItem Update(BudgetItem budgetItem);
+        AutomationCategory Update(AutomationCategory category);
+        Account Update(Account account);
+        Transaction Update(Transaction transaction);
         void UpdateMonthTotals(BudgetMonth budgetMonth);
         void UpdateMonthTotals(int budgetMonthId);
-        Account UpdateAccount(Account account);
         void UpdateAccountHistory(Account account, DateTime balanceDate, decimal balance);
 
         // Delete
         void Delete(int budgetMonthId);
         void Delete(BudgetItem budgetItem);
         void Delete(BudgetCategory budgetCategory);
+        void Delete(AutomationCategory category);
+        void Delete(Automation automation);
         BudgetMonth ResetMonthToDefault(BudgetMonth budgetMonth, Guid user);
         void DeleteAccount(Account account);
         void DeleteTransaction(Transaction transaction);

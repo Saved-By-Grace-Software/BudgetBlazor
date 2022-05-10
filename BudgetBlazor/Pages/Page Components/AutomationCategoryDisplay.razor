@@ -1,0 +1,218 @@
+﻿<MudCard Elevation="1" Style="@($"color:{CurrentTheme.Palette.TextPrimary}; background:{Category.Color};")">
+    <MudCardHeader Class="mb-n4">
+        <CardHeaderContent>
+            <MudText Typo="Typo.body1"><strong>@Category.Name</strong></MudText>
+        </CardHeaderContent>
+        <CardHeaderActions>
+            <MudMenu Icon="@Icons.Material.Filled.MoreVert">
+                <MudMenuItem OnClick="OpenAddAutomationDialog">
+                    <MudStack Row="true" Spacing="4" AlignItems="AlignItems.Center">
+                        <MudIcon Icon="@Icons.Material.Filled.Add" />
+                        <MudText>Add Automation Rule</MudText>
+                    </MudStack>
+                </MudMenuItem>
+                <MudMenuItem OnClick="OpenEditDialog">
+                    <MudStack Row="true" Spacing="4" AlignItems="AlignItems.Center">
+                        <MudIcon Icon="@Icons.Material.Filled.Edit" />
+                        <MudText>Edit Category</MudText>
+                    </MudStack>
+                </MudMenuItem>
+                <MudMenuItem OnClick="DeleteCategory">
+                    <MudStack Row="true" Spacing="4" AlignItems="AlignItems.Center">
+                        <MudIcon Icon="@Icons.Material.Filled.Delete" />
+                        <MudText>Delete Category</MudText>
+                    </MudStack>
+                </MudMenuItem>
+            </MudMenu>
+        </CardHeaderActions>
+    </MudCardHeader>
+    <MudCardContent>
+        @if (Category.Automations.Count == 0)
+        {
+            <MudText Typo="Typo.body2" Align="Align.Center"><i>No automations to display for this category</i></MudText>
+        }
+        else
+        {
+            <MudTable Items="@Category.Automations" T="Automation" Hover="true" Breakpoint="Breakpoint.Sm">
+                <ColGroup>
+                    <col style="width: 25%;" />
+                    <col style="width: 40%;" />
+                    <col style="width: 25%;" />
+                    <col style="width: 10%;" />
+                </ColGroup>
+                <HeaderContent>
+                    <MudTh><strong>Name</strong></MudTh>
+                    <MudTh><strong>Triggers When Desc. Contains..</strong></MudTh>
+                    <MudTh><strong>Sets Budget To..</strong></MudTh>
+                    <MudTh></MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd>@context.Name</MudTd>
+                    <MudTd>
+                        @if (context.Rules.Count == 0)
+                        {
+                            <i>No checks for this rule yet</i>
+                        }
+                        else
+                        {
+                            <ul>
+                                @foreach(AutomationRule rule in @context.Rules)
+                                {
+                                    <li>@rule.ContainsText</li>
+                                }
+                            </ul>
+                        }
+                    </MudTd>
+                    <MudTd>
+                        @(context.DefaultBudgetToSet == null && context.SetToIncome ? "INCOME" : @context.DefaultBudgetToSet.Name)
+                    </MudTd>
+                    <MudTd>
+                        <MudToolBar>
+                            <MudTooltip Text="Execute Rule Now">
+                                <MudIconButton Icon="@Icons.Material.Filled.PlayArrow" OnClick="() => ExecuteAutomation(context)" />
+                            </MudTooltip>
+                            <MudTooltip Text="Edit Rule">
+                                <MudIconButton Icon="@Icons.Material.Filled.Edit" OnClick="() => OpenEditAutomationDialog(context)" />
+                            </MudTooltip>
+                            <MudTooltip Text="Delete Rule">
+                                <MudIconButton Icon="@Icons.Material.Filled.Delete" OnClick="() => DeleteAutomation(context)" />
+                            </MudTooltip>
+                        </MudToolBar>
+                    </MudTd>
+                </RowTemplate>
+            </MudTable>
+        }
+    </MudCardContent>
+</MudCard>
+
+@code
+{
+    [CascadingParameter] private MudTheme CurrentTheme { get; set; }
+    [Inject] private IDialogService DialogService { get; set; }
+    [Inject] private IBudgetDataService BudgetDataService { get; set; }
+    [Inject] private AuthenticationStateProvider AuthenticationStateProvider { get; set; }
+    [Inject] private ISnackbar Snackbar { get; set; }
+    [Parameter] public AutomationCategory Category { get; set; }
+
+    Guid _currentUserId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authstate = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        _currentUserId = Guid.Parse(authstate.User.Claims.First().Value);
+    }
+
+    /// <summary>
+    /// Opens the dialog to edit an automation category
+    /// </summary>
+    /// <returns></returns>
+    private async Task OpenEditDialog()
+    {
+        // Open the dialog
+        var parameters = new DialogParameters { ["CategoryName"] = Category.Name, ["CategoryColor"] = new MudColor(Category.Color) };
+        var options = new DialogOptions() { MaxWidth = MaxWidth.Medium, FullWidth = true };
+        var dialogRef = DialogService.Show<EditCategoryDialog>("Edit Category", parameters, options);
+
+        // Wait for a response and update the Category name and color
+        var res = await dialogRef.Result;
+        if (!res.Cancelled)
+        {
+            Tuple<string, string> data = (Tuple<string, string>)res.Data;
+            Category.Name = data.Item1;
+            Category.Color = data.Item2;
+            Category = BudgetDataService.Update(Category);
+        }
+    }
+
+    /// <summary>
+    /// Calls the callback to delete the category
+    /// </summary>
+    private async Task DeleteCategory()
+    {
+        bool? result = await DialogService.ShowMessageBox(
+            "Warning", 
+            "Deleting a category will delete all budgets inside of it and cannot be undone!", 
+            yesText:"Delete!", cancelText:"Cancel");
+
+        if (result != null && result == true)
+        {
+            // Delete the category
+            BudgetDataService.Delete(Category);
+        }
+    }
+
+    /// <summary>
+    /// Opens the dialog to add an automation to the category
+    /// </summary>
+    /// <returns></returns>
+    private async Task OpenAddAutomationDialog()
+    {
+        // Create a new Automation for the dialog
+        Automation newAutomation = new Automation("");
+        newAutomation.Rules.Add(new AutomationRule(""));
+
+        // Open the dialog
+        var parameters = new DialogParameters { ["Automation"] = newAutomation };
+        var options = new DialogOptions() { MaxWidth = MaxWidth.Large, FullWidth = true };
+        var dialogRef = DialogService.Show<EditAutomationDialog>("Add New Automation", parameters, options);
+
+        // Wait for a response and add the new budget item
+        var res = await dialogRef.Result;
+        if (!res.Cancelled)
+        {
+            // Add the new automation
+            Automation automationToAdd = (Automation)res.Data;
+            Category.Automations.Add(automationToAdd);
+            BudgetDataService.Update(Category);
+        }
+    }
+
+    /// <summary>
+    /// Opens the dialog to edit an automation
+    /// </summary>
+    /// <returns></returns>
+    private async Task OpenEditAutomationDialog(Automation automationToEdit)
+    {
+        // Open the dialog
+        var parameters = new DialogParameters { ["Automation"] = automationToEdit };
+        var options = new DialogOptions() { MaxWidth = MaxWidth.Large, FullWidth = true };
+        var dialogRef = DialogService.Show<EditAutomationDialog>("Add New Automation", parameters, options);
+
+        // Wait for a response and add the new budget item
+        var res = await dialogRef.Result;
+        if (!res.Cancelled)
+        {
+            // Update the category with the updated automation
+            BudgetDataService.Update(Category);
+        }
+    }
+
+    /// <summary>
+    /// Deletes the selected automation
+    /// </summary>
+    private async Task DeleteAutomation(Automation automationToDelete)
+    {
+        bool? result = await DialogService.ShowMessageBox(
+            "Warning", 
+            "Deleting an automation cannot be undone!", 
+            yesText:"Delete!", cancelText:"Cancel");
+
+        if (result != null && result == true)
+        {
+            // Delete the automation
+            BudgetDataService.Delete(automationToDelete);
+        }
+    }
+
+    /// <summary>
+    /// Executes the given automation against all transactions for the user
+    /// </summary>
+    /// <param name="automationToExecute"></param>
+    /// <returns></returns>
+    private async Task ExecuteAutomation(Automation automationToExecute)
+    {
+        int numUpdated = AutomationEngine.ExecuteSingleAutomation(automationToExecute, _currentUserId, BudgetDataService);
+
+        Snackbar.Add("Done! \"" + automationToExecute.Name + "\" updated " + numUpdated + " transactions");
+    }
+}

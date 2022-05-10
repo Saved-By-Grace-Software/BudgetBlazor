@@ -73,7 +73,7 @@ namespace BudgetBlazor.Pages.Page_Components
                 // Add the new transaction
                 Transaction transaction = (Transaction)res.Data;
                 Account.Transactions.Add(transaction);
-                BudgetDataService.UpdateAccount(Account);
+                BudgetDataService.Update(Account);
             }
         }
 
@@ -97,7 +97,7 @@ namespace BudgetBlazor.Pages.Page_Components
                 if (index != -1)
                 {
                     Account.Transactions[index] = transaction;
-                    BudgetDataService.UpdateAccount(Account);
+                    BudgetDataService.Update(Account);
                 }
             }
         }

@@ -81,7 +81,7 @@ namespace BudgetBlazor.Pages
             {
                 // Add the new account
                 Account account = (Account)res.Data;
-                BudgetDataService.UpdateAccount(account);
+                BudgetDataService.Update(account);
             }
         }
 

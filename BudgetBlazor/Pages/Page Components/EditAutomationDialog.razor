@@ -1,0 +1,123 @@
+﻿@using System.ComponentModel;
+@using System.ComponentModel.DataAnnotations.Schema;
+
+<MudDialog>
+    <DialogContent>
+        <MudForm @ref="form" @bind-IsValid="@success" @bind-Errors="@errors">
+            <MudGrid Spacing="4" Justify="Justify.SpaceBetween">
+                <MudItem sm="12" md="3">
+                    <MudTextField @bind-Value="Automation.Name" Label="Name" Variant="Variant.Outlined" Required="true" RequiredError="Must enter an Automation name"></MudTextField>
+                </MudItem>
+                <MudItem sm="12" md="6">
+                    <MudStack>
+                        @foreach (AutomationRule rule in Automation.Rules)
+                        {
+                            <MudTextField @bind-Value="rule.ContainsText" 
+                                Label="Triggers when desc. contains..." 
+                                FullWidth="true"
+                                Variant="Variant.Outlined"
+                                Adornment="Adornment.End"
+                                AdornmentIcon="@Icons.Material.Filled.Delete"
+                                OnAdornmentClick="() => DeleteTrigger(rule)"
+                                Required="true"
+                                RequiredError="Cannot have an empty trigger"/>
+                        }
+
+                        <MudButton StartIcon="@Icons.Material.Filled.Add" Color="Color.Primary" Variant="Variant.Outlined" OnClick="AddNewTrigger">
+                            Add New Trigger
+                        </MudButton>
+                    </MudStack>
+                </MudItem>
+                <MudItem sm="12" md="3">
+                    <MudStack>
+                        <MudItem>
+                            <MudSelect T="BudgetItem" @bind-Value="@Automation.DefaultBudgetToSet" 
+                                Disabled="@Automation.SetToIncome" 
+                                Label="Set budget to..." 
+                                AnchorOrigin="Origin.BottomCenter"
+                                Validation="@(new Func<BudgetItem, string>(ValidateBudget))">
+                                @foreach(BudgetItem budget in _defaultBudgetItems)
+                                {
+                                    <MudSelectItem Value="budget" />
+                                }
+                            </MudSelect>
+                        </MudItem>
+                        <MudItem>
+                            <MudCheckBox @bind-Checked="@Automation.SetToIncome" Label="Set To Income"></MudCheckBox>
+                        </MudItem>
+                    </MudStack>
+                </MudItem>
+            </MudGrid>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">Ok</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code
+{
+    [CascadingParameter] private MudTheme CurrentTheme { get; set; }
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    [Inject] private IDialogService DialogService { get; set; }
+    [Inject] private IBudgetDataService BudgetDataService { get; set; }
+    [Inject] private AuthenticationStateProvider AuthenticationStateProvider { get; set; }
+    [Inject] private ISnackbar Snackbar { get; set; }
+    [Parameter] public Automation Automation { get; set; }
+
+    bool success;
+    string[] errors = { };
+    MudForm form;
+    List<BudgetItem> _defaultBudgetItems { get; set; }
+    Guid _currentUserId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authstate = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        _currentUserId = Guid.Parse(authstate.User.Claims.First().Value);
+
+        _defaultBudgetItems = BudgetDataService.GetDefaultMonth(_currentUserId).BudgetCategories.SelectMany(c => c.BudgetItems).ToList();
+    }
+
+    /// <summary>
+    /// Adds a new trigger(rule) to the automation
+    /// </summary>
+    /// <returns></returns>
+    private async Task AddNewTrigger()
+    {
+        AutomationRule newRule = new AutomationRule("");
+        Automation.Rules.Add(newRule);
+    }
+
+    private async Task DeleteTrigger(AutomationRule ruleToDelete)
+    {
+        Automation.Rules.Remove(ruleToDelete);
+    }
+
+    private string ValidateBudget(BudgetItem arg)
+    {
+        if (!Automation.SetToIncome && arg == null)
+            return "Must select a budget to set";
+        return null;
+    }
+
+    private async Task Submit()
+    {
+        // Validate the form
+        await form.Validate();
+
+        // Manually validate that there is at least one rule
+        if (form.IsValid && Automation.Rules.Count > 0)
+        {
+            // Remove the budget if Income is selected
+            if (Automation.SetToIncome)
+            {
+                Automation.DefaultBudgetToSet = null;
+            }
+
+            MudDialog.Close(Automation);
+        }
+    }
+    void Cancel() => MudDialog.Cancel();
+}

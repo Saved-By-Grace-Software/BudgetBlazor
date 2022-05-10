@@ -4,6 +4,7 @@ using DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220504231400_RemoveUserIdFromAutomation")]
+    partial class RemoveUserIdFromAutomation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -94,7 +96,7 @@ namespace DataAccess.Migrations
                     b.Property<int?>("AutomationCategoryId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("DefaultBudgetToSetId")
+                    b.Property<int>("DefaultBudgetToSetId")
                         .HasColumnType("int");
 
                     b.Property<bool>("IsActive")
@@ -106,9 +108,6 @@ namespace DataAccess.Migrations
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("SetToIncome")
-                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 
@@ -553,7 +552,9 @@ namespace DataAccess.Migrations
 
                     b.HasOne("DataAccess.Models.BudgetItem", "DefaultBudgetToSet")
                         .WithMany()
-                        .HasForeignKey("DefaultBudgetToSetId");
+                        .HasForeignKey("DefaultBudgetToSetId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("DefaultBudgetToSet");
                 });
