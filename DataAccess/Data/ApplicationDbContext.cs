@@ -16,5 +16,6 @@ namespace DataAccess.Data
         public DbSet<Account> Accounts { get; set; }
         public DbSet<AccountHistory> AccountsHistories { get; set; }
         public DbSet<AutomationCategory> AutomationCategories { get; set; }
+        public DbSet<PiggyBank> PiggyBanks { get; set; }
     }
 }

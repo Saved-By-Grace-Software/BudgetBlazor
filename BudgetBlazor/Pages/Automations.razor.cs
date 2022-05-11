@@ -62,7 +62,7 @@ namespace BudgetBlazor.Pages
                 // Add the new category to the month
                 Tuple<string, string> data = (Tuple<string, string>)res.Data;
                 AutomationCategory category = new AutomationCategory(data.Item1, _currentUserId, data.Item2);
-                category = BudgetDataService.CreateAutomationCategory(category);
+                category = BudgetDataService.Create(category);
                 AutomationCategories.Add(category);
             }
         }

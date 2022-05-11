@@ -20,7 +20,8 @@ namespace DataAccess.Services
         BudgetMonth Create(int year, int month, Guid user);
         BudgetMonth CreateFromDefault(int year, int month, Guid user);
         List<Account> CreateAccount(Account account, Guid user);
-        AutomationCategory CreateAutomationCategory(AutomationCategory category);
+        AutomationCategory Create(AutomationCategory category);
+        PiggyBank Create(PiggyBank piggyBank);
 
         // Get
         BudgetMonth Get(int budgetMonthId, Guid user);
@@ -29,6 +30,7 @@ namespace DataAccess.Services
         List<BudgetMonth> GetAllMonths(Guid user);
         BudgetMonth GetDefaultMonth(Guid user);
         List<Account> GetAllAccounts(Guid user);
+        List<PiggyBank> GetAllPiggyBanks(Guid user);
         Account GetAccount(int accountId, Guid user);
         List<BudgetItem> GetBudgetItems(int year, int month, Guid user);
         List<AutomationCategory> GetAutomationCategories(Guid user);

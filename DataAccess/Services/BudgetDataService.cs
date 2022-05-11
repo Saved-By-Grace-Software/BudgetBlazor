@@ -87,7 +87,7 @@ namespace DataAccess.Services
             return _db.Accounts.Where(a => a.User == user).ToList();
         }
 
-        public AutomationCategory CreateAutomationCategory(AutomationCategory category)
+        public AutomationCategory Create(AutomationCategory category)
         {
             // Add the category
             _db.AutomationCategories.Add(category);
@@ -95,6 +95,16 @@ namespace DataAccess.Services
 
             // Return the updated category
             return category;
+        }
+
+        public PiggyBank Create(PiggyBank piggyBank)
+        {
+            // Add the piggy bank
+            _db.PiggyBanks.Add(piggyBank);
+            _db.SaveChanges();
+
+            // Return the updated piggy bank
+            return piggyBank;
         }
         #endregion
 
@@ -131,6 +141,11 @@ namespace DataAccess.Services
         public List<Account> GetAllAccounts(Guid user)
         {
             return _db.Accounts.Where(x => x.User == user).ToList();
+        }
+
+        public List<PiggyBank> GetAllPiggyBanks(Guid user)
+        {
+            return _db.PiggyBanks.Where(x => x.User == user).ToList();
         }
 
         public BudgetMonth GetDefaultMonth(Guid user)
