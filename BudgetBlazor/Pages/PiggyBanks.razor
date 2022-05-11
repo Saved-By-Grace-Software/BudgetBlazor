@@ -14,7 +14,7 @@
         </CardHeaderContent>
         <CardHeaderActions>
             <MudTooltip Text="Add New Piggy Bank">
-                <MudIconButton Icon="@Icons.Material.Filled.Add" Color="Color.Default" />
+                <MudIconButton Icon="@Icons.Material.Filled.Add" Color="Color.Default" OnClick="OpenAddPiggyBankDialog" />
             </MudTooltip>
         </CardHeaderActions>
     </MudCardHeader>
@@ -51,7 +51,7 @@
                     <MudCardContent Class="mx-4">
                         <MudGrid Justify="Justify.SpaceBetween">
                             <MudItem md="1">
-                                <MudProgressLinear Vertical="true" Rounded="true" Color="@ColorHelpers.ProgressBarColorReverse(bank.PercentSaved)" Size="Size.Large" Value="@bank.PercentSaved">
+                                <MudProgressLinear Vertical="true" Rounded="true" Color="@ColorHelpers.ProgressBarColorReverse(bank.PercentSaved, false, 60, 90)" Size="Size.Large" Value="@bank.PercentSaved">
                                     <MudText Typo="Typo.subtitle2">
                                         <b>@string.Format("{0}%", bank.PercentSaved)</b>
                                     </MudText>
@@ -88,10 +88,6 @@
                                         <MudText Typo="Typo.body1"><strong>Suggested Per Month:</strong></MudText>
                                         <MudText Typo="Typo.body1">@string.Format("{0:C}", bank.PerMonthAmount)</MudText>
                                     </MudStack>
-                                    <MudStack Row="true" Justify="Justify.SpaceBetween">
-                                        <MudText Typo="Typo.body1"><strong>Account:</strong></MudText>
-                                        <MudText Typo="Typo.body1">@bank.SavingsAccount.Name</MudText>
-                                    </MudStack>
                                 </MudStack>
                             </MudItem>
                         </MudGrid>
@@ -118,28 +114,19 @@
         {
             <MudTable Items="@_accounts" Hover="true" Breakpoint="Breakpoint.Sm" T="Account">
                 <ColGroup>
-                    <col style="width: 25%;" />
-                    <col style="width: 15%;" />
-                    <col style="width: 15%;" />
-                    <col style="width: 15%;" />
-                    <col style="width: 15%;" />
-                    <col style="width: 15%;" />
+                    <col style="width: 40%;" />
+                    <col style="width: 30%;" />
+                    <col style="width: 30%;" />
                 </ColGroup>
                 <HeaderContent>
                     <MudTh>Name</MudTh>
                     <MudTh>Current Balance</MudTh>
-                    <MudTh>Left for Piggy Banks</MudTh>
-                    <MudTh>Sum of Piggy Banks</MudTh>
-                    <MudTh>Saved So Far</MudTh>
-                    <MudTh>Left To Save</MudTh>
+                    <MudTh>Last Updated</MudTh>
                 </HeaderContent>
                 <RowTemplate>
-                    <MudTd DataLabel="Name">@context.Name</MudTd>
-                    <MudTd DataLabel="Balance">@string.Format("{0:C}", context.CurrentBalance)</MudTd>
-                    <MudTd>LPB</MudTd>
-                    <MudTd>SUM</MudTd>
-                    <MudTd>SAVED</MudTd>
-                    <MudTd>LTS</MudTd>
+                    <MudTd>@context.Name</MudTd>
+                    <MudTd>@string.Format("{0:C}", context.CurrentBalance)</MudTd>
+                    <MudTd>@context.LastUpdated.ToShortDateString()</MudTd>
                 </RowTemplate>
             </MudTable>
         }

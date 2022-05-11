@@ -18,7 +18,7 @@ namespace DataAccess.Models
 
         public Guid User { get; set; }
 
-        public virtual Account SavingsAccount { get; set; }
+        public virtual Account? SavingsAccount { get; set; }
 
         [NotMapped]
         public decimal RemainingAmount
@@ -56,6 +56,11 @@ namespace DataAccess.Models
             Name = name;
             User = user;
             TargetDate = DateTime.Now;
+        }
+
+        public override string ToString()
+        {
+            return Name;
         }
     }
 }

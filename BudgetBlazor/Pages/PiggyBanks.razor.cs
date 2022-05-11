@@ -73,7 +73,7 @@ namespace BudgetBlazor.Pages
         {
             // Open the dialog
             var parameters = new DialogParameters { ["OkButtonText"] = "Add" };
-            var dialogRef = DialogService.Show<EditPBAmountSaved>("Add Amount Saved", parameters);
+            var dialogRef = DialogService.Show<EditPBAmountSavedDialog>("Add Amount Saved", parameters);
 
             // Wait for a response and add the amount to bank's current amount
             var res = await dialogRef.Result;
@@ -91,7 +91,7 @@ namespace BudgetBlazor.Pages
         {
             // Open the dialog
             var parameters = new DialogParameters { ["OkButtonText"] = "Remove" };
-            var dialogRef = DialogService.Show<EditPBAmountSaved>("Remove Amount Saved", parameters);
+            var dialogRef = DialogService.Show<EditPBAmountSavedDialog>("Remove Amount Saved", parameters);
 
             // Wait for a response and remove the amount from the bank's current amount
             var res = await dialogRef.Result;
@@ -99,6 +99,25 @@ namespace BudgetBlazor.Pages
             {
                 bank.CurrentAmount -= (decimal)res.Data;
                 BudgetDataService.Update(bank);
+            }
+        }
+
+        /// <summary>
+        /// Opens the dialog to add a new piggy bank
+        /// </summary>
+        /// <returns></returns>
+        protected async Task OpenAddPiggyBankDialog()
+        {
+            // Open the dialog
+            var parameters = new DialogParameters { ["PiggyBank"] = new PiggyBank("", _currentUserId) };
+            var options = new DialogOptions() { MaxWidth = MaxWidth.Medium, FullWidth = true };
+            var dialogRef = DialogService.Show<EditPiggyBankDialog>("Add New Piggy Bank", parameters, options);
+
+            // Wait for a response and add the Category
+            var res = await dialogRef.Result;
+            if (!res.Cancelled)
+            {
+                
             }
         }
     }
