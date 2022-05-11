@@ -383,6 +383,33 @@ namespace DataAccess.Services
             return t;
         }
 
+        public PiggyBank Update(PiggyBank piggyBank)
+        {
+            PiggyBank b = _db.Find<PiggyBank>(piggyBank.Id);
+
+            if (b != default(PiggyBank))
+            {
+                b.Name = piggyBank.Name;
+                b.CurrentAmount = piggyBank.CurrentAmount;
+                b.SavingsAccount = piggyBank.SavingsAccount;
+                b.TargetAmount = piggyBank.TargetAmount;
+                b.TargetDate = piggyBank.TargetDate;
+
+                // Save the changes
+                try
+                {
+                    _db.SaveChanges();
+                }
+                catch (DbUpdateException)
+                {
+                    // Failed to update, return null
+                    b = default(PiggyBank);
+                }
+            }
+
+            return b;
+        }
+
         /// <summary>
         /// Updates the totals for the given month
         /// </summary>

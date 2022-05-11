@@ -45,6 +45,7 @@ namespace DataAccess.Services
         AutomationCategory Update(AutomationCategory category);
         Account Update(Account account);
         Transaction Update(Transaction transaction);
+        PiggyBank Update(PiggyBank piggyBank);
         void UpdateMonthTotals(BudgetMonth budgetMonth);
         void UpdateMonthTotals(int budgetMonthId);
         void UpdateAccountHistory(Account account, DateTime balanceDate, decimal balance);

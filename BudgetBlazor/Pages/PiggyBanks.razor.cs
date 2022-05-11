@@ -1,4 +1,5 @@
-﻿using DataAccess.Models;
+﻿using BudgetBlazor.Pages.Page_Components;
+using DataAccess.Models;
 using DataAccess.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -63,6 +64,42 @@ namespace BudgetBlazor.Pages
             //bank2.SavingsAccount = accounts[0];
             //BudgetDataService.Create(bank2);
             //// END DEBUG
+        }
+
+        /// <summary>
+        /// Opens the dialog to add an amount to the current amount saved
+        /// </summary>
+        protected async Task OpenAddAmountDialog(PiggyBank bank)
+        {
+            // Open the dialog
+            var parameters = new DialogParameters { ["OkButtonText"] = "Add" };
+            var dialogRef = DialogService.Show<EditPBAmountSaved>("Add Amount Saved", parameters);
+
+            // Wait for a response and add the amount to bank's current amount
+            var res = await dialogRef.Result;
+            if (!res.Cancelled)
+            {
+                bank.CurrentAmount += (decimal)res.Data;
+                BudgetDataService.Update(bank);
+            }
+        }
+
+        /// <summary>
+        /// Opens the dialog to remove an amount to the current amount saved
+        /// </summary>
+        protected async Task OpenRemoveAmountDialog(PiggyBank bank)
+        {
+            // Open the dialog
+            var parameters = new DialogParameters { ["OkButtonText"] = "Remove" };
+            var dialogRef = DialogService.Show<EditPBAmountSaved>("Remove Amount Saved", parameters);
+
+            // Wait for a response and remove the amount from the bank's current amount
+            var res = await dialogRef.Result;
+            if (!res.Cancelled)
+            {
+                bank.CurrentAmount -= (decimal)res.Data;
+                BudgetDataService.Update(bank);
+            }
         }
     }
 }

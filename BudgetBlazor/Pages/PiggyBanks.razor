@@ -36,12 +36,6 @@
                             <MudMenu Icon="@Icons.Material.Filled.MoreVert">
                                 <MudMenuItem>
                                     <MudStack Row="true" Spacing="4" AlignItems="AlignItems.Center">
-                                        <MudIcon Icon="@Icons.Material.Filled.Balance" />
-                                        <MudText>Update Saved Amount</MudText>
-                                    </MudStack>
-                                </MudMenuItem>
-                                <MudMenuItem>
-                                    <MudStack Row="true" Spacing="4" AlignItems="AlignItems.Center">
                                         <MudIcon Icon="@Icons.Material.Filled.Edit" />
                                         <MudText>Edit Piggy Bank</MudText>
                                     </MudStack>
@@ -67,7 +61,11 @@
                                 <MudStack>
                                     <MudStack Row="true" Justify="Justify.SpaceBetween">
                                         <MudText Typo="Typo.body1"><strong>Current Amount Saved:</strong></MudText>
-                                        <MudText Typo="Typo.body1">@string.Format("{0:C}", bank.CurrentAmount)</MudText>
+                                        <MudStack Row="true" Spacing="0" Justify="Justify.FlexEnd">
+                                            <MudIconButton Icon="@Icons.Material.Filled.Remove" Size="Size.Small" Color="Color.Error" OnClick="() => OpenRemoveAmountDialog(bank)" />
+                                            <MudText Typo="Typo.body1">@string.Format("{0:C}", bank.CurrentAmount)</MudText>
+                                            <MudIconButton Icon="@Icons.Material.Filled.Add" Size="Size.Small" Color="Color.Success" OnClick="() => OpenAddAmountDialog(bank)" />
+                                        </MudStack>
                                     </MudStack>
                                     <MudStack Row="true" Justify="Justify.SpaceBetween">
                                         <MudText Typo="Typo.body1"><strong>Target Amount:</strong></MudText>
