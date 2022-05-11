@@ -52,8 +52,8 @@
                             </MudItem>
                             <MudItem md="3" xs="4">
                                 <MudTextField Value="Category.Remaining" Label="Remaining" Variant="Variant.Text" Format="C2" Margin="Margin.Dense" ReadOnly="true"
-                                    Style="@($"color:{((Category.Remaining <= 0) ? CurrentTheme.Palette.Error : CurrentTheme.Palette.TextPrimary)};")"
-                                    Error="@(Category.Remaining <= 0)">
+                                    Style="@($"color:{((Category.Remaining <= 0 && Category.Budgeted != 0) ? CurrentTheme.Palette.Error : CurrentTheme.Palette.TextPrimary)};")"
+                                    Error="@(Category.Remaining <= 0 && Category.Budgeted != 0)">
                                 </MudTextField>
                             </MudItem> 
                             <MudHidden Breakpoint="Breakpoint.SmAndDown">
