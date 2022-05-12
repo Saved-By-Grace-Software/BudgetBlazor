@@ -632,16 +632,7 @@ namespace DataAccess.Services
             RaiseAutomationDataChanged();
         }
 
-        public BudgetMonth ResetMonthToDefault(BudgetMonth budgetMonth, Guid user)
-        {
-            // Delete the month
-            Delete(budgetMonth.Id);
-
-            // Return a newly created month
-            return CreateFromDefault(budgetMonth.Year, budgetMonth.Month, user);
-        }
-
-        public void DeleteAccount(Account account)
+        public void Delete(Account account)
         {
             // Delete the account's transactions
             _db.RemoveRange(account.Transactions);
@@ -656,7 +647,7 @@ namespace DataAccess.Services
             RaiseAccountDataChanged();
         }
 
-        public void DeleteTransaction(Transaction transaction)
+        public void Delete(Transaction transaction)
         {
             // Remove the transaction from the parent account
             Account dbAccount = GetAccountFromTransaction(transaction);
@@ -674,9 +665,25 @@ namespace DataAccess.Services
             }
         }
 
+        public void Delete(PiggyBank piggyBank)
+        {
+            // Delete the bank
+            _db.Remove(piggyBank);
+            _db.SaveChanges();
+        }
+
         public void DeleteSplitTransactions(Transaction transaction)
         {
             _db.Transactions.RemoveRange(transaction.Splits);
+        }
+
+        public BudgetMonth ResetMonthToDefault(BudgetMonth budgetMonth, Guid user)
+        {
+            // Delete the month
+            Delete(budgetMonth.Id);
+
+            // Return a newly created month
+            return CreateFromDefault(budgetMonth.Year, budgetMonth.Month, user);
         }
 
         public void RejectChanges()

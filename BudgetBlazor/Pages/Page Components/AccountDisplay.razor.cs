@@ -115,7 +115,7 @@ namespace BudgetBlazor.Pages.Page_Components
             if (result != null && result == true)
             {
                 // Delete the transaction 
-                BudgetDataService.DeleteTransaction(transactionToDelete);
+                BudgetDataService.Delete(transactionToDelete);
             }
         }
 

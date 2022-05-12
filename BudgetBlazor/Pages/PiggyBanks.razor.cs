@@ -120,5 +120,25 @@ namespace BudgetBlazor.Pages
                 BudgetDataService.Update((PiggyBank)res.Data);
             }
         }
+
+        /// <summary>
+        /// Deletes the given piggy bank
+        /// </summary>
+        /// <param name="bank"></param>
+        /// <returns></returns>
+        protected async Task DeletePiggyBank(PiggyBank bankToDelete)
+        {
+            bool? result = await DialogService.ShowMessageBox(
+                "Warning",
+                "Deleting a piggy bank cannot be undone!",
+                yesText: "Delete!", cancelText: "Cancel");
+
+            if (result != null && result == true)
+            {
+                // Delete the piggy bank
+                _banks.Remove(bankToDelete);
+                BudgetDataService.Delete(bankToDelete);
+            }
+        }
     }
 }

@@ -56,10 +56,11 @@ namespace DataAccess.Services
         void Delete(BudgetCategory budgetCategory);
         void Delete(AutomationCategory category);
         void Delete(Automation automation);
-        BudgetMonth ResetMonthToDefault(BudgetMonth budgetMonth, Guid user);
-        void DeleteAccount(Account account);
-        void DeleteTransaction(Transaction transaction);
+        void Delete(Account account);
+        void Delete(Transaction transaction);
+        void Delete(PiggyBank piggyBank);
         void DeleteSplitTransactions(Transaction transaction);
+        BudgetMonth ResetMonthToDefault(BudgetMonth budgetMonth, Guid user);
         void RejectChanges();
     }
 }
