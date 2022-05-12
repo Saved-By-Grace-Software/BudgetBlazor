@@ -101,5 +101,24 @@ namespace BudgetBlazor.Pages
                 }
             }
         }
+
+        /// <summary>
+        /// Opens the dialog to edit a piggy bank
+        /// </summary>
+        /// <returns></returns>
+        protected async Task OpenEditPiggyBankDialog(PiggyBank bankToEdit)
+        {
+            // Open the dialog
+            var parameters = new DialogParameters { ["PiggyBank"] = bankToEdit };
+            var options = new DialogOptions() { MaxWidth = MaxWidth.Medium, FullWidth = true };
+            var dialogRef = DialogService.Show<EditPiggyBankDialog>("Edit Piggy Bank", parameters, options);
+
+            // Wait for a response and add the piggy bank
+            var res = await dialogRef.Result;
+            if (!res.Cancelled)
+            {
+                BudgetDataService.Update((PiggyBank)res.Data);
+            }
+        }
     }
 }
