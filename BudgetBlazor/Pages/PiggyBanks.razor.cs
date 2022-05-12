@@ -41,29 +41,6 @@ namespace BudgetBlazor.Pages
 
             _accounts = BudgetDataService.GetAllAccounts(_currentUserId);
             _banks = BudgetDataService.GetAllPiggyBanks(_currentUserId);
-
-            //// DEBUG
-            //PiggyBank bank = new PiggyBank("Emergency Fund", _currentUserId)
-            //{
-            //    CurrentAmount = 1000,
-            //    TargetAmount = 5000,
-            //    TargetDate = new DateTime(2022, 12, 31)
-            //};
-
-            //List<Account> accounts = BudgetDataService.GetAllAccounts(_currentUserId);
-            //bank.SavingsAccount = accounts[0];
-            //BudgetDataService.Create(bank);
-
-            //PiggyBank bank2 = new PiggyBank("Christmas", _currentUserId)
-            //{
-            //    CurrentAmount = 0,
-            //    TargetAmount = 2000,
-            //    TargetDate = new DateTime(2022, 11, 30)
-            //};
-
-            //bank2.SavingsAccount = accounts[0];
-            //BudgetDataService.Create(bank2);
-            //// END DEBUG
         }
 
         /// <summary>
@@ -113,11 +90,15 @@ namespace BudgetBlazor.Pages
             var options = new DialogOptions() { MaxWidth = MaxWidth.Medium, FullWidth = true };
             var dialogRef = DialogService.Show<EditPiggyBankDialog>("Add New Piggy Bank", parameters, options);
 
-            // Wait for a response and add the Category
+            // Wait for a response and add the piggy bank
             var res = await dialogRef.Result;
             if (!res.Cancelled)
             {
-                
+                PiggyBank newBank = BudgetDataService.Create((PiggyBank)res.Data);
+                if (newBank != default(PiggyBank))
+                {
+                    _banks.Add(newBank);
+                }
             }
         }
     }

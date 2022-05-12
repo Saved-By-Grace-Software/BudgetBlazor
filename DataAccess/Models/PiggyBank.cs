@@ -35,7 +35,10 @@ namespace DataAccess.Models
             get
             {
                 int monthsApart = (12 * (TargetDate.Year - DateTime.Now.Year)) + (TargetDate.Month - DateTime.Now.Month);
-                return RemainingAmount / Math.Abs(monthsApart);
+                if (monthsApart == 0)
+                    return RemainingAmount;
+                else
+                    return RemainingAmount / Math.Abs(monthsApart);
             }
         }
 
