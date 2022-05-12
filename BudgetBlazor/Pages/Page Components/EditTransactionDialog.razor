@@ -3,77 +3,76 @@
 @inherits EditTransactionDialogBase;
 
 <MudDialog>
-    <DialogActions>
-
-    </DialogActions>
     <DialogContent>
-        <MudForm @ref="form" @bind-IsValid="@success" @bind-Errors="@errors">
-            <MudGrid Spacing="4" Justify="Justify.SpaceBetween">
-                <MudItem sm="12" md="2">
-                    <MudDatePicker Label="Transaction Date" @bind-Date="_transactionDateBinder" DisableToolbar="true" PickerClosed="MonthChanged" />
-                </MudItem>
-                <MudItem sm="12" md="4">
-                    <MudTextField @bind-Value="Transaction.Name" Label="Description" Variant="Variant.Outlined" Required="true" RequiredError="Must enter a Transaction description"></MudTextField>
-                </MudItem>
-                <MudItem sm="12" md="2">
-                    <MudTextField @bind-Value="Transaction.Amount" Label="Amount" Variant="Variant.Outlined" Required="true" RequiredError="Must enter a Transaction amount"></MudTextField>
-                </MudItem>
-                <MudItem sm="12" md="4">
-                    <MudSelect T="BudgetItem" @bind-Value="@Transaction.Budget" Label="Budget" AnchorOrigin="Origin.BottomCenter" Required="false" Disabled="@(Transaction.IsIncome || Transaction.IsSplit)">
-                        @foreach(BudgetItem budget in _parentBudgets)
-                        {
-                            <MudSelectItem Value="budget" />
-                        }
-                    </MudSelect>
-                </MudItem>
-                <MudItem sm="12" md="12">
-                    <MudCheckBox @bind-Checked="@Transaction.IsIncome" Label="Is Income?" Disabled="@Transaction.IsSplit"></MudCheckBox>
-                    <MudCheckBox @bind-Checked="@Transaction.IsSplit" Label="Split Transaction?" Disabled="@Transaction.IsIncome"></MudCheckBox>
-                </MudItem>
-                <MudItem sm="12" md="12">
-                    <MudExpansionPanels DisableBorders="false" Elevation="2">
-                        <MudExpansionPanel Text="Split Information" Disabled="true" IsExpanded="@(Transaction.IsSplit)">
-                            @foreach (Transaction t in Transaction.Splits)
+        <MudContainer Style="max-height: 400px; overflow-y: scroll">
+            <MudForm @ref="form" @bind-IsValid="@success" @bind-Errors="@errors">
+                <MudGrid Spacing="4" Justify="Justify.SpaceBetween">
+                    <MudItem sm="12" md="2">
+                        <MudDatePicker Label="Transaction Date" @bind-Date="_transactionDateBinder" DisableToolbar="true" PickerClosed="MonthChanged" />
+                    </MudItem>
+                    <MudItem sm="12" md="4">
+                        <MudTextField @bind-Value="Transaction.Name" Label="Description" Variant="Variant.Outlined" Required="true" RequiredError="Must enter a Transaction description"></MudTextField>
+                    </MudItem>
+                    <MudItem sm="12" md="2">
+                        <MudTextField @bind-Value="Transaction.Amount" Label="Amount" Variant="Variant.Outlined" Required="true" RequiredError="Must enter a Transaction amount"></MudTextField>
+                    </MudItem>
+                    <MudItem sm="12" md="4">
+                        <MudSelect T="BudgetItem" @bind-Value="@Transaction.Budget" Label="Budget" AnchorOrigin="Origin.BottomCenter" Required="false" Disabled="@(Transaction.IsIncome || Transaction.IsSplit)">
+                            @foreach(BudgetItem budget in _parentBudgets)
                             {
-                                <MudGrid Justify="@Justify.SpaceAround">
-                                    <MudItem sm="6" md="2">
-                                        <MudDatePicker Label="Transaction Date" @bind-Date="@_splitDateBinders[t]" DisableToolbar="true" PickerClosed="() => SplitMonthChanged(t)" />
-                                    </MudItem>
-                                    <MudItem sm="6" md="4">
-                                        <MudTextField @bind-Value="t.Name" Label="Split Name" Variant="Variant.Outlined" Required="true" RequiredError="Must enter a Transaction description"></MudTextField>
-                                    </MudItem>
-                                    <MudItem sm="6" md="2">
-                                        <MudTextField Label="Split Amount" 
-                                            @bind-Value="t.Amount"
-                                            T=decimal
-                                            Variant="Variant.Outlined" 
-                                            Required="true" 
-                                            RequiredError="Must enter a Transaction amount" 
-                                            Error="_isSplitsError"
-                                            ErrorText="@_splitsErrorMessage"
-                                            TextChanged="VerifySplitAmounts"/>
-                                    </MudItem>
-                                    <MudItem sm="5" md="3">
-                                        <MudSelect T="BudgetItem" @bind-Value="@t.Budget" Label="Split Budget" AnchorOrigin="Origin.BottomCenter" Required="false">
-                                            @foreach(BudgetItem budget in _splitBudgets[t])
-                                            {
-                                                <MudSelectItem Value="budget" />
-                                            }
-                                        </MudSelect>
-                                    </MudItem>
-                                    <MudItem sm="1" md="1">
-                                        <MudIconButton Class="mt-4" Icon="@Icons.Material.Filled.Delete" Color="Color.Error" OnClick="() => DeleteTransactionSplit(t)" />
-                                    </MudItem>
-                                </MudGrid>
+                                <MudSelectItem Value="budget" />
                             }
-                            <MudTooltip Text="Add New Split">
-                                <MudIconButton Class="mt-4" Icon="@Icons.Material.Filled.Add" Color="Color.Success" Variant="Variant.Outlined" OnClick="AddNewTransactionSplit" />
-                            </MudTooltip>
-                        </MudExpansionPanel>
-                    </MudExpansionPanels>
-                </MudItem>
-            </MudGrid>
-        </MudForm>
+                        </MudSelect>
+                    </MudItem>
+                    <MudItem sm="12" md="12">
+                        <MudCheckBox @bind-Checked="@Transaction.IsIncome" Label="Is Income?" Disabled="@Transaction.IsSplit"></MudCheckBox>
+                        <MudCheckBox @bind-Checked="@Transaction.IsSplit" Label="Split Transaction?" Disabled="@Transaction.IsIncome"></MudCheckBox>
+                    </MudItem>
+                    <MudItem sm="12" md="12">
+                        <MudExpansionPanels DisableBorders="false" Elevation="2">
+                            <MudExpansionPanel Text="Split Information" Disabled="true" IsExpanded="@(Transaction.IsSplit)">
+                                @foreach (Transaction t in Transaction.Splits)
+                                {
+                                    <MudGrid Justify="@Justify.SpaceAround">
+                                        <MudItem sm="6" md="2">
+                                            <MudDatePicker Label="Transaction Date" @bind-Date="@_splitDateBinders[t]" DisableToolbar="true" PickerClosed="() => SplitMonthChanged(t)" />
+                                        </MudItem>
+                                        <MudItem sm="6" md="4">
+                                            <MudTextField @bind-Value="t.Name" Label="Split Name" Variant="Variant.Outlined" Required="true" RequiredError="Must enter a Transaction description"></MudTextField>
+                                        </MudItem>
+                                        <MudItem sm="6" md="2">
+                                            <MudTextField Label="Split Amount" 
+                                                @bind-Value="t.Amount"
+                                                T=decimal
+                                                Variant="Variant.Outlined" 
+                                                Required="true" 
+                                                RequiredError="Must enter a Transaction amount" 
+                                                Error="_isSplitsError"
+                                                ErrorText="@_splitsErrorMessage"
+                                                TextChanged="VerifySplitAmounts"/>
+                                        </MudItem>
+                                        <MudItem sm="5" md="3">
+                                            <MudSelect T="BudgetItem" @bind-Value="@t.Budget" Label="Split Budget" AnchorOrigin="Origin.BottomCenter" Required="false">
+                                                @foreach(BudgetItem budget in _splitBudgets[t])
+                                                {
+                                                    <MudSelectItem Value="budget" />
+                                                }
+                                            </MudSelect>
+                                        </MudItem>
+                                        <MudItem sm="1" md="1">
+                                            <MudIconButton Class="mt-4" Icon="@Icons.Material.Filled.Delete" Color="Color.Error" OnClick="() => DeleteTransactionSplit(t)" />
+                                        </MudItem>
+                                    </MudGrid>
+                                }
+                                <MudTooltip Text="Add New Split">
+                                    <MudIconButton Class="mt-4" Icon="@Icons.Material.Filled.Add" Color="Color.Success" Variant="Variant.Outlined" OnClick="AddNewTransactionSplit" />
+                                </MudTooltip>
+                            </MudExpansionPanel>
+                        </MudExpansionPanels>
+                    </MudItem>
+                </MudGrid>
+            </MudForm>
+        </MudContainer>
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="Cancel">Cancel</MudButton>

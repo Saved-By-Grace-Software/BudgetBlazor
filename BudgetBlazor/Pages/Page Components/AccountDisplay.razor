@@ -4,7 +4,9 @@
 
 <PageHeader PageIcon="@Icons.Material.Outlined.CreditCard" PageTitleText="@Account.Name">
     <PageHeaderActions>
-        <MudBreadcrumbs Items="_items"></MudBreadcrumbs>
+        <MudHidden Breakpoint="Breakpoint.MdAndUp" Invert="true">
+            <MudBreadcrumbs Items="_items"></MudBreadcrumbs>
+        </MudHidden>
     </PageHeaderActions>
 </PageHeader>
 
@@ -16,7 +18,7 @@
         }
         else
         {
-            <MudTable Items="@Account.Transactions" Hover="true" Breakpoint="Breakpoint.Sm" T="Transaction" Dense="true" Striped="true" Filter="new Func<Transaction,bool>(FilterFunc1)">
+            <MudTable Items="@Account.Transactions" Hover="true" Breakpoint="Breakpoint.SmAndDown" T="Transaction" Dense="true" Striped="true" Filter="new Func<Transaction,bool>(FilterFunc1)">
                 <ToolBarContent>
                     <MudText Typo="Typo.h6">Transactions</MudText>
                     <MudSpacer />
@@ -75,7 +77,7 @@
                                         </CardHeaderContent>
                                     </MudCardHeader>
                                     <MudCardContent>
-                                        <MudTable Items="@context.Splits" Context="SplitsContext" Hover="false" T="Transaction" Dense="true" Striped="true">
+                                        <MudTable Items="@context.Splits" Breakpoint="Breakpoint.SmAndDown" Context="SplitsContext" Hover="false" T="Transaction" Dense="true" Striped="true">
                                             <ColGroup>
                                                 <col style="width: 10%;" />
                                                 <col style="width: 40%;" />
@@ -105,7 +107,12 @@
                     }
 	            </ChildRowContent>
                 <PagerContent>
-                    <MudTablePager />
+                    <MudHidden Breakpoint="Breakpoint.SmAndDown" Invert="true">
+                        <MudTablePager HideRowsPerPage="true" />
+                    </MudHidden>
+                    <MudHidden Breakpoint="Breakpoint.MdAndUp" Invert="true">
+                        <MudTablePager HideRowsPerPage="false" />
+                    </MudHidden>
                 </PagerContent>
             </MudTable>
         }
