@@ -88,6 +88,10 @@
                                         <MudText Typo="Typo.body1"><strong>Suggested Per Month:</strong></MudText>
                                         <MudText Typo="Typo.body1">@string.Format("{0:C}", bank.PerMonthAmount)</MudText>
                                     </MudStack>
+                                    <MudStack Row="true" Justify="Justify.SpaceBetween">
+                                        <MudText Typo="Typo.body1"><strong>Account:</strong></MudText>
+                                        <MudText Typo="Typo.body1">@(bank.SavingsAccount != null ? bank.SavingsAccount : "None Selected")</MudText>
+                                    </MudStack>
                                 </MudStack>
                             </MudItem>
                         </MudGrid>
