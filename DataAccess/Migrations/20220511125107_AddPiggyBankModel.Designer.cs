@@ -4,6 +4,7 @@ using DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220511125107_AddPiggyBankModel")]
+    partial class AddPiggyBankModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -288,7 +290,7 @@ namespace DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("SavingsAccountId")
+                    b.Property<int>("SavingsAccountId")
                         .HasColumnType("int");
 
                     b.Property<decimal>("TargetAmount")
@@ -297,38 +299,11 @@ namespace DataAccess.Migrations
                     b.Property<DateTime>("TargetDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("User")
-                        .HasColumnType("uniqueidentifier");
-
                     b.HasKey("Id");
 
                     b.HasIndex("SavingsAccountId");
 
                     b.ToTable("PiggyBanks");
-                });
-
-            modelBuilder.Entity("DataAccess.Models.PiggyBankHistory", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<int>("PiggyBankId")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("SavedAmount")
-                        .HasColumnType("decimal(12,2)");
-
-                    b.Property<DateTime>("SavedAmountDate")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PiggyBankId");
-
-                    b.ToTable("PiggyBankHistories");
                 });
 
             modelBuilder.Entity("DataAccess.Models.Transaction", b =>
@@ -644,20 +619,11 @@ namespace DataAccess.Migrations
                 {
                     b.HasOne("DataAccess.Models.Account", "SavingsAccount")
                         .WithMany()
-                        .HasForeignKey("SavingsAccountId");
-
-                    b.Navigation("SavingsAccount");
-                });
-
-            modelBuilder.Entity("DataAccess.Models.PiggyBankHistory", b =>
-                {
-                    b.HasOne("DataAccess.Models.PiggyBank", "PiggyBank")
-                        .WithMany()
-                        .HasForeignKey("PiggyBankId")
+                        .HasForeignKey("SavingsAccountId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("PiggyBank");
+                    b.Navigation("SavingsAccount");
                 });
 
             modelBuilder.Entity("DataAccess.Models.Transaction", b =>

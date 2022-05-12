@@ -6,19 +6,19 @@ namespace BudgetBlazor.Helpers
     {
         /// <summary>
         /// Returns the color code for a standard progress bar
-        /// 0 - 75% - Green
-        /// 75 - 95% - Orange
-        /// 95%+ - Red
+        /// 0 - {ok}% - Green
+        /// {ok} - {bad}% - Orange
+        /// {bad}%+ - Red
         /// </summary>
         /// <param name="percentComplete"></param>
         /// <returns></returns>
-        public static Color ProgressBarColor(int percentComplete)
+        public static Color ProgressBarColor(int percentComplete, int okThreshold = 75, int badThreshold = 95)
         {
-            if (percentComplete <= 75)
+            if (percentComplete <= okThreshold)
             {
                 return Color.Success;
             }
-            else if (percentComplete > 75 && percentComplete < 95)
+            else if (percentComplete > okThreshold && percentComplete < badThreshold)
             {
                 return Color.Warning;
             }
@@ -30,19 +30,19 @@ namespace BudgetBlazor.Helpers
 
         /// <summary>
         /// Returns the color code for a reversed progress bar
-        /// 0 - 75% - Red
-        /// 75 - 95% - Orange
-        /// 95%+ - Green
+        /// 0 - {ok}% - Red
+        /// {ok} - {good}% - Orange
+        /// {good}%+ - Green
         /// </summary>
         /// <param name="percentComplete"></param>
         /// <returns></returns>
-        public static Color ProgressBarColorReverse(int percentComplete)
+        public static Color ProgressBarColorReverse(int percentComplete, bool badOver100 = true, int okThreshold = 75, int goodThreshold = 95)
         {
-            if (percentComplete <= 75 || percentComplete > 100)
+            if (percentComplete <= okThreshold || (badOver100 && percentComplete > 100))
             {
                 return Color.Error;
             }
-            else if (percentComplete > 75 && percentComplete < 95)
+            else if (percentComplete > okThreshold && percentComplete < goodThreshold)
             {
                 return Color.Warning;
             }

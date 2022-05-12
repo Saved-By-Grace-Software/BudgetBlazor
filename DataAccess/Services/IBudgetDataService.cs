@@ -20,7 +20,8 @@ namespace DataAccess.Services
         BudgetMonth Create(int year, int month, Guid user);
         BudgetMonth CreateFromDefault(int year, int month, Guid user);
         List<Account> CreateAccount(Account account, Guid user);
-        AutomationCategory CreateAutomationCategory(AutomationCategory category);
+        AutomationCategory Create(AutomationCategory category);
+        PiggyBank Create(PiggyBank piggyBank);
 
         // Get
         BudgetMonth Get(int budgetMonthId, Guid user);
@@ -29,6 +30,8 @@ namespace DataAccess.Services
         List<BudgetMonth> GetAllMonths(Guid user);
         BudgetMonth GetDefaultMonth(Guid user);
         List<Account> GetAllAccounts(Guid user);
+        List<Account> GetAllPiggyBankAccounts(Guid user);
+        List<PiggyBank> GetAllPiggyBanks(Guid user);
         Account GetAccount(int accountId, Guid user);
         List<BudgetItem> GetBudgetItems(int year, int month, Guid user);
         List<AutomationCategory> GetAutomationCategories(Guid user);
@@ -43,6 +46,7 @@ namespace DataAccess.Services
         AutomationCategory Update(AutomationCategory category);
         Account Update(Account account);
         Transaction Update(Transaction transaction);
+        PiggyBank Update(PiggyBank piggyBank);
         void UpdateMonthTotals(BudgetMonth budgetMonth);
         void UpdateMonthTotals(int budgetMonthId);
         void UpdateAccountHistory(Account account, DateTime balanceDate, decimal balance);
@@ -53,10 +57,11 @@ namespace DataAccess.Services
         void Delete(BudgetCategory budgetCategory);
         void Delete(AutomationCategory category);
         void Delete(Automation automation);
-        BudgetMonth ResetMonthToDefault(BudgetMonth budgetMonth, Guid user);
-        void DeleteAccount(Account account);
-        void DeleteTransaction(Transaction transaction);
+        void Delete(Account account);
+        void Delete(Transaction transaction);
+        void Delete(PiggyBank piggyBank);
         void DeleteSplitTransactions(Transaction transaction);
+        BudgetMonth ResetMonthToDefault(BudgetMonth budgetMonth, Guid user);
         void RejectChanges();
     }
 }

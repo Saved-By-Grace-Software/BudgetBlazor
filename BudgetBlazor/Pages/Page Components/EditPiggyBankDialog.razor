@@ -1,0 +1,78 @@
+﻿<MudDialog>
+    <DialogContent>
+        <MudForm @ref="form" @bind-IsValid="@success" @bind-Errors="@errors">
+            <MudGrid Spacing="4" Justify="Justify.SpaceBetween">
+                <MudItem sm="12" md="6">
+                    <MudTextField @bind-Value="PiggyBank.Name" Label="Piggy Bank Name" Variant="Variant.Outlined" Required="true" RequiredError="Must enter a Piggy Bank name"></MudTextField>
+                </MudItem>
+                <MudItem sm="12" md="6">
+                    <MudTextField @bind-Value="PiggyBank.CurrentAmount" T="decimal" Label="Current Amount Saved" Variant="Variant.Outlined" Required="true" RequiredError="Must enter a current amount"></MudTextField>
+                </MudItem>
+            </MudGrid>
+            <MudGrid Spacing="4" Justify="Justify.SpaceBetween">
+                <MudItem sm="12" md="4">
+                    <MudTextField @bind-Value="PiggyBank.TargetAmount" T="decimal" Label="Target Amount" Variant="Variant.Outlined" Required="true" RequiredError="Must enter a target amount"></MudTextField>
+                </MudItem>
+                <MudItem sm="12" md="4">
+                    <MudDatePicker Label="Target Date" @bind-Date="_targetDateBinder" DisableToolbar="true" DateFormat="MMMM yyyy" FixDay="1" OpenTo="OpenTo.Month" />
+                </MudItem>
+                <MudItem sm="12" md="4">
+                    <MudSelect T="Account" @bind-Value="@PiggyBank.SavingsAccount" Label="Account" AnchorOrigin="Origin.BottomCenter" Required="true" RequiredError="Must select an account to associate with the piggy bank">
+                        @foreach(Account account in _availableAccounts)
+                        {
+                            <MudSelectItem Value="account" />
+                        }
+                    </MudSelect>
+                </MudItem>
+            </MudGrid>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">Ok</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    [Inject] AuthenticationStateProvider AuthenticationStateProvider { get; set; }
+    [Inject] IBudgetDataService BudgetDataService { get; set; }
+    [Parameter] public PiggyBank PiggyBank { get; set; }
+
+    MudForm form;
+    bool success;
+    string[] errors = { };
+    DateTime? _targetDateBinder { get; set; }
+    Guid _currentUserId { get; set; }
+    List<Account> _availableAccounts { get; set; }
+
+    /// <summary>
+    /// Lifecycle method called when the page is initialized
+    /// </summary>
+    /// <returns></returns>
+    protected override async Task OnInitializedAsync()
+    {
+        var authstate = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        _currentUserId = Guid.Parse(authstate.User.Claims.First().Value);
+
+        _targetDateBinder = PiggyBank.TargetDate;
+        _availableAccounts = BudgetDataService.GetAllAccounts(_currentUserId);
+    }
+
+    private async Task Submit()
+    {
+        // Validate the form
+        await form.Validate();
+
+        if (form.IsValid)
+        {
+            // Update the piggy bank date with the date binder
+            PiggyBank.TargetDate = (DateTime)_targetDateBinder;
+
+            // Close the modal and pass back the updated piggy bank
+            MudDialog.Close(PiggyBank);
+        }
+    }
+
+    void Cancel() => MudDialog.Cancel();
+}

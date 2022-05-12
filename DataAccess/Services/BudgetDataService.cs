@@ -87,7 +87,7 @@ namespace DataAccess.Services
             return _db.Accounts.Where(a => a.User == user).ToList();
         }
 
-        public AutomationCategory CreateAutomationCategory(AutomationCategory category)
+        public AutomationCategory Create(AutomationCategory category)
         {
             // Add the category
             _db.AutomationCategories.Add(category);
@@ -95,6 +95,16 @@ namespace DataAccess.Services
 
             // Return the updated category
             return category;
+        }
+
+        public PiggyBank Create(PiggyBank piggyBank)
+        {
+            // Add the piggy bank
+            _db.PiggyBanks.Add(piggyBank);
+            _db.SaveChanges();
+
+            // Return the updated piggy bank
+            return piggyBank;
         }
         #endregion
 
@@ -131,6 +141,17 @@ namespace DataAccess.Services
         public List<Account> GetAllAccounts(Guid user)
         {
             return _db.Accounts.Where(x => x.User == user).ToList();
+        }
+
+        public List<Account> GetAllPiggyBankAccounts(Guid user)
+        {
+            // Get the list of all 
+            return _db.PiggyBanks.Where(x => x.User == user).Select(b => b.SavingsAccount).Distinct().ToList();
+        }
+
+        public List<PiggyBank> GetAllPiggyBanks(Guid user)
+        {
+            return _db.PiggyBanks.Where(x => x.User == user).ToList();
         }
 
         public BudgetMonth GetDefaultMonth(Guid user)
@@ -368,6 +389,33 @@ namespace DataAccess.Services
             return t;
         }
 
+        public PiggyBank Update(PiggyBank piggyBank)
+        {
+            PiggyBank b = _db.Find<PiggyBank>(piggyBank.Id);
+
+            if (b != default(PiggyBank))
+            {
+                b.Name = piggyBank.Name;
+                b.CurrentAmount = piggyBank.CurrentAmount;
+                b.SavingsAccount = piggyBank.SavingsAccount;
+                b.TargetAmount = piggyBank.TargetAmount;
+                b.TargetDate = piggyBank.TargetDate;
+
+                // Save the changes
+                try
+                {
+                    _db.SaveChanges();
+                }
+                catch (DbUpdateException)
+                {
+                    // Failed to update, return null
+                    b = default(PiggyBank);
+                }
+            }
+
+            return b;
+        }
+
         /// <summary>
         /// Updates the totals for the given month
         /// </summary>
@@ -590,16 +638,7 @@ namespace DataAccess.Services
             RaiseAutomationDataChanged();
         }
 
-        public BudgetMonth ResetMonthToDefault(BudgetMonth budgetMonth, Guid user)
-        {
-            // Delete the month
-            Delete(budgetMonth.Id);
-
-            // Return a newly created month
-            return CreateFromDefault(budgetMonth.Year, budgetMonth.Month, user);
-        }
-
-        public void DeleteAccount(Account account)
+        public void Delete(Account account)
         {
             // Delete the account's transactions
             _db.RemoveRange(account.Transactions);
@@ -614,7 +653,7 @@ namespace DataAccess.Services
             RaiseAccountDataChanged();
         }
 
-        public void DeleteTransaction(Transaction transaction)
+        public void Delete(Transaction transaction)
         {
             // Remove the transaction from the parent account
             Account dbAccount = GetAccountFromTransaction(transaction);
@@ -632,9 +671,25 @@ namespace DataAccess.Services
             }
         }
 
+        public void Delete(PiggyBank piggyBank)
+        {
+            // Delete the bank
+            _db.Remove(piggyBank);
+            _db.SaveChanges();
+        }
+
         public void DeleteSplitTransactions(Transaction transaction)
         {
             _db.Transactions.RemoveRange(transaction.Splits);
+        }
+
+        public BudgetMonth ResetMonthToDefault(BudgetMonth budgetMonth, Guid user)
+        {
+            // Delete the month
+            Delete(budgetMonth.Id);
+
+            // Return a newly created month
+            return CreateFromDefault(budgetMonth.Year, budgetMonth.Month, user);
         }
 
         public void RejectChanges()

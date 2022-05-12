@@ -29,6 +29,11 @@ namespace DataAccess.Models
             Name = name;
             AccountNumber = "";
         }
+
+        public override string ToString()
+        {
+            return Name;
+        }
     }
 
     public enum AccountType

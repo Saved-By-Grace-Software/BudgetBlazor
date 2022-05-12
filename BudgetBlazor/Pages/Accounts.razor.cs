@@ -99,7 +99,7 @@ namespace BudgetBlazor.Pages
             {
                 // Delete the account
                 _accounts.Remove(accountToDelete);
-                BudgetDataService.DeleteAccount(accountToDelete);
+                BudgetDataService.Delete(accountToDelete);
             }
         }
 
