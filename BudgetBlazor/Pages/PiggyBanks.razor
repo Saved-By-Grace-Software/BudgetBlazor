@@ -106,7 +106,7 @@
 <MudCard Class="my-4" Elevation="3" Style="@($"color:{CurrentTheme.Palette.TextPrimary}; background:{CurrentTheme.Palette.GrayLighter};")">
     <MudCardHeader>
         <CardHeaderContent>
-            <MudText Typo="Typo.h6">Related Accounts</MudText>
+            <MudText Typo="Typo.h6">Account Totals</MudText>
         </CardHeaderContent>
     </MudCardHeader>
     <MudCardContent>
@@ -118,19 +118,25 @@
         {
             <MudTable Items="@_accounts" Hover="true" Breakpoint="Breakpoint.Sm" T="Account">
                 <ColGroup>
-                    <col style="width: 40%;" />
-                    <col style="width: 30%;" />
-                    <col style="width: 30%;" />
+                    <col style="width: 20%;" />
+                    <col style="width: 20%;" />
+                    <col style="width: 20%;" />
+                    <col style="width: 20%;" />
+                    <col style="width: 20%;" />
                 </ColGroup>
                 <HeaderContent>
                     <MudTh>Name</MudTh>
                     <MudTh>Current Balance</MudTh>
-                    <MudTh>Last Updated</MudTh>
+                    <MudTh>Target Amount</MudTh>
+                    <MudTh>Saved So Far</MudTh>
+                    <MudTh>Left To Save</MudTh>
                 </HeaderContent>
                 <RowTemplate>
                     <MudTd>@context.Name</MudTd>
                     <MudTd>@string.Format("{0:C}", context.CurrentBalance)</MudTd>
-                    <MudTd>@context.LastUpdated.ToShortDateString()</MudTd>
+                    <MudTd>@string.Format("{0:C}", _accountTotals[context]?.TargetAmount)</MudTd>
+                    <MudTd>@string.Format("{0:C}", _accountTotals[context]?.SavedSoFar)</MudTd>
+                    <MudTd>@string.Format("{0:C}", _accountTotals[context]?.LeftToSave)</MudTd>
                 </RowTemplate>
             </MudTable>
         }

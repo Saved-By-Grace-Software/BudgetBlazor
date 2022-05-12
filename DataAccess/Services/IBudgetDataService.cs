@@ -30,6 +30,7 @@ namespace DataAccess.Services
         List<BudgetMonth> GetAllMonths(Guid user);
         BudgetMonth GetDefaultMonth(Guid user);
         List<Account> GetAllAccounts(Guid user);
+        List<Account> GetAllPiggyBankAccounts(Guid user);
         List<PiggyBank> GetAllPiggyBanks(Guid user);
         Account GetAccount(int accountId, Guid user);
         List<BudgetItem> GetBudgetItems(int year, int month, Guid user);

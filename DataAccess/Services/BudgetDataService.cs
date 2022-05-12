@@ -143,6 +143,12 @@ namespace DataAccess.Services
             return _db.Accounts.Where(x => x.User == user).ToList();
         }
 
+        public List<Account> GetAllPiggyBankAccounts(Guid user)
+        {
+            // Get the list of all 
+            return _db.PiggyBanks.Where(x => x.User == user).Select(b => b.SavingsAccount).Distinct().ToList();
+        }
+
         public List<PiggyBank> GetAllPiggyBanks(Guid user)
         {
             return _db.PiggyBanks.Where(x => x.User == user).ToList();
