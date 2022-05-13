@@ -2,10 +2,10 @@
     <DialogContent>
         <MudForm @ref="form" @bind-IsValid="@success" @bind-Errors="@errors">
             <MudGrid Spacing="4" Justify="Justify.SpaceBetween">
-                <MudItem xs="6">
+                <MudItem xs="12" md="6">
                     <MudTextField @bind-Value="CategoryName" Label="Category Name" Variant="Variant.Outlined" Required="true" RequiredError="Must enter a Category name"></MudTextField>
                 </MudItem>
-                <MudItem xs="6">
+                <MudItem xs="12" md="6">
                     <MudColorPicker 
                         Label="Category Color" 
                         DisableToolbar="false" 
