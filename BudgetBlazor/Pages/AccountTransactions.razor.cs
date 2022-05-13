@@ -1,4 +1,5 @@
 using BudgetBlazor.Helpers;
+using BudgetBlazor.Pages.Page_Components;
 using DataAccess.Models;
 using DataAccess.Services;
 using Microsoft.AspNetCore.Components;
@@ -6,9 +7,9 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Forms;
 using MudBlazor;
 
-namespace BudgetBlazor.Pages.Page_Components
+namespace BudgetBlazor.Pages
 {
-    public class AccountDisplayBase : ComponentBase
+    public class AccountTransactionsBase : ComponentBase
     {
         #region Dependency Injection & Cascading Parameters
         [Inject]
@@ -32,6 +33,8 @@ namespace BudgetBlazor.Pages.Page_Components
         protected Guid _currentUserId;
         protected string searchString = "";
         protected List<BreadcrumbItem> _items = new List<BreadcrumbItem>();
+        protected Variant _filterButtonVariant = Variant.Outlined;
+        private bool _showOnlyUnbudgeted = false;
 
         /// <summary>
         /// Lifecycle method called when the page is initialized
@@ -124,6 +127,10 @@ namespace BudgetBlazor.Pages.Page_Components
 
         protected bool FilterFunc(Transaction transaction, string searchString)
         {
+            // Check for unbudgeted
+            if (_showOnlyUnbudgeted && (transaction.Budget != default(BudgetItem) || transaction.IsIncome))
+                return false;
+
             if (string.IsNullOrWhiteSpace(searchString))
                 return true;
             if (transaction.Name.Contains(searchString, StringComparison.CurrentCultureIgnoreCase))
@@ -149,6 +156,16 @@ namespace BudgetBlazor.Pages.Page_Components
             }
 
             return false;
+        }
+
+        protected async Task FilterUnbudgeted()
+        {
+            // Toggle the unbudgeted filter
+            _showOnlyUnbudgeted = !_showOnlyUnbudgeted;
+            if (_showOnlyUnbudgeted)
+                _filterButtonVariant = Variant.Filled;
+            else
+                _filterButtonVariant= Variant.Outlined;
         }
         #endregion
 

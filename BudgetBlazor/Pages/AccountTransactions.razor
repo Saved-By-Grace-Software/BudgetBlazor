@@ -1,6 +1,6 @@
 ﻿@attribute [Authorize]
 @page "/Accounts/Edit/{AccountId}"
-@inherits AccountDisplayBase
+@inherits AccountTransactionsBase
 
 <PageHeader PageIcon="@Icons.Material.Outlined.CreditCard" PageTitleText="@Account.Name">
     <PageHeaderActions>
@@ -22,6 +22,14 @@
                 <ToolBarContent>
                     <MudText Typo="Typo.h6">Transactions</MudText>
                     <MudSpacer />
+                    <MudButton 
+                        Variant="@_filterButtonVariant" 
+                        StartIcon="@Icons.Material.Filled.FilterList" 
+                        Color="Color.Info" 
+                        Class="me-4 align-center"
+                        OnClick="FilterUnbudgeted">
+                        Unbudgeted
+                    </MudButton>
                     <MudTextField @bind-Value="searchString" 
                         Placeholder="Search" 
                         Clearable="true"
@@ -29,6 +37,7 @@
                         AdornmentIcon="@Icons.Material.Filled.Search" 
                         IconSize="Size.Medium" 
                         Class="mt-0"></MudTextField>
+                    
                 </ToolBarContent>
                 <ColGroup>
                     <col style="width: 10%;" />
