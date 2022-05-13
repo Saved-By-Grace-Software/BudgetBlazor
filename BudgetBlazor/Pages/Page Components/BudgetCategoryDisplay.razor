@@ -1,4 +1,6 @@
-﻿<MudCard Elevation="1" Style="@($"color:{CurrentTheme.Palette.TextPrimary}; background:{Category.Color};")">
+﻿@inherits BudgetCategoryDisplayBase
+
+<MudCard Elevation="1" Style="@($"color:{CurrentTheme.Palette.TextPrimary}; background:{Category.Color};")">
     <MudCardHeader Class="mb-n4">
         <CardHeaderContent>
             <MudText Typo="Typo.body1"><strong>@Category.Name</strong></MudText>
@@ -33,105 +35,63 @@
         }
         else
         {
-            <MudStack Spacing="4" AlignItems="AlignItems.Stretch">
-                @foreach (BudgetItem item in Category.BudgetItems)
-                {
-                    <BudgetItemDisplay Item=@item IsBudgetEditable="@AreBudgetsEditable" />
-                }
-
-                @if (ShouldShowTotals)
-                {
-                    <MudPaper Elevation="1" Class="pa-2" Style="@($"color:{CurrentTheme.Palette.TextPrimary}; background:{CurrentTheme.Palette.GrayLighter};")">
-                        <MudGrid Spacing="4" Justify="Justify.SpaceBetween">
-                            <MudItem md="2" xs="12" Class="d-flex align-center"><MudText Typo="Typo.body1" Align="Align.Left"><strong>TOTALS</strong></MudText></MudItem>
-                            <MudItem md="3" xs="4">
-                                <MudTextField Value="Category.Budgeted" Label="Budget" Variant="Variant.Text" Format="C2" Margin="Margin.Dense" ReadOnly="true"></MudTextField>
-                            </MudItem>
-                            <MudItem md="3" xs="4">
-                                <MudTextField Value="@(Category.Spent * -1)" Label="Spent" Variant="Variant.Text" Format="C2" Margin="Margin.Dense" ReadOnly="true"></MudTextField>
-                            </MudItem>
-                            <MudItem md="3" xs="4">
-                                <MudTextField Value="Category.Remaining" Label="Remaining" Variant="Variant.Text" Format="C2" Margin="Margin.Dense" ReadOnly="true"
-                                    Style="@($"color:{((Category.Remaining <= 0 && Category.Budgeted != 0) ? CurrentTheme.Palette.Error : CurrentTheme.Palette.TextPrimary)};")"
-                                    Error="@(Category.Remaining <= 0 && Category.Budgeted != 0)">
-                                </MudTextField>
-                            </MudItem> 
-                            <MudHidden Breakpoint="Breakpoint.SmAndDown">
-                                <MudItem md="1"></MudItem>
-                            </MudHidden>
-                        </MudGrid>
-                    </MudPaper>
-                }
-            </MudStack>
+            <MudTable Items="@Category.BudgetItems" T="BudgetItem"
+                Hover="true" 
+                Dense="true" 
+                Breakpoint="Breakpoint.SmAndDown" 
+                ReadOnly="false"
+                CustomFooter="true"
+                CanCancelEdit="true"
+                IsEditRowSwitchingBlocked="true"
+                CommitEditTooltip="Save Budget"
+                CancelEditTooltip="Cancel"
+                RowEditCommit="SaveBudgetItem"
+                RowEditPreview="BackupItem"
+                RowEditCancel="ResetItemToOriginalValues">
+                <ColGroup>
+                    <col style="width: 35%;" />
+                    <col style="width: 20%;" />
+                    <col style="width: 20%;" />
+                    <col style="width: 20%;" />
+                    <col style="width: 5%;" />
+                </ColGroup>
+                <HeaderContent>
+                    <MudTh></MudTh>
+                    <MudTh><strong>Budget</strong></MudTh>
+                    <MudTh><strong>Spent</strong></MudTh>
+                    <MudTh><strong>Remaining</strong></MudTh>
+                    <MudTh></MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd>@context.Name</MudTd>
+                    <MudTd>@string.Format("{0:C}", context.Budget)</MudTd>
+                    <MudTd>@string.Format("{0:C}", (context.Spent * -1))</MudTd>
+                    <MudTd Style="@($"color:{((context.Remaining <= 0 && context.Budget != 0) ? CurrentTheme.Palette.Error : CurrentTheme.Palette.TextPrimary)};")">@string.Format("{0:C}", context.Remaining)</MudTd>
+                    <MudTd>
+                        <MudIconButton Icon="@Icons.Material.Filled.Delete" Size="Size.Small" OnClick="() => DeleteBudgetItem(context)" />
+                    </MudTd>
+                </RowTemplate>
+                <RowEditingTemplate>
+                    <MudTd>
+                        <MudTextField @bind-Value="@context.Name" Required />
+                    </MudTd>
+                    <MudTd>
+                        <MudTextField @bind-Value="@context.Budget" Required />
+                    </MudTd>
+                    <MudTd>@string.Format("{0:C}", (context.Spent * -1))</MudTd>
+                    <MudTd Style="@($"color:{((context.Remaining <= 0 && context.Budget != 0) ? CurrentTheme.Palette.Error : CurrentTheme.Palette.TextPrimary)};")">@string.Format("{0:C}", context.Remaining)</MudTd>
+                    <MudTd></MudTd>
+                </RowEditingTemplate>
+                <FooterContent>
+                    <MudTFootRow>
+                        <MudTd><strong>TOTALS</strong></MudTd>
+                        <MudTd><strong>@string.Format("{0:C}", Category.Budgeted)</strong></MudTd>
+                        <MudTd><strong>@string.Format("{0:C}", (Category.Spent * -1))</strong></MudTd>
+                        <MudTd Style="@($"color:{((Category.Remaining <= 0 && Category.Budgeted != 0) ? CurrentTheme.Palette.Error : CurrentTheme.Palette.TextPrimary)};")"><strong>@string.Format("{0:C}", Category.Remaining)</strong></MudTd>
+                        <MudTd></MudTd>
+                    </MudTFootRow>
+                </FooterContent>
+            </MudTable>
         }
     </MudCardContent>
 </MudCard>
-
-@code
-{
-    [Parameter] public BudgetCategory Category { get; set; }
-    [Parameter] public bool AreBudgetsEditable { get; set; }
-    [Parameter] public bool ShouldShowTotals { get; set; }
-    [CascadingParameter] private MudTheme CurrentTheme { get; set; }
-    [Inject] private IDialogService DialogService { get; set; }
-    [Inject] private IBudgetDataService BudgetDataService { get; set; }
-
-    /// <summary>
-    /// Opens the dialog to edit a budget category
-    /// </summary>
-    /// <returns></returns>
-    private async Task OpenEditDialog()
-    {
-        // Open the dialog
-        var parameters = new DialogParameters { ["CategoryName"] = Category.Name, ["CategoryColor"] = new MudColor(Category.Color) };
-        var dialogRef = DialogService.Show<EditCategoryDialog>("Edit Category", parameters);
-
-        // Wait for a response and update the Category name and color
-        var res = await dialogRef.Result;
-        if (!res.Cancelled)
-        {
-            Tuple<string, string> data = (Tuple<string, string>)res.Data;
-            Category.Name = data.Item1;
-            Category.Color = data.Item2;
-            BudgetDataService.Update(Category);
-        }
-    }
-
-    /// <summary>
-    /// Opens the dialog to add a budget to the category
-    /// </summary>
-    /// <returns></returns>
-    private async Task OpenAddBudgetDialog()
-    {
-        // Open the dialog
-        var parameters = new DialogParameters { ["BudgetName"] = "" };
-        var dialogRef = DialogService.Show<EditBudgetItemDialog>("Add New Budget", parameters);
-
-        // Wait for a response and add the new budget item
-        var res = await dialogRef.Result;
-        if (!res.Cancelled)
-        {
-            // Add the new budget item
-            BudgetItem item = new BudgetItem((string)res.Data);
-            Category.BudgetItems.Add(item);
-            BudgetDataService.Update(Category);
-        }
-    }
-
-    /// <summary>
-    /// Calls the callback to delete the category
-    /// </summary>
-    private async Task DeleteCategory()
-    {
-        bool? result = await DialogService.ShowMessageBox(
-            "Warning", 
-            "Deleting a category will delete all budgets inside of it and cannot be undone!", 
-            yesText:"Delete!", cancelText:"Cancel");
-
-        if (result != null && result == true)
-        {
-            // Delete the category
-            BudgetDataService.Delete(Category);
-        }
-    }
-}
