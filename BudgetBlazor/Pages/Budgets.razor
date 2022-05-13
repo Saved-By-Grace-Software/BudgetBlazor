@@ -84,7 +84,7 @@
                 @foreach(BudgetCategory category in _currentMonth.BudgetCategories)
                 {
                     <MudItem xs="12" md="6">
-                        <BudgetCategoryDisplay Category="@category" AreBudgetsEditable="true" ShouldShowTotals="true" />
+                        <BudgetCategoryDisplay Category="@category" />
                     </MudItem>
                 }
             </MudGrid>
