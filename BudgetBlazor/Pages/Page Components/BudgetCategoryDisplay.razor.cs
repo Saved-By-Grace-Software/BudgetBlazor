@@ -27,8 +27,6 @@ namespace BudgetBlazor.Pages.Page_Components
         #endregion
 
         [Parameter] public BudgetCategory Category { get; set; }
-        [Parameter] public bool AreBudgetsEditable { get; set; }
-        [Parameter] public bool ShouldShowTotals { get; set; }
 
         private BudgetItem itemBeforeEdit;
 
