@@ -50,14 +50,23 @@
                     </MudCardHeader>
                     <MudCardContent Class="mx-4">
                         <MudGrid Justify="Justify.SpaceBetween">
-                            <MudItem md="1">
-                                <MudProgressLinear Vertical="true" Rounded="true" Color="@ColorHelpers.ProgressBarColorReverse(bank.PercentSaved, false, 60, 90)" Size="Size.Large" Value="@bank.PercentSaved">
-                                    <MudText Typo="Typo.subtitle2">
-                                        <b>@string.Format("{0}%", bank.PercentSaved)</b>
-                                    </MudText>
-                                </MudProgressLinear>
+                            <MudItem xs="12" sm="12" md="1">
+                                <MudHidden Breakpoint="Breakpoint.SmAndDown" Invert="true">
+                                    <MudProgressLinear Vertical="false" Rounded="true" Color="@ColorHelpers.ProgressBarColorReverse(bank.PercentSaved, false, 60, 90)" Size="Size.Large" Value="@bank.PercentSaved">
+                                        <MudText Typo="Typo.subtitle2">
+                                            <b>@string.Format("{0}%", bank.PercentSaved)</b>
+                                        </MudText>
+                                    </MudProgressLinear>
+                                </MudHidden>
+                                <MudHidden Breakpoint="Breakpoint.MdAndUp" Invert="true">
+                                    <MudProgressLinear Vertical="true" Rounded="true" Color="@ColorHelpers.ProgressBarColorReverse(bank.PercentSaved, false, 60, 90)" Size="Size.Large" Value="@bank.PercentSaved">
+                                        <MudText Typo="Typo.subtitle2">
+                                            <b>@string.Format("{0}%", bank.PercentSaved)</b>
+                                        </MudText>
+                                    </MudProgressLinear>
+                                </MudHidden>
                             </MudItem>
-                            <MudItem md="5">
+                            <MudItem xs="12" sm="12" md="5">
                                 <MudStack>
                                     <MudStack Row="true" Justify="Justify.SpaceBetween">
                                         <MudText Typo="Typo.body1"><strong>Current Amount Saved:</strong></MudText>
@@ -77,8 +86,10 @@
                                     </MudStack>
                                 </MudStack>
                             </MudItem>
-                            <MudSpacer />
-                            <MudItem md="5">
+                            <MudHidden Breakpoint="Breakpoint.SmAndDown" Invert="true">
+                                <MudSpacer />
+                            </MudHidden>
+                            <MudItem xs="12" sm="12" md="5">
                                 <MudStack>
                                     <MudStack Row="true" Justify="Justify.SpaceBetween">
                                         <MudText Typo="Typo.body1"><strong>Remaining Amount:</strong></MudText>
@@ -116,7 +127,7 @@
         }
         else
         {
-            <MudTable Items="@_accounts" Hover="true" Breakpoint="Breakpoint.Sm" T="Account">
+            <MudTable Items="@_accounts" Hover="true" Breakpoint="Breakpoint.SmAndDown" T="Account">
                 <ColGroup>
                     <col style="width: 20%;" />
                     <col style="width: 20%;" />
