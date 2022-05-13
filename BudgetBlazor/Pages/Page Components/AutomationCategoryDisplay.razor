@@ -33,7 +33,7 @@
         }
         else
         {
-            <MudTable Items="@Category.Automations" T="Automation" Hover="true" Breakpoint="Breakpoint.Sm">
+            <MudTable Items="@Category.Automations" T="Automation" Hover="true" Breakpoint="Breakpoint.SmAndDown">
                 <ColGroup>
                     <col style="width: 25%;" />
                     <col style="width: 40%;" />
@@ -42,7 +42,7 @@
                 </ColGroup>
                 <HeaderContent>
                     <MudTh><strong>Name</strong></MudTh>
-                    <MudTh><strong>Triggers When Desc. Contains..</strong></MudTh>
+                    <MudTh><strong>Description Contains..</strong></MudTh>
                     <MudTh><strong>Sets Budget To..</strong></MudTh>
                     <MudTh></MudTh>
                 </HeaderContent>

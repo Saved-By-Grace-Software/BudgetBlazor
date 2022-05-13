@@ -4,7 +4,7 @@
 <MudDialog>
     <DialogContent>
         <MudForm @ref="form" @bind-IsValid="@success" @bind-Errors="@errors">
-            <MudGrid Spacing="4" Justify="Justify.SpaceBetween">
+            <MudGrid Spacing="4" Justify="Justify.SpaceBetween"  Style="max-height: 400px; overflow-y: scroll">
                 <MudItem sm="12" md="3">
                     <MudTextField @bind-Value="Automation.Name" Label="Name" Variant="Variant.Outlined" Required="true" RequiredError="Must enter an Automation name"></MudTextField>
                 </MudItem>
@@ -15,7 +15,7 @@
                             <MudGrid Class="d-flex align-center flex-wrap flex-grow-1">
                                 <MudItem sm="8">
                                     <MudTextField @bind-Value="rule.ContainsText" 
-                                        Label="Triggers when desc. contains..." 
+                                        Label="Description contains..." 
                                         FullWidth="true"
                                         Variant="Variant.Outlined"
                                         Adornment="Adornment.End"
@@ -28,6 +28,7 @@
                                     <MudCheckBox @bind-Checked="@rule.IsExactMatch" Label="Exact Match?"></MudCheckBox>
                                 </MudItem>
                             </MudGrid>
+                            <MudDivider />
                         }
                         <MudButton StartIcon="@Icons.Material.Filled.Add" Color="Color.Primary" Variant="Variant.Outlined" OnClick="AddNewTrigger">
                             Add New Trigger

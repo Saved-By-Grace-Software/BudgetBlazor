@@ -3,12 +3,9 @@
 @inherits EditTransactionDialogBase;
 
 <MudDialog>
-    <DialogActions>
-
-    </DialogActions>
     <DialogContent>
         <MudForm @ref="form" @bind-IsValid="@success" @bind-Errors="@errors">
-            <MudGrid Spacing="4" Justify="Justify.SpaceBetween">
+            <MudGrid Spacing="4" Justify="Justify.SpaceBetween" Style="max-height: 400px; overflow-y: scroll">
                 <MudItem sm="12" md="2">
                     <MudDatePicker Label="Transaction Date" @bind-Date="_transactionDateBinder" DisableToolbar="true" PickerClosed="MonthChanged" />
                 </MudItem>
@@ -19,7 +16,12 @@
                     <MudTextField @bind-Value="Transaction.Amount" Label="Amount" Variant="Variant.Outlined" Required="true" RequiredError="Must enter a Transaction amount"></MudTextField>
                 </MudItem>
                 <MudItem sm="12" md="4">
-                    <MudSelect T="BudgetItem" @bind-Value="@Transaction.Budget" Label="Budget" AnchorOrigin="Origin.BottomCenter" Required="false" Disabled="@(Transaction.IsIncome || Transaction.IsSplit)">
+                    <MudSelect T="BudgetItem" @bind-Value="@Transaction.Budget" 
+                        Label="Budget" 
+                        AnchorOrigin="Origin.BottomCenter" 
+                        Required="false" 
+                        Disabled="@(Transaction.IsIncome || Transaction.IsSplit)"
+                        Clearable="true">
                         @foreach(BudgetItem budget in _parentBudgets)
                         {
                             <MudSelectItem Value="budget" />

@@ -41,16 +41,24 @@
         </CardHeaderActions>
     </MudCardHeader>
     <MudCardContent Class="my-n4">
-        <MudPaper Class="my-2 pa-1" Elevation="1" Style="@($"color:{CurrentTheme.Palette.TextPrimary}; background:{CurrentTheme.Palette.GrayLighter};")">
-            <MudText Typo="Typo.subtitle2"><i>Expected Income - </i>@String.Format("{0:C}", _currentMonth.ExpectedIncome)</MudText>
-            <MudProgressLinear Color="@ColorHelpers.ProgressBarColorReverse(_currentMonth.PercentBudgeted)" Rounded="true" Size="Size.Large" Value="@_currentMonth.PercentBudgeted" />
-            <MudText Typo="Typo.subtitle2"><i>Total Budgeted - </i>@String.Format("{0:C}", _currentMonth.TotalBudgeted)</MudText>
+        <MudPaper Class="my-2 pa-3" Elevation="1" Style="@($"color:{CurrentTheme.Palette.TextPrimary}; background:{CurrentTheme.Palette.GrayLighter};")">
+            <MudText Typo="Typo.body1"><strong>Expected Income - </strong>@String.Format("{0:C}", _currentMonth.ExpectedIncome)</MudText>
+            <MudProgressLinear Color="@ColorHelpers.ProgressBarColorReverse(_currentMonth.PercentBudgeted)" Rounded="true" Size="Size.Large" Value="@_currentMonth.PercentBudgeted">
+                <MudText Typo="Typo.subtitle2">
+                    <b>@string.Format("{0}%", _currentMonth.PercentBudgeted)</b>
+                </MudText>
+            </MudProgressLinear>
+            <MudText Typo="Typo.body1"><strong>Total Budgeted - </strong>@String.Format("{0:C}", _currentMonth.TotalBudgeted)</MudText>
         </MudPaper>
         
-        <MudPaper Class="my-2 pa-1" Elevation="1" Style="@($"color:{CurrentTheme.Palette.TextPrimary}; background:{CurrentTheme.Palette.GrayLighter};")">
-            <MudText Typo="Typo.subtitle2"><i>Actual Income - </i>@String.Format("{0:C}", _currentMonth.ActualIncome)</MudText>
-            <MudProgressLinear Color="@ColorHelpers.ProgressBarColor(_currentMonth.PercentSpent)" Rounded="true" Size="Size.Large" Value="@_currentMonth.PercentSpent" />
-            <MudText Typo="Typo.subtitle2"><i>Total Spent - </i>@String.Format("{0:C}", (_currentMonth.TotalSpent * -1))</MudText>
+        <MudPaper Class="my-2 pa-3" Elevation="1" Style="@($"color:{CurrentTheme.Palette.TextPrimary}; background:{CurrentTheme.Palette.GrayLighter};")">
+            <MudText Typo="Typo.body1"><strong>Actual Income - </strong>@String.Format("{0:C}", _currentMonth.ActualIncome)</MudText>
+            <MudProgressLinear Color="@ColorHelpers.ProgressBarColor(_currentMonth.PercentSpent)" Rounded="true" Size="Size.Large" Value="@_currentMonth.PercentSpent">
+                <MudText Typo="Typo.subtitle2">
+                    <b>@string.Format("{0}%", _currentMonth.PercentSpent)</b>
+                </MudText>
+            </MudProgressLinear>
+            <MudText Typo="Typo.body1"><strong>Total Spent - </strong>@String.Format("{0:C}", (_currentMonth.TotalSpent * -1))</MudText>
         </MudPaper>
     </MudCardContent>
 </MudCard>
@@ -72,12 +80,14 @@
         }
         else
         {
-            <MudStack>
+            <MudGrid Spacing="4" Justify="Justify.SpaceBetween">
                 @foreach(BudgetCategory category in _currentMonth.BudgetCategories)
                 {
-                    <BudgetCategoryDisplay Category="@category" AreBudgetsEditable="true" ShouldShowTotals="true" />
+                    <MudItem xs="12" md="6">
+                        <BudgetCategoryDisplay Category="@category" />
+                    </MudItem>
                 }
-            </MudStack>
+            </MudGrid>
         }
     </MudCardContent>
 </MudCard>
