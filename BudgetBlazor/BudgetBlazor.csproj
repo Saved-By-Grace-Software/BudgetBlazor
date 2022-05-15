@@ -19,6 +19,7 @@
     </PackageReference>
     <PackageReference Include="MudBlazor" Version="6.0.10" />
     <PackageReference Include="OfxSharp.NetStandard" Version="1.0.0" />
+    <PackageReference Include="Plotly.Blazor" Version="2.12.0" />
   </ItemGroup>
 
   <ItemGroup>
