@@ -1,26 +1,77 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using BudgetBlazor.Helpers;
+using DataAccess.Models;
+using DataAccess.Services;
+using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
+using MudBlazor;
 using Plotly.Blazor;
 using Plotly.Blazor.Traces;
 using Plotly.Blazor.Traces.ScatterLib;
+using Title = Plotly.Blazor.LayoutLib.Title;
+using YAxis = Plotly.Blazor.LayoutLib.YAxis;
 
 namespace BudgetBlazor.Pages
 {
     public class IndexBase : ComponentBase
     {
-        protected PlotlyChart chart;
-        protected Config config = new Config();
-        protected Layout layout = new Layout();
+        #region Dependency Injection & Cascading Parameters
+        [Inject]
+        protected ISnackbar Snackbar { get; set; }
 
-        // Using of the interface IList is important for the event callback!
-        protected IList<ITrace> data = new List<ITrace>
+        [Inject]
+        protected IDialogService DialogService { get; set; }
+
+        [Inject]
+        protected IBudgetDataService BudgetDataService { get; set; }
+
+        [Inject]
+        protected AuthenticationStateProvider AuthenticationStateProvider { get; set; }
+
+        [CascadingParameter]
+        protected MudTheme CurrentTheme { get; set; }
+        #endregion
+
+        protected PlotlyChart chart;
+        protected Config config { get; set; }
+        protected Layout layout { get; set; }
+        protected IList<ITrace> data { get; set; }
+        protected Guid _currentUserId;
+
+        /// <summary>
+        /// Lifecycle method called when the page is initialized
+        /// </summary>
+        /// <returns></returns>
+        protected override async Task OnInitializedAsync()
         {
-            new Scatter
+            var authstate = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            _currentUserId = Guid.Parse(authstate.User.Claims.First().Value);
+
+            // Get the user accounts
+            data = new List<ITrace>();
+            List<Account> accounts = BudgetDataService.GetAllAccounts(_currentUserId);
+
+            // Iterate through the accounts and add their histories to the chart
+            foreach (Account account in accounts)
             {
-                Name = "ScatterTrace",
-                Mode = ModeFlag.Lines | ModeFlag.Markers,
-                X = new List<object>{1,2,3},
-                Y = new List<object>{1,2,3}
+                data.Add(ChartHelpers.GetScatterDataForAccount(account.Id, account.Name, BudgetDataService));
             }
-        };
+
+            config = new()
+            {
+                Responsive = true
+            };
+
+            layout = new()
+            {
+                    Title = new Title { Text = "Account History" },
+                    YAxis = new List<YAxis>
+                    {
+                        new()
+                        {
+                            Title = new Plotly.Blazor.LayoutLib.YAxisLib.Title { Text = "Account Balance" }
+                        }
+                    }
+                };
+            }
     }
 }

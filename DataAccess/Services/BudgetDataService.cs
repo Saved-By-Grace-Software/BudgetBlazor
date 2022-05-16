@@ -218,6 +218,11 @@ namespace DataAccess.Services
                 return default(BudgetItem);
             }
         }
+
+        public List<AccountHistory> GetAccountHistory(int accountId)
+        {
+            return _db.AccountsHistories.Where(h => h.Account.Id == accountId).ToList();
+        }
         #endregion
 
         #region Update
