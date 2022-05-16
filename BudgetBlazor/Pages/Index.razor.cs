@@ -5,8 +5,6 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using MudBlazor;
 using Plotly.Blazor;
-using Plotly.Blazor.Traces;
-using Plotly.Blazor.Traces.ScatterLib;
 using Title = Plotly.Blazor.LayoutLib.Title;
 using YAxis = Plotly.Blazor.LayoutLib.YAxis;
 
@@ -58,12 +56,20 @@ namespace BudgetBlazor.Pages
 
             config = new()
             {
-                Responsive = true
+                Responsive = true,
+                DisplayModeBar = Plotly.Blazor.ConfigLib.DisplayModeBarEnum.False
             };
 
             layout = new()
             {
-                    Title = new Title { Text = "Account History" },
+                    Title = new Title 
+                    { 
+                        Text = "Account History", 
+                        Font =  new Plotly.Blazor.LayoutLib.TitleLib.Font()
+                        {
+                            Size = 30
+                        }
+                    },
                     YAxis = new List<YAxis>
                     {
                         new()
