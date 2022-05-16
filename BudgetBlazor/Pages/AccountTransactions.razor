@@ -10,6 +10,15 @@
     </PageHeaderActions>
 </PageHeader>
 
+<MudCard>
+    <MudCardContent>
+        <PlotlyChart @bind-Config="config" @bind-Layout="layout" @bind-Data="data" @ref="chart"/>
+    </MudCardContent>
+    <MudCardActions>
+        <MudText Typo="Typo.caption">Current Balance: 1234</MudText>
+    </MudCardActions>
+</MudCard>
+
 <MudCard Class="my-4" Elevation="3" Style="@($"color:{CurrentTheme.Palette.TextPrimary}; background:{CurrentTheme.Palette.GrayLighter};")">
     <MudCardContent>
         @if (Account.Transactions.Count == 0)

@@ -62,22 +62,22 @@ namespace BudgetBlazor.Pages
 
             layout = new()
             {
-                    Title = new Title 
-                    { 
-                        Text = "Account History", 
-                        Font =  new Plotly.Blazor.LayoutLib.TitleLib.Font()
-                        {
-                            Size = 30
-                        }
-                    },
-                    YAxis = new List<YAxis>
+                Title = new Title 
+                { 
+                    Text = "Account History", 
+                    Font =  new Plotly.Blazor.LayoutLib.TitleLib.Font()
                     {
-                        new()
-                        {
-                            Title = new Plotly.Blazor.LayoutLib.YAxisLib.Title { Text = "Account Balance" }
-                        }
+                        Size = 30
                     }
-                };
-            }
+                },
+                YAxis = new List<YAxis>
+                {
+                    new()
+                    {
+                        Title = new Plotly.Blazor.LayoutLib.YAxisLib.Title { Text = "Account Balance" }
+                    }
+                }
+            };
+        }
     }
 }
