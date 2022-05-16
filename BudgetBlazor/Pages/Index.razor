@@ -13,7 +13,7 @@
                     <MudIcon Icon="@Icons.Material.Filled.Balance" Size="Size.Large" />
                     <MudDivider Vertical="true" FlexItem="true" />
                     <MudStack>
-                        <MudText Typo="Typo.h6">@account.Name</MudText>
+                        <MudLink Href="@string.Format("/Accounts/Edit/{0}", account.Id)" Typo="Typo.h6" Underline="Underline.None" Style="@($"color:{CurrentTheme.Palette.PrimaryContrastText} !important;")">@account.Name</MudLink>
                         <MudText Typo="Typo.body1">@string.Format("{0:C}", account.CurrentBalance)</MudText>
                     </MudStack>
                 </MudStack>
@@ -30,7 +30,7 @@
 
 <MudCard Elevation="2" Class="mt-2">
     <MudCardHeader>
-        <MudText Typo="Typo.h5">Piggy Banks</MudText>
+        <MudLink Href="/PiggyBanks" Typo="Typo.h5" Underline="Underline.None" Style="@($"color:{CurrentTheme.Palette.TextPrimary} !important;")">Piggy Banks</MudLink>
     </MudCardHeader>
     <MudCardContent>
         <MudStack>
