@@ -16,7 +16,7 @@
         />
         <MudSnackbarProvider/>
 
-        <MudLayout>
+        <MudLayout Style="@($"background:{CurrentTheme.Palette.GrayLighter};")">
             <CascadingValue Value="@CurrentTheme">
                 <AppBar OnSidebarToggled="ToggleSidebar" OnThemeToggled="ToggleTheme" />
 
@@ -26,6 +26,7 @@
                     <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge">
                         @Body
                     </MudContainer>
+                    <PageFooter />
                 </MudMainContent>
             </CascadingValue>
         </MudLayout>

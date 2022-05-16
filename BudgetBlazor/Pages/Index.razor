@@ -4,10 +4,47 @@
 
 <PageTitle>Dashboard</PageTitle>
 
-<PageHeader PageIcon="@Icons.Material.Filled.Home" PageTitleText="Dashboard"></PageHeader>
+<MudGrid Spacing="4" Justify="Justify.SpaceBetween" Class="my-2">
+    @foreach(Account account in _userAccounts)
+    {
+        <MudItem xs="6" md="3">
+            <MudCard Class="pa-4" Style="@($"color:{CurrentTheme.Palette.PrimaryContrastText}; background:{CurrentTheme.Palette.Tertiary};")">
+                <MudStack Row="true" AlignItems="AlignItems.Center">
+                    <MudIcon Icon="@Icons.Material.Filled.Balance" Size="Size.Large" />
+                    <MudDivider Vertical="true" FlexItem="true" />
+                    <MudStack>
+                        <MudText Typo="Typo.h6">@account.Name</MudText>
+                        <MudText Typo="Typo.body1">@string.Format("{0:C}", account.CurrentBalance)</MudText>
+                    </MudStack>
+                </MudStack>
+            </MudCard>
+        </MudItem>
+    }
+</MudGrid>
 
-<MudCard>
+<MudCard Elevation="2" Class="my-2">
     <MudCardContent>
         <PlotlyChart @bind-Config="config" @bind-Layout="layout" @bind-Data="data" @ref="chart"/>
+    </MudCardContent>
+</MudCard>
+
+<MudCard Elevation="2" Class="mt-2">
+    <MudCardHeader>
+        <MudText Typo="Typo.h5">Piggy Banks</MudText>
+    </MudCardHeader>
+    <MudCardContent>
+        <MudStack>
+            @foreach (PiggyBank bank in _userBanks)
+            {
+                <MudStack>
+                    <MudText Typo="Typo.body1"><strong>@bank.Name</strong></MudText>
+                    <MudProgressLinear Vertical="false" Rounded="true" Color="@ColorHelpers.ProgressBarColorReverse(bank.PercentSaved, false, 60, 90)" Size="Size.Large" Value="@bank.PercentSaved">
+                        <MudText Typo="Typo.subtitle2">
+                            <b>@string.Format("{0}%", bank.PercentSaved)</b>
+                        </MudText>
+                    </MudProgressLinear>
+                </MudStack>
+            }
+        </MudStack>
     </MudCardContent>
 </MudCard>

@@ -33,6 +33,8 @@ namespace BudgetBlazor.Pages
         protected Config config { get; set; }
         protected Layout layout { get; set; }
         protected IList<ITrace> data { get; set; }
+        protected List<Account> _userAccounts { get; set; }
+        protected List<PiggyBank> _userBanks { get; set; }
         protected Guid _currentUserId;
 
         /// <summary>
@@ -45,15 +47,16 @@ namespace BudgetBlazor.Pages
             _currentUserId = Guid.Parse(authstate.User.Claims.First().Value);
 
             // Get the user accounts
-            data = new List<ITrace>();
-            List<Account> accounts = BudgetDataService.GetAllAccounts(_currentUserId);
+            _userAccounts = BudgetDataService.GetAllAccounts(_currentUserId);
 
             // Iterate through the accounts and add their histories to the chart
-            foreach (Account account in accounts)
+            data = new List<ITrace>();
+            foreach (Account account in _userAccounts)
             {
                 data.Add(ChartHelpers.GetScatterDataForAccount(account.Id, account.Name, BudgetDataService));
             }
 
+            // Configure the chart
             config = new()
             {
                 Responsive = true,
@@ -64,7 +67,7 @@ namespace BudgetBlazor.Pages
             {
                 Title = new Title 
                 { 
-                    Text = "Account History", 
+                    Text = "Your Accounts", 
                     Font =  new Plotly.Blazor.LayoutLib.TitleLib.Font()
                     {
                         Size = 30
@@ -78,6 +81,9 @@ namespace BudgetBlazor.Pages
                     }
                 }
             };
+
+            // Get the user piggy banks
+            _userBanks = BudgetDataService.GetAllPiggyBanks(_currentUserId);
         }
     }
 }
