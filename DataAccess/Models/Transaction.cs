@@ -28,6 +28,8 @@ namespace DataAccess.Models
 
         public bool IsIncome { get; set; }
 
+        public string? Notes { get; set; }
+
         public virtual BudgetItem? Budget { get; set; }
 
         public virtual List<Transaction> Splits { get; set; }
