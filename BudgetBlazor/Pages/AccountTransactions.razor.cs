@@ -80,7 +80,7 @@ namespace BudgetBlazor.Pages
             {
                 Title = new Title
                 {
-                    Text = String.Format("Current Balance - {0:C}", Account.CurrentBalance),
+                    Text = String.Format("Balance - {0:C}", Account.CurrentBalance),
                     Font = new Plotly.Blazor.LayoutLib.TitleLib.Font()
                     {
                         Size = 30
