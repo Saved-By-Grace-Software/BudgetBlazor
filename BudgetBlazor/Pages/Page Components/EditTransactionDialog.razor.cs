@@ -108,6 +108,9 @@ namespace BudgetBlazor.Pages.Page_Components
         {
             if (((DateTime)_transactionDateBinder).Year != Transaction.TransactionDate.Year || ((DateTime)_transactionDateBinder).Month != Transaction.TransactionDate.Month)
             {
+                // Clear the existing budget
+                Transaction.Budget = null;
+
                 // The date changed to a new month, reload the budget items
                 _parentBudgets = BudgetDataService.GetBudgetItems(((DateTime)_transactionDateBinder).Year, ((DateTime)_transactionDateBinder).Month, _currentUserId);
             }
@@ -122,8 +125,14 @@ namespace BudgetBlazor.Pages.Page_Components
             // Check for an existing entry
             if (_splitBudgets.ContainsKey(split))
             {
-                // Update the existing entry
-                _splitBudgets[split] = BudgetDataService.GetBudgetItems(((DateTime)_splitDateBinders[split]).Year, ((DateTime)_splitDateBinders[split]).Month, _currentUserId);
+                if (((DateTime)_splitDateBinders[split]).Year != split.TransactionDate.Year || ((DateTime)_splitDateBinders[split]).Month != split.TransactionDate.Month)
+                {
+                    // Clear the existing budget
+                    split.Budget = null;
+
+                    // Update the existing entry
+                    _splitBudgets[split] = BudgetDataService.GetBudgetItems(((DateTime)_splitDateBinders[split]).Year, ((DateTime)_splitDateBinders[split]).Month, _currentUserId);
+                }   
             }
             else
             {

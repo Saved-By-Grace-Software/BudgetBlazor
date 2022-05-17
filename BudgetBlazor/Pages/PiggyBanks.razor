@@ -7,7 +7,7 @@
 <PageHeader PageIcon="@Icons.Material.Filled.Savings" PageTitleText="Piggy Banks" />
 
 <!-- Piggy Banks Card -->
-<MudCard Class="my-4" Elevation="3" Style="@($"color:{CurrentTheme.Palette.TextPrimary}; background:{CurrentTheme.Palette.GrayLighter};")">
+<MudCard Class="my-4" Elevation="3">
     <MudCardHeader>
         <CardHeaderContent>
             <MudText Typo="Typo.h6">Piggy Banks</MudText>
@@ -27,7 +27,7 @@
         {
             @foreach(PiggyBank bank in _banks)
             {
-                <MudCard Class="my-2" Elevation="1">
+                <MudCard Class="my-2" Elevation="1" Style="@($"color:{CurrentTheme.Palette.TextPrimary}; background:{CurrentTheme.Palette.GrayLighter};")">
                     <MudCardHeader>
                         <CardHeaderContent>
                             <MudText Typo="Typo.h6">@bank.Name</MudText>

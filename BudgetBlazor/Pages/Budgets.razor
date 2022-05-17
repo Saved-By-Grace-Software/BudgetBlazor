@@ -31,7 +31,7 @@
 </PageHeader>
 
 <!-- Income and Total Budget Card -->
-<MudCard Class="my-4" Elevation="3" Style="@($"color:{CurrentTheme.Palette.TextPrimary}; background:{CurrentTheme.Palette.GrayLight};")">
+<MudCard Class="my-4" Elevation="3">
     <MudCardHeader>
         <CardHeaderContent>
             <MudText Typo="Typo.h6">Total Budget - @String.Format("{0:MMMM yyyy}", _currentMonthDate)</MudText>
@@ -41,7 +41,7 @@
         </CardHeaderActions>
     </MudCardHeader>
     <MudCardContent Class="my-n4">
-        <MudPaper Class="my-2 pa-3" Elevation="1" Style="@($"color:{CurrentTheme.Palette.TextPrimary}; background:{CurrentTheme.Palette.GrayLighter};")">
+        <MudPaper Class="my-2 pa-3" Elevation="0" Outlined="true">
             <MudText Typo="Typo.body1"><strong>Expected Income - </strong>@String.Format("{0:C}", _currentMonth.ExpectedIncome)</MudText>
             <MudProgressLinear Color="@ColorHelpers.ProgressBarColorReverse(_currentMonth.PercentBudgeted)" Rounded="true" Size="Size.Large" Value="@_currentMonth.PercentBudgeted">
                 <MudText Typo="Typo.subtitle2">
@@ -51,7 +51,7 @@
             <MudText Typo="Typo.body1"><strong>Total Budgeted - </strong>@String.Format("{0:C}", _currentMonth.TotalBudgeted)</MudText>
         </MudPaper>
         
-        <MudPaper Class="my-2 pa-3" Elevation="1" Style="@($"color:{CurrentTheme.Palette.TextPrimary}; background:{CurrentTheme.Palette.GrayLighter};")">
+        <MudPaper Class="my-2 pa-3" Elevation="0" Outlined="true">
             <MudText Typo="Typo.body1"><strong>Actual Income - </strong>@String.Format("{0:C}", _currentMonth.ActualIncome)</MudText>
             <MudProgressLinear Color="@ColorHelpers.ProgressBarColor(_currentMonth.PercentSpent)" Rounded="true" Size="Size.Large" Value="@_currentMonth.PercentSpent">
                 <MudText Typo="Typo.subtitle2">
@@ -64,7 +64,7 @@
 </MudCard>
 
 <!-- Budget Lists -->
-<MudCard Class="my-8" Elevation="3" Style="@($"color:{CurrentTheme.Palette.TextPrimary}; background:{CurrentTheme.Palette.GrayLighter};")">
+<MudCard Class="my-8" Elevation="3">
     <MudCardHeader>
         <CardHeaderContent>
             <MudText Typo="Typo.h6">Budgets</MudText>

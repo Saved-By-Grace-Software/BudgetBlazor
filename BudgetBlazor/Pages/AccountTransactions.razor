@@ -1,6 +1,6 @@
 ﻿@attribute [Authorize]
 @page "/Accounts/Edit/{AccountId}"
-@inherits AccountDisplayBase
+@inherits AccountTransactionsBase
 
 <PageHeader PageIcon="@Icons.Material.Outlined.CreditCard" PageTitleText="@Account.Name">
     <PageHeaderActions>
@@ -9,6 +9,15 @@
         </MudHidden>
     </PageHeaderActions>
 </PageHeader>
+
+<MudCard>
+    <MudCardContent>
+        <PlotlyChart @bind-Config="config" @bind-Layout="layout" @bind-Data="data" @ref="chart"/>
+    </MudCardContent>
+    <MudCardActions>
+        <MudText Typo="Typo.caption">Current Balance: 1234</MudText>
+    </MudCardActions>
+</MudCard>
 
 <MudCard Class="my-4" Elevation="3" Style="@($"color:{CurrentTheme.Palette.TextPrimary}; background:{CurrentTheme.Palette.GrayLighter};")">
     <MudCardContent>
@@ -22,6 +31,14 @@
                 <ToolBarContent>
                     <MudText Typo="Typo.h6">Transactions</MudText>
                     <MudSpacer />
+                    <MudButton 
+                        Variant="@_filterButtonVariant" 
+                        StartIcon="@Icons.Material.Filled.FilterList" 
+                        Color="Color.Info" 
+                        Class="me-4 align-center"
+                        OnClick="FilterUnbudgeted">
+                        Unbudgeted
+                    </MudButton>
                     <MudTextField @bind-Value="searchString" 
                         Placeholder="Search" 
                         Clearable="true"
@@ -29,6 +46,7 @@
                         AdornmentIcon="@Icons.Material.Filled.Search" 
                         IconSize="Size.Medium" 
                         Class="mt-0"></MudTextField>
+                    
                 </ToolBarContent>
                 <ColGroup>
                     <col style="width: 10%;" />

@@ -1,14 +1,18 @@
 using BudgetBlazor.Helpers;
+using BudgetBlazor.Pages.Page_Components;
 using DataAccess.Models;
 using DataAccess.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Forms;
 using MudBlazor;
+using Plotly.Blazor;
+using Title = Plotly.Blazor.LayoutLib.Title;
+using YAxis = Plotly.Blazor.LayoutLib.YAxis;
 
-namespace BudgetBlazor.Pages.Page_Components
+namespace BudgetBlazor.Pages
 {
-    public class AccountDisplayBase : ComponentBase
+    public class AccountTransactionsBase : ComponentBase
     {
         #region Dependency Injection & Cascading Parameters
         [Inject]
@@ -32,6 +36,12 @@ namespace BudgetBlazor.Pages.Page_Components
         protected Guid _currentUserId;
         protected string searchString = "";
         protected List<BreadcrumbItem> _items = new List<BreadcrumbItem>();
+        protected Variant _filterButtonVariant = Variant.Outlined;
+        private bool _showOnlyUnbudgeted = false;
+        protected PlotlyChart chart;
+        protected Config config { get; set; }
+        protected Layout layout { get; set; }
+        protected IList<ITrace> data { get; set; }
 
         /// <summary>
         /// Lifecycle method called when the page is initialized
@@ -54,6 +64,36 @@ namespace BudgetBlazor.Pages.Page_Components
             };
 
             BudgetDataService.AccountDataChanged += BudgetDataService_AccountDataChanged;
+
+            // Add the history data for the chart
+            data = new List<ITrace>();
+            data.Add(ChartHelpers.GetScatterDataForAccount(Account.Id, Account.Name, BudgetDataService));
+
+            // Configure the chart
+            config = new()
+            {
+                Responsive = true,
+                DisplayModeBar = Plotly.Blazor.ConfigLib.DisplayModeBarEnum.False
+            };
+
+            layout = new()
+            {
+                Title = new Title
+                {
+                    Text = String.Format("Current Balance - {0:C}", Account.CurrentBalance),
+                    Font = new Plotly.Blazor.LayoutLib.TitleLib.Font()
+                    {
+                        Size = 30
+                    }
+                },
+                YAxis = new List<YAxis>
+                {
+                    new()
+                    {
+                        Title = new Plotly.Blazor.LayoutLib.YAxisLib.Title { Text = "Account Balance" }
+                    }
+                }
+            };
         }
 
         /// <summary>
@@ -124,6 +164,10 @@ namespace BudgetBlazor.Pages.Page_Components
 
         protected bool FilterFunc(Transaction transaction, string searchString)
         {
+            // Check for unbudgeted
+            if (_showOnlyUnbudgeted && (transaction.Budget != default(BudgetItem) || transaction.IsIncome))
+                return false;
+
             if (string.IsNullOrWhiteSpace(searchString))
                 return true;
             if (transaction.Name.Contains(searchString, StringComparison.CurrentCultureIgnoreCase))
@@ -149,6 +193,16 @@ namespace BudgetBlazor.Pages.Page_Components
             }
 
             return false;
+        }
+
+        protected async Task FilterUnbudgeted()
+        {
+            // Toggle the unbudgeted filter
+            _showOnlyUnbudgeted = !_showOnlyUnbudgeted;
+            if (_showOnlyUnbudgeted)
+                _filterButtonVariant = Variant.Filled;
+            else
+                _filterButtonVariant= Variant.Outlined;
         }
         #endregion
 

@@ -38,6 +38,7 @@ namespace DataAccess.Services
         List<Automation> GetAutomations(Guid user);
         List<Transaction> GetTransactions(Guid user);
         BudgetItem GetMatchingBudgetItem(BudgetItem defaultMonthBudgetItem, int month, int year, Guid user);
+        List<AccountHistory> GetAccountHistory(int accountId);
 
         // Update
         BudgetMonth Update(BudgetMonth budgetMonth);
