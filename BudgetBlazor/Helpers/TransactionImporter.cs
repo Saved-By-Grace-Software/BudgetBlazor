@@ -12,42 +12,50 @@ namespace BudgetBlazor.Helpers
             bool success = false;
 
             OFXDocumentParser parser = new OFXDocumentParser();
-            OFXDocument ofxDocument = parser.Import(transactionsFile);
 
-            if (ofxDocument != null)
+            try
             {
-                // Update the account balance
-                account.CurrentBalance = ofxDocument.Balance.LedgerBalance;
-                account.LastUpdated = ofxDocument.StatementEnd;
+                OFXDocument ofxDocument = parser.Import(transactionsFile);
 
-                // Import the transactions
-                foreach (Transaction transaction in ofxDocument.Transactions)
+                if (ofxDocument != null)
                 {
-                    // Create a new budget transaction
-                    BudgetTransaction t = new BudgetTransaction(transaction.Name, account.User);
-                    t.Amount = transaction.Amount;
-                    t.CheckNumber = transaction.CheckNum;
-                    t.FITransactionId = transaction.TransactionId;
-                    t.TransactionDate = transaction.Date;
+                    // Update the account balance
+                    account.CurrentBalance = ofxDocument.Balance.LedgerBalance;
+                    account.LastUpdated = ofxDocument.StatementEnd;
 
-                    // Add the transaction to the account if it is unique
-                    if (!account.Transactions.Contains(t))
+                    // Import the transactions
+                    foreach (Transaction transaction in ofxDocument.Transactions)
                     {
-                        // Run automations against the transaction
-                        t = AutomationEngine.ExecuteAllAutomations(t, account.User, dataService);
+                        // Create a new budget transaction
+                        BudgetTransaction t = new BudgetTransaction(transaction.Name, account.User);
+                        t.Amount = transaction.Amount;
+                        t.CheckNumber = transaction.CheckNum;
+                        t.FITransactionId = transaction.TransactionId;
+                        t.TransactionDate = transaction.Date;
 
-                        // Add the transaction to the account
-                        account.Transactions.Add(t);
+                        // Add the transaction to the account if it is unique
+                        if (!account.Transactions.Contains(t))
+                        {
+                            // Run automations against the transaction
+                            t = AutomationEngine.ExecuteAllAutomations(t, account.User, dataService);
+
+                            // Add the transaction to the account
+                            account.Transactions.Add(t);
+                        }
                     }
+
+                    // Update the account in the database
+                    dataService.Update(account);
+
+                    // Add the account history to the database
+                    dataService.UpdateAccountHistory(account, ofxDocument.StatementEnd, ofxDocument.Balance.LedgerBalance);
+
+                    success = true;
                 }
-
-                // Update the account in the database
-                dataService.Update(account);
-
-                // Add the account history to the database
-                dataService.UpdateAccountHistory(account, ofxDocument.StatementEnd, ofxDocument.Balance.LedgerBalance);
-
-                success = true;
+            }
+            catch (Exception)
+            {
+                // Failed to parse transactions, return false
             }
 
             return success;
