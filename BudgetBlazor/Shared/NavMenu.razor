@@ -16,6 +16,20 @@
 </MudDrawer>
 
 @code {
+	private bool _sideBarOpen;
+
 	[Parameter]
-	public bool SideBarOpen { get; set; }
+	public bool SideBarOpen 
+	{
+		get => _sideBarOpen;
+		set
+		{
+			if (_sideBarOpen == value ) return;
+			_sideBarOpen = value;
+			SideBarOpenChanged.InvokeAsync(value);
+		}
+	}
+
+	[Parameter]
+	public EventCallback<bool> SideBarOpenChanged { get; set; }
 }

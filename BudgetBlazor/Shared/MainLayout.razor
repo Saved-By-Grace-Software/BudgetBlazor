@@ -20,7 +20,7 @@
             <CascadingValue Value="@CurrentTheme">
                 <AppBar OnSidebarToggled="ToggleSidebar" OnThemeToggled="ToggleTheme" />
 
-	            <NavMenu SideBarOpen="_sidebarOpen" />
+	            <NavMenu @bind-SideBarOpen="@_sidebarOpen" />
 
                 <MudMainContent>
                     <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge">
