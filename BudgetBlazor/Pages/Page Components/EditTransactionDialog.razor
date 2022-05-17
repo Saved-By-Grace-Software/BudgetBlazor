@@ -29,6 +29,9 @@
                     </MudSelect>
                 </MudItem>
                 <MudItem sm="12" md="12">
+                    <MudTextField T="string" @bind-Value="Transaction.Notes" Label="Transaction Notes" Variant="Variant.Outlined" Lines="5" Required="false" />
+                </MudItem>
+                <MudItem sm="12" md="12">
                     <MudCheckBox @bind-Checked="@Transaction.IsIncome" Label="Is Income?" Disabled="@Transaction.IsSplit"></MudCheckBox>
                     <MudCheckBox @bind-Checked="@Transaction.IsSplit" Label="Split Transaction?" Disabled="@Transaction.IsIncome"></MudCheckBox>
                 </MudItem>
