@@ -28,6 +28,7 @@ namespace DataAccess.Models
         {
             Name = name;
             AccountNumber = "";
+            Transactions = new List<Transaction>();
         }
 
         public override string ToString()
