@@ -16,7 +16,7 @@
         />
         <MudSnackbarProvider/>
 
-        <MudLayout Style="@($"background:{CurrentTheme.Palette.GrayLighter};")">
+        <MudLayout Style="@($"background:{CurrentTheme.Palette.BackgroundGrey}; height: 100%")">
             <CascadingValue Value="@CurrentTheme">
                 <AppBar OnSidebarToggled="ToggleSidebar" OnThemeToggled="ToggleTheme" />
 
