@@ -221,7 +221,7 @@ namespace DataAccess.Services
 
         public List<AccountHistory> GetAccountHistory(int accountId)
         {
-            return _db.AccountsHistories.Where(h => h.Account.Id == accountId).ToList();
+            return _db.AccountsHistories.Where(h => h.Account.Id == accountId).OrderBy(h => h.BalanceDate).ToList();
         }
         #endregion
 
