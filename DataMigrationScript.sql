@@ -38,7 +38,7 @@ Set IDENTITY_INSERT [BudgetBlazor].[dbo].[BudgetMonths] On
 INSERT INTO [BudgetBlazor].[dbo].[BudgetMonths] ([Id], [Month], [Year], [ExpectedIncome], [User], [ActualIncome], [TotalBudgeted], [TotalSpent])
 SELECT ([MonthId] + @NextMonthId) as [Id], [Name] as [Month], [Year], [ExpectedIncome], @DestinationUserId as [User], [ActualIncome], [TotalBudgeted], [Spent] as [TotalSpent]
 FROM [Budget].[dbo].[BudgetMonths]
-WHERE [Budget].[dbo].[BudgetMonths].[UserID] = @SourceUserId --AND [Year] < 2022
+WHERE [Budget].[dbo].[BudgetMonths].[UserID] = @SourceUserId AND ([Year] < 2022 OR [Name] < 4)
 Set Identity_Insert [BudgetBlazor].[dbo].[BudgetMonths] Off
 
 -- Copy over the budget categories
