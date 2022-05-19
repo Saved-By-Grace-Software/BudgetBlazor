@@ -1,3 +1,6 @@
+DECLARE @DestinationUserId AS NVARCHAR(50) = 'F3D3781A-461C-4AA0-AE9F-C59560C4A6D4'
+DECLARE @SourceUserId AS NVARCHAR(50) = 'f946d0eb-f463-4c72-86fa-32ae69561a84'
+
 -- Get the offset for the month ID
 DECLARE @NextMonthId AS INT
 SELECT @NextMonthId = IDENT_CURRENT('BudgetBlazor.dbo.BudgetMonths');
@@ -32,24 +35,26 @@ INSERT INTO #CategoryEnum VALUES (103, 'LongTermSavings')
 
 -- Copy over the budget months (prior to April 2022)
 Set IDENTITY_INSERT [BudgetBlazor].[dbo].[BudgetMonths] On
---INSERT INTO [BudgetBlazor].[dbo].[BudgetMonths] ([Id], [Month], [Year], [ExpectedIncome], [User], [ActualIncome], [TotalBudgeted], [TotalSpent])
-SELECT ([MonthId] + @NextMonthId) as [Id], [Name] as [Month], [Year], [ExpectedIncome], 'F3D3781A-461C-4AA0-AE9F-C59560C4A6D4' as [User], [ActualIncome], [TotalBudgeted], [Spent] as [TotalSpent]
+INSERT INTO [BudgetBlazor].[dbo].[BudgetMonths] ([Id], [Month], [Year], [ExpectedIncome], [User], [ActualIncome], [TotalBudgeted], [TotalSpent])
+SELECT ([MonthId] + @NextMonthId) as [Id], [Name] as [Month], [Year], [ExpectedIncome], @DestinationUserId as [User], [ActualIncome], [TotalBudgeted], [Spent] as [TotalSpent]
 FROM [Budget].[dbo].[BudgetMonths]
-WHERE [Name] < 4 AND [Year] < 2022
+WHERE [Budget].[dbo].[BudgetMonths].[UserID] = @SourceUserId --AND [Year] < 2022
 Set Identity_Insert [BudgetBlazor].[dbo].[BudgetMonths] Off
 
------- Copy over the budget categories
---Set IDENTITY_INSERT [BudgetBlazor].[dbo].[BudgetCategory] On
---INSERT INTO [BudgetBlazor].[dbo].[BudgetCategory] ([Id], [Name], [Color], [Budgeted], [Spent], [Remaining], [BudgetMonthId])
---SELECT ([CategoryID] + @NextCatId) as [Id], [#CategoryEnum].[CatName] as [Name], '#85858657' as [Color], [Budgeted], [Spent], [Remaining], ([MonthId] + @NextMonthId) as [BudgetMonthId]
---FROM [Budget].[dbo].[BudgetCategories]
---INNER JOIN #CategoryEnum on #CategoryEnum.ID = [BudgetCategories].Type
---Set IDENTITY_INSERT [BudgetBlazor].[dbo].[BudgetCategory] Off
+-- Copy over the budget categories
+Set IDENTITY_INSERT [BudgetBlazor].[dbo].[BudgetCategory] On
+INSERT INTO [BudgetBlazor].[dbo].[BudgetCategory] ([Id], [Name], [Color], [Budgeted], [Spent], [Remaining], [BudgetMonthId])
+SELECT ([CategoryID] + @NextCatId) as [Id], [#CategoryEnum].[CatName] as [Name], '#85858657' as [Color], [Budgeted], [Spent], [Remaining], ([MonthId] + @NextMonthId) as [BudgetMonthId]
+FROM [Budget].[dbo].[BudgetCategories]
+INNER JOIN #CategoryEnum on #CategoryEnum.ID = [BudgetCategories].Type
+INNER JOIN [BudgetBlazor].[dbo].[BudgetMonths] on [BudgetBlazor].[dbo].[BudgetMonths].[Id] = ([MonthId] + @NextMonthId)
+Set IDENTITY_INSERT [BudgetBlazor].[dbo].[BudgetCategory] Off
 
------- Copy over the budget items
---INSERT INTO [BudgetBlazor].[dbo].[BudgetItem]
---SELECT [Name], [Budgeted] as [Budget], [Spent], [Remaining], ([CategoryID] + @NextCatId) as [BudgetCategoryId]
---FROM [Budget].[dbo].[BudgetItemDatas]
+-- Copy over the budget items
+INSERT INTO [BudgetBlazor].[dbo].[BudgetItem]
+SELECT [BID].[Name], [BID].[Budgeted] as [Budget], [BID].[Spent], [BID].[Remaining], ([CategoryID] + @NextCatId) as [BudgetCategoryId]
+FROM [Budget].[dbo].[BudgetItemDatas] as [BID]
+INNER JOIN [BudgetBlazor].[dbo].[BudgetCategory] on [BudgetBlazor].[dbo].[BudgetCategory].[Id] = ([CategoryID] + @NextCatId)
 
 -- Clear the temp tables
 DROP TABLE #CategoryEnum
