@@ -8,7 +8,7 @@
     @foreach(Account account in _userAccounts)
     {
         <MudItem xs="6" md="3">
-            <MudCard Class="pa-4" Style="@($"color:{CurrentTheme.Palette.PrimaryContrastText}; background:{CurrentTheme.Palette.Tertiary};")">
+            <MudCard Elevation="3" Class="pa-4" Style="@($"color:{CurrentTheme.Palette.PrimaryContrastText}; background:{CurrentTheme.Palette.Tertiary};")">
                 <MudStack Row="true" AlignItems="AlignItems.Center">
                     <MudIcon Icon="@Icons.Material.Filled.Balance" Size="Size.Large" />
                     <MudDivider Vertical="true" FlexItem="true" />
@@ -22,13 +22,13 @@
     }
 </MudGrid>
 
-<MudCard Elevation="2" Class="my-2">
+<MudCard Elevation="3" Class="my-2">
     <MudCardContent>
         <PlotlyChart @bind-Config="config" @bind-Layout="layout" @bind-Data="data" @ref="chart"/>
     </MudCardContent>
 </MudCard>
 
-<MudCard Elevation="2" Class="mt-2">
+<MudCard Elevation="3" Class="mt-2">
     <MudCardHeader>
         <MudLink Href="/PiggyBanks" Typo="Typo.h5" Underline="Underline.None" Style="@($"color:{CurrentTheme.Palette.TextPrimary} !important;")">Piggy Banks</MudLink>
     </MudCardHeader>

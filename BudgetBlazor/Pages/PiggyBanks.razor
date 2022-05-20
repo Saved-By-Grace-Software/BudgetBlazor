@@ -27,7 +27,7 @@
         {
             @foreach(PiggyBank bank in _banks)
             {
-                <MudCard Class="my-2" Elevation="1" Style="@($"color:{CurrentTheme.Palette.TextPrimary}; background:{CurrentTheme.Palette.GrayLighter};")">
+                <MudCard Class="my-2" Elevation="3" Style="@($"background:{CurrentTheme.Palette.Primary.SetAlpha(0.1)};")">
                     <MudCardHeader>
                         <CardHeaderContent>
                             <MudText Typo="Typo.h6">@bank.Name</MudText>
@@ -114,42 +114,38 @@
 </MudCard>
 
 <!-- Accounts Card -->
-<MudCard Class="my-4" Elevation="3" Style="@($"color:{CurrentTheme.Palette.TextPrimary}; background:{CurrentTheme.Palette.GrayLighter};")">
+<MudCard Class="my-4" Elevation="3">
     <MudCardHeader>
         <CardHeaderContent>
             <MudText Typo="Typo.h6">Account Totals</MudText>
         </CardHeaderContent>
     </MudCardHeader>
     <MudCardContent>
-        @if (_accounts.Count == 0)
-        {
-            <MudText Typo="Typo.body2" Align="Align.Center"><i>No accounts to display</i></MudText>
-        }
-        else
-        {
-            <MudTable Items="@_accounts" Hover="true" Breakpoint="Breakpoint.SmAndDown" T="Account">
-                <ColGroup>
-                    <col style="width: 20%;" />
-                    <col style="width: 20%;" />
-                    <col style="width: 20%;" />
-                    <col style="width: 20%;" />
-                    <col style="width: 20%;" />
-                </ColGroup>
-                <HeaderContent>
-                    <MudTh>Name</MudTh>
-                    <MudTh>Current Balance</MudTh>
-                    <MudTh>Target Amount</MudTh>
-                    <MudTh>Saved So Far</MudTh>
-                    <MudTh>Left To Save</MudTh>
-                </HeaderContent>
-                <RowTemplate>
-                    <MudTd>@context.Name</MudTd>
-                    <MudTd>@string.Format("{0:C}", context.CurrentBalance)</MudTd>
-                    <MudTd>@string.Format("{0:C}", _accountTotals[context]?.TargetAmount)</MudTd>
-                    <MudTd>@string.Format("{0:C}", _accountTotals[context]?.SavedSoFar)</MudTd>
-                    <MudTd>@string.Format("{0:C}", _accountTotals[context]?.LeftToSave)</MudTd>
-                </RowTemplate>
-            </MudTable>
-        }
+        <MudTable Items="@_accounts" Hover="true" Breakpoint="Breakpoint.SmAndDown" T="Account" Elevation="3">
+            <NoRecordsContent>
+                <MudText Typo="Typo.body2" Align="Align.Center"><i>No accounts to display</i></MudText>
+            </NoRecordsContent>
+            <ColGroup>
+                <col style="width: 20%;" />
+                <col style="width: 20%;" />
+                <col style="width: 20%;" />
+                <col style="width: 20%;" />
+                <col style="width: 20%;" />
+            </ColGroup>
+            <HeaderContent>
+                <MudTh>Name</MudTh>
+                <MudTh>Current Balance</MudTh>
+                <MudTh>Target Amount</MudTh>
+                <MudTh>Saved So Far</MudTh>
+                <MudTh>Left To Save</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.Name</MudTd>
+                <MudTd>@string.Format("{0:C}", context.CurrentBalance)</MudTd>
+                <MudTd>@string.Format("{0:C}", _accountTotals[context]?.TargetAmount)</MudTd>
+                <MudTd>@string.Format("{0:C}", _accountTotals[context]?.SavedSoFar)</MudTd>
+                <MudTd>@string.Format("{0:C}", _accountTotals[context]?.LeftToSave)</MudTd>
+            </RowTemplate>
+        </MudTable>
     </MudCardContent>
 </MudCard>

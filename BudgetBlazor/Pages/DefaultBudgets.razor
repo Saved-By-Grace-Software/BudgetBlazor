@@ -8,8 +8,10 @@
 
 <MudAlert Severity="Severity.Normal" Variant="Variant.Outlined">These budgets will affect all newly created months. They will not change months with existing budgets.</MudAlert>
 
+<MudButton Variant="Variant.Outlined" Color="Color.Primary" Class="my-6" StartIcon="@Icons.Filled.Add" OnClick="OpenAddCategoryDialog">Add New Default Category</MudButton>
+
 <!-- Budget Lists -->
-<MudCard Class="my-8" Elevation="3">
+@*<MudCard Class="my-8" Elevation="3">
     <MudCardHeader>
         <CardHeaderContent>
             <MudText Typo="Typo.h6">Budgets</MudText>
@@ -18,7 +20,7 @@
             <MudIconButton Icon="@Icons.Material.Filled.Add" OnClick="OpenAddCategoryDialog" />
         </CardHeaderActions>
     </MudCardHeader>
-    <MudCardContent>
+    <MudCardContent>*@
         @if (_defaultMonth.BudgetCategories.Count == 0)
         {
             <MudText Typo="Typo.body2" Align="Align.Center"><i>No budget categories to display</i></MudText>
@@ -86,5 +88,5 @@
                 }
             </MudGrid>
         }
-    </MudCardContent>
-</MudCard>
+@*    </MudCardContent>
+</MudCard>*@

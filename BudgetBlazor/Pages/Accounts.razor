@@ -6,54 +6,45 @@
 
 <PageHeader PageIcon="@Icons.Material.Filled.CreditCard" PageTitleText="Accounts"></PageHeader>
 
-<MudCard Class="my-4" Elevation="3" Style="@($"color:{CurrentTheme.Palette.TextPrimary}; background:{CurrentTheme.Palette.GrayLighter};")">
-    <MudCardContent>
-        @if (_accounts.Count == 0)
-        {
-            <MudText Typo="Typo.body2" Align="Align.Center"><i>No accounts to display</i></MudText>
-        }
-        else
-        {
-            <MudTable Items="@_accounts" Hover="true" Breakpoint="Breakpoint.SmAndDown" T="Account" OnRowClick="RowClickEvent">
-                <ColGroup>
-                    <col style="width: 30%;" />
-                    <col style="width: 20%;" />
-                    <col style="width: 20%;" />
-                    <col style="width: 25%;" />
-                    <col style="width: 5%;" />
-                </ColGroup>
-                <HeaderContent>
-                    <MudTh>Name</MudTh>
-                    <MudTh>Account Type</MudTh>
-                    <MudTh>Current Balance</MudTh>
-                    <MudTh>Last Updated</MudTh>
-                    <MudTh></MudTh>
-                </HeaderContent>
-                <RowTemplate>
-                    <MudTd DataLabel="Name">@context.Name</MudTd>
-                    <MudTd DataLabel="Type">@context.AccountType</MudTd>
-                    <MudTd DataLabel="Balance">@string.Format("{0:C}", context.CurrentBalance)</MudTd>
-                    <MudTd DataLabel="Updated">@context.LastUpdated</MudTd>
-                    <MudTd>
-                        <MudMenu Icon="@Icons.Material.Filled.MoreVert">
-                            <MudMenuItem OnClick="() => OpenEditAccountDialog(context)">
-                                <MudStack Row="true" Spacing="4" AlignItems="AlignItems.Center">
-                                    <MudIcon Icon="@Icons.Material.Filled.Edit" />
-                                    <MudText>Edit Account</MudText>
-                                </MudStack>
-                            </MudMenuItem>
-                            <MudMenuItem OnClick="() => DeleteAccount(context)">
-                                <MudStack Row="true" Spacing="4" AlignItems="AlignItems.Center">
-                                    <MudIcon Icon="@Icons.Material.Filled.Delete" />
-                                    <MudText>Delete Account</MudText>
-                                </MudStack></MudMenuItem>
-                        </MudMenu>
-                    </MudTd>
-                </RowTemplate>
-            </MudTable>
-        }
-    </MudCardContent>
-    <MudCardActions>
-        <MudButton Variant="Variant.Outlined" Color="Color.Primary" StartIcon="@Icons.Filled.Add" OnClick="OpenAddAccountDialog">Add New Account</MudButton>
-    </MudCardActions>
-</MudCard>
+<MudTable Items="@_accounts" Hover="true" Breakpoint="Breakpoint.SmAndDown" T="Account" OnRowClick="RowClickEvent" Elevation="3" Class="mb-4">
+    <NoRecordsContent>
+        <MudText Typo="Typo.body2" Align="Align.Center"><i>No accounts to display</i></MudText>
+    </NoRecordsContent>
+    <ColGroup>
+        <col style="width: 30%;" />
+        <col style="width: 20%;" />
+        <col style="width: 20%;" />
+        <col style="width: 25%;" />
+        <col style="width: 5%;" />
+    </ColGroup>
+    <HeaderContent>
+        <MudTh>Name</MudTh>
+        <MudTh>Account Type</MudTh>
+        <MudTh>Current Balance</MudTh>
+        <MudTh>Last Updated</MudTh>
+        <MudTh></MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Name">@context.Name</MudTd>
+        <MudTd DataLabel="Type">@context.AccountType</MudTd>
+        <MudTd DataLabel="Balance">@string.Format("{0:C}", context.CurrentBalance)</MudTd>
+        <MudTd DataLabel="Updated">@context.LastUpdated</MudTd>
+        <MudTd>
+            <MudMenu Icon="@Icons.Material.Filled.MoreVert">
+                <MudMenuItem OnClick="() => OpenEditAccountDialog(context)">
+                    <MudStack Row="true" Spacing="4" AlignItems="AlignItems.Center">
+                        <MudIcon Icon="@Icons.Material.Filled.Edit" />
+                        <MudText>Edit Account</MudText>
+                    </MudStack>
+                </MudMenuItem>
+                <MudMenuItem OnClick="() => DeleteAccount(context)">
+                    <MudStack Row="true" Spacing="4" AlignItems="AlignItems.Center">
+                        <MudIcon Icon="@Icons.Material.Filled.Delete" />
+                        <MudText>Delete Account</MudText>
+                    </MudStack></MudMenuItem>
+            </MudMenu>
+        </MudTd>
+    </RowTemplate>
+</MudTable>
+
+<MudButton Variant="Variant.Outlined" Color="Color.Primary" StartIcon="@Icons.Filled.Add" OnClick="OpenAddAccountDialog">Add New Account</MudButton>
