@@ -209,8 +209,8 @@
     /// <returns></returns>
     private async Task ExecuteAutomation(Automation automationToExecute)
     {
-        int numUpdated = AutomationEngine.ExecuteSingleAutomation(automationToExecute, _currentUserId, BudgetDataService);
+        Snackbar.Add("Automation execution has started, please do not exit this page until they are complete.");
 
-        Snackbar.Add("Done! \"" + automationToExecute.Name + "\" updated " + numUpdated + " transactions");
+        Task.Run(() => AutomationEngine.ExecuteSingleAutomation(automationToExecute, _currentUserId, BudgetDataService, Snackbar, null, true));
     }
 }

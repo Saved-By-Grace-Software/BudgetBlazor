@@ -11,82 +11,70 @@
 <MudButton Variant="Variant.Outlined" Color="Color.Primary" Class="my-6" StartIcon="@Icons.Filled.Add" OnClick="OpenAddCategoryDialog">Add New Default Category</MudButton>
 
 <!-- Budget Lists -->
-@*<MudCard Class="my-8" Elevation="3">
-    <MudCardHeader>
-        <CardHeaderContent>
-            <MudText Typo="Typo.h6">Budgets</MudText>
-        </CardHeaderContent>
-        <CardHeaderActions>
-            <MudIconButton Icon="@Icons.Material.Filled.Add" OnClick="OpenAddCategoryDialog" />
-        </CardHeaderActions>
-    </MudCardHeader>
-    <MudCardContent>*@
-        @if (_defaultMonth.BudgetCategories.Count == 0)
+@if (_defaultMonth.BudgetCategories.Count == 0)
+{
+    <MudText Typo="Typo.body2" Align="Align.Center"><i>No budget categories to display</i></MudText>
+}
+else
+{
+    <MudGrid Spacing="4" Justify="Justify.FlexStart">
+        @foreach(BudgetCategory category in _defaultMonth.BudgetCategories)
         {
-            <MudText Typo="Typo.body2" Align="Align.Center"><i>No budget categories to display</i></MudText>
-        }
-        else
-        {
-            <MudGrid Spacing="4" Justify="Justify.FlexStart">
-                @foreach(BudgetCategory category in _defaultMonth.BudgetCategories)
-                {
-                    <MudItem xs="12" md="3">
-                        <MudCard Elevation="1" Style="@($"color:{CurrentTheme.Palette.TextPrimary}; background:{category.Color};")">
-                            <MudCardHeader Class="mb-n4">
-                                <CardHeaderContent>
-                                    <MudText Typo="Typo.body1"><strong>@category.Name</strong></MudText>
-                                </CardHeaderContent>
-                                <CardHeaderActions>
-                                    <MudMenu Icon="@Icons.Material.Filled.MoreVert">
-                                        <MudMenuItem OnClick="() => OpenAddBudgetDialog(category)">
-                                            <MudStack Row="true" Spacing="4" AlignItems="AlignItems.Center">
-                                                <MudIcon Icon="@Icons.Material.Filled.Add" />
-                                                <MudText>Add Budget</MudText>
-                                            </MudStack>
-                                        </MudMenuItem>
-                                        <MudMenuItem OnClick="() => OpenEditDialog(category)">
-                                            <MudStack Row="true" Spacing="4" AlignItems="AlignItems.Center">
-                                                <MudIcon Icon="@Icons.Material.Filled.Edit" />
-                                                <MudText>Edit Category</MudText>
-                                            </MudStack>
-                                        </MudMenuItem>
-                                        <MudMenuItem OnClick="() => DeleteCategory(category)">
-                                            <MudStack Row="true" Spacing="4" AlignItems="AlignItems.Center">
-                                                <MudIcon Icon="@Icons.Material.Filled.Delete" />
-                                                <MudText>Delete Category</MudText>
-                                            </MudStack>
-                                        </MudMenuItem>
-                                    </MudMenu>
-                                </CardHeaderActions>
-                            </MudCardHeader>
-                            <MudCardContent>
-                                @if (category.BudgetItems.Count == 0)
+            <MudItem xs="12" md="3">
+                <MudCard Elevation="1" Style="@($"color:{CurrentTheme.Palette.TextPrimary}; background:{category.Color};")">
+                    <MudCardHeader Class="mb-n4">
+                        <CardHeaderContent>
+                            <MudText Typo="Typo.body1"><strong>@category.Name</strong></MudText>
+                        </CardHeaderContent>
+                        <CardHeaderActions>
+                            <MudMenu Icon="@Icons.Material.Filled.MoreVert">
+                                <MudMenuItem OnClick="() => OpenAddBudgetDialog(category)">
+                                    <MudStack Row="true" Spacing="4" AlignItems="AlignItems.Center">
+                                        <MudIcon Icon="@Icons.Material.Filled.Add" />
+                                        <MudText>Add Budget</MudText>
+                                    </MudStack>
+                                </MudMenuItem>
+                                <MudMenuItem OnClick="() => OpenEditDialog(category)">
+                                    <MudStack Row="true" Spacing="4" AlignItems="AlignItems.Center">
+                                        <MudIcon Icon="@Icons.Material.Filled.Edit" />
+                                        <MudText>Edit Category</MudText>
+                                    </MudStack>
+                                </MudMenuItem>
+                                <MudMenuItem OnClick="() => DeleteCategory(category)">
+                                    <MudStack Row="true" Spacing="4" AlignItems="AlignItems.Center">
+                                        <MudIcon Icon="@Icons.Material.Filled.Delete" />
+                                        <MudText>Delete Category</MudText>
+                                    </MudStack>
+                                </MudMenuItem>
+                            </MudMenu>
+                        </CardHeaderActions>
+                    </MudCardHeader>
+                    <MudCardContent>
+                        @if (category.BudgetItems.Count == 0)
+                        {
+                            <MudText Typo="Typo.body2" Align="Align.Center"><i>No budgets to display for this category</i></MudText>
+                        }
+                        else
+                        {
+                            <MudCard Elevation="1" Class="pa-2">
+                                @foreach(BudgetItem item in category.BudgetItems)
                                 {
-                                    <MudText Typo="Typo.body2" Align="Align.Center"><i>No budgets to display for this category</i></MudText>
+                                    <MudStack Row="true" Spacing="4" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+                                        <MudText>@item.Name</MudText>
+                                        <MudSpacer />
+                                        <MudIconButton Icon="@Icons.Material.Filled.Edit" Size="Size.Small" OnClick="() => OpenEditBudgetDialog(item, category)" />
+                                        <MudIconButton Icon="@Icons.Material.Filled.Delete" Size="Size.Small" OnClick="() => DeleteBudgetItem(item)" />
+                                    </MudStack>
+                                    if (item != category.BudgetItems.Last())
+                                    {
+                                        <MudDivider />
+                                    }
                                 }
-                                else
-                                {
-                                    <MudCard Elevation="1" Class="pa-2">
-                                        @foreach(BudgetItem item in category.BudgetItems)
-                                        {
-                                            <MudStack Row="true" Spacing="4" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
-                                                <MudText>@item.Name</MudText>
-                                                <MudSpacer />
-                                                <MudIconButton Icon="@Icons.Material.Filled.Edit" Size="Size.Small" OnClick="() => OpenEditBudgetDialog(item, category)" />
-                                                <MudIconButton Icon="@Icons.Material.Filled.Delete" Size="Size.Small" OnClick="() => DeleteBudgetItem(item)" />
-                                            </MudStack>
-                                            if (item != category.BudgetItems.Last())
-                                            {
-                                                <MudDivider />
-                                            }
-                                        }
-                                    </MudCard>
-                                }
-                            </MudCardContent>
-                        </MudCard>
-                    </MudItem>
-                }
-            </MudGrid>
+                            </MudCard>
+                        }
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
         }
-@*    </MudCardContent>
-</MudCard>*@
+    </MudGrid>
+}

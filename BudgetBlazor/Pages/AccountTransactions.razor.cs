@@ -237,6 +237,8 @@ namespace BudgetBlazor.Pages
         #region Import Transactions Functions
         protected async Task UploadFiles(InputFileChangeEventArgs e)
         {
+            Snackbar.Add("Transaction import has started, please do not exit this page until it has completed.");
+
             // Copy the uploaded file into a string buffer
             string transactionsFile = await new StreamReader(e.File.OpenReadStream()).ReadToEndAsync();
 
@@ -244,7 +246,7 @@ namespace BudgetBlazor.Pages
             if (e.File.ContentType == "text/csv")
             {
                 // CSV file uploaded, use CSV parser
-                if (Account != default(Account) && TransactionImporter.ImportCSVTransactions(transactionsFile, (Account)Account, BudgetDataService))
+                if (Account != default(Account) && await TransactionImporter.ImportCSVTransactions(transactionsFile, (Account)Account, BudgetDataService))
                 {
                     Snackbar.Add("Successfully imported transactions!");
                 }
@@ -256,7 +258,7 @@ namespace BudgetBlazor.Pages
             else
             {
                 // OFX file uploaded, use OFX parser
-                if (Account != default(Account) && TransactionImporter.ImportOFXTransactions(transactionsFile, (Account)Account, BudgetDataService))
+                if (Account != default(Account) && await TransactionImporter.ImportOFXTransactions(transactionsFile, (Account)Account, BudgetDataService))
                 {
                     Snackbar.Add("Successfully imported transactions!");
                 }
