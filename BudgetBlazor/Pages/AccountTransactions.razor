@@ -2,7 +2,7 @@
 @page "/Accounts/Edit/{AccountId}"
 @inherits AccountTransactionsBase
 
-<PageHeader PageIcon="@Icons.Material.Outlined.CreditCard" PageTitleText="@Account.Name">
+<PageHeader PageIcon="@Icons.Material.Outlined.CreditCard" PageTitleText="@(Account == null ? "Loading Account..." : Account.Name)">
     <PageHeaderActions>
         <MudHidden Breakpoint="Breakpoint.MdAndUp" Invert="true">
             <MudBreadcrumbs Items="_items"></MudBreadcrumbs>
@@ -18,7 +18,11 @@
 
 <MudCard Class="my-4" Elevation="3" Style="@($"color:{CurrentTheme.Palette.TextPrimary}; background:{CurrentTheme.Palette.GrayLighter};")">
     <MudCardContent>
-        @if (Account.Transactions.Count == 0)
+        @if (Account == null)
+        {
+            <MudText Typo="Typo.body2" Align="Align.Center"><i>Not a valid account, please go back and try again</i></MudText>
+        }
+        else if (Account.Transactions.Count == 0)
         {
             <MudText Typo="Typo.body2" Align="Align.Center"><i>No transactions for this account yet</i></MudText>
         }
@@ -144,11 +148,12 @@
                    Variant="Variant.Filled"
                    Color="Color.Primary"
                    StartIcon="@Icons.Filled.CloudUpload"
-                   for="fileInput">
+                   for="fileInput"
+                   Disabled="@(Account == null)">
             Import Transactions
         </MudButton>
         <MudSpacer />
-        <MudButton Variant="Variant.Outlined" Color="Color.Primary" StartIcon="@Icons.Filled.Add" OnClick="OpenAddTransactionDialog">Add New Transaction</MudButton>
+        <MudButton Variant="Variant.Outlined" Color="Color.Primary" StartIcon="@Icons.Filled.Add" OnClick="OpenAddTransactionDialog" Disabled="@(Account == null)">Add New Transaction</MudButton>
     </MudCardActions>
 </MudCard>
 
