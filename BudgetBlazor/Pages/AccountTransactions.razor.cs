@@ -38,6 +38,7 @@ namespace BudgetBlazor.Pages
         protected List<BreadcrumbItem> _items = new List<BreadcrumbItem>();
         protected Variant _filterButtonVariant = Variant.Outlined;
         private bool _showOnlyUnbudgeted = false;
+        protected bool _isAccountLoading = true;
         protected PlotlyChart chart;
         protected Config config { get; set; }
         protected Layout layout { get; set; }
@@ -52,48 +53,65 @@ namespace BudgetBlazor.Pages
             var authstate = await AuthenticationStateProvider.GetAuthenticationStateAsync();
             _currentUserId = Guid.Parse(authstate.User.Claims.First().Value);
 
-            if (int.TryParse(AccountId, out int id))
-            {
-                Account = BudgetDataService.GetAccount(id, _currentUserId);
-            }
-
-            _items = new List<BreadcrumbItem>
-            {
-                new BreadcrumbItem("Accounts", href: "Accounts", icon: Icons.Material.Filled.CreditCard),
-                new BreadcrumbItem(Account == null ? "Account" : Account.Name, href: null, disabled: true)
-            };
+            Account = new Account("Loading Account...");
 
             BudgetDataService.AccountDataChanged += BudgetDataService_AccountDataChanged;
+        }
 
-            // Add the history data for the chart
-            data = new List<ITrace>();
-            data.Add(ChartHelpers.GetScatterDataForAccount(Account.Id, Account.Name, BudgetDataService));
-
-            // Configure the chart
-            config = new()
+        /// <summary>
+        /// Lifecycle method called after the page is rendered
+        /// </summary>
+        /// <param name="firstRender"></param>
+        /// <returns></returns>
+        protected override async Task OnAfterRenderAsync(bool firstRender)
+        {
+            if (firstRender && int.TryParse(AccountId, out int id))
             {
-                Responsive = true,
-                DisplayModeBar = Plotly.Blazor.ConfigLib.DisplayModeBarEnum.False
-            };
+                Account = BudgetDataService.GetAccount(id, _currentUserId);
 
-            layout = new()
-            {
-                Title = new Title
+                if (Account != default(Account))
                 {
-                    Text = String.Format("Balance - {0:C}", Account.CurrentBalance),
-                    Font = new Plotly.Blazor.LayoutLib.TitleLib.Font()
+                    _items = new List<BreadcrumbItem>
                     {
-                        Size = 30
-                    }
-                },
-                YAxis = new List<YAxis>
-                {
-                    new()
+                        new BreadcrumbItem("Accounts", href: "Accounts", icon: Icons.Material.Filled.CreditCard),
+                        new BreadcrumbItem(Account == null ? "Account" : Account.Name, href: null, disabled: true)
+                    };
+
+                    // Add the history data for the chart
+                    data = new List<ITrace>();
+                    data.Add(ChartHelpers.GetScatterDataForAccount(Account.Id, Account.Name, BudgetDataService));
+
+                    // Configure the chart
+                    config = new()
                     {
-                        Title = new Plotly.Blazor.LayoutLib.YAxisLib.Title { Text = "Account Balance" }
-                    }
+                        Responsive = true,
+                        DisplayModeBar = Plotly.Blazor.ConfigLib.DisplayModeBarEnum.False
+                    };
+
+                    layout = new()
+                    {
+                        Title = new Title
+                        {
+                            Text = String.Format("Balance - {0:C}", Account.CurrentBalance),
+                            Font = new Plotly.Blazor.LayoutLib.TitleLib.Font()
+                            {
+                                Size = 30
+                            }
+                        },
+                        YAxis = new List<YAxis>
+                        {
+                            new()
+                            {
+                                Title = new Plotly.Blazor.LayoutLib.YAxisLib.Title { Text = "Account Balance" }
+                            }
+                        }
+                    };
+
+                    // Done loading data, show the data
+                    _isAccountLoading = false;
+                    StateHasChanged();
                 }
-            };
+            }
         }
 
         /// <summary>
@@ -219,6 +237,8 @@ namespace BudgetBlazor.Pages
         #region Import Transactions Functions
         protected async Task UploadFiles(InputFileChangeEventArgs e)
         {
+            Snackbar.Add("Transaction import has started, please do not exit this page until it has completed.");
+
             // Copy the uploaded file into a string buffer
             string transactionsFile = await new StreamReader(e.File.OpenReadStream()).ReadToEndAsync();
 
@@ -226,7 +246,7 @@ namespace BudgetBlazor.Pages
             if (e.File.ContentType == "text/csv")
             {
                 // CSV file uploaded, use CSV parser
-                if (Account != default(Account) && TransactionImporter.ImportCSVTransactions(transactionsFile, (Account)Account, BudgetDataService))
+                if (Account != default(Account) && await TransactionImporter.ImportCSVTransactions(transactionsFile, (Account)Account, BudgetDataService))
                 {
                     Snackbar.Add("Successfully imported transactions!");
                 }
@@ -238,7 +258,7 @@ namespace BudgetBlazor.Pages
             else
             {
                 // OFX file uploaded, use OFX parser
-                if (Account != default(Account) && TransactionImporter.ImportOFXTransactions(transactionsFile, (Account)Account, BudgetDataService))
+                if (Account != default(Account) && await TransactionImporter.ImportOFXTransactions(transactionsFile, (Account)Account, BudgetDataService))
                 {
                     Snackbar.Add("Successfully imported transactions!");
                 }

@@ -1,4 +1,4 @@
-﻿<MudCard Elevation="1" Style="@($"color:{CurrentTheme.Palette.TextPrimary}; background:{Category.Color};")">
+﻿<MudCard Elevation="3" Style="@($"color:{CurrentTheme.Palette.TextPrimary}; background:{Category.Color};")">
     <MudCardHeader Class="mb-n4">
         <CardHeaderContent>
             <MudText Typo="Typo.body1"><strong>@Category.Name</strong></MudText>
@@ -27,63 +27,59 @@
         </CardHeaderActions>
     </MudCardHeader>
     <MudCardContent>
-        @if (Category.Automations.Count == 0)
-        {
-            <MudText Typo="Typo.body2" Align="Align.Center"><i>No automations to display for this category</i></MudText>
-        }
-        else
-        {
-            <MudTable Items="@Category.Automations" T="Automation" Hover="true" Breakpoint="Breakpoint.SmAndDown">
-                <ColGroup>
-                    <col style="width: 25%;" />
-                    <col style="width: 40%;" />
-                    <col style="width: 25%;" />
-                    <col style="width: 10%;" />
-                </ColGroup>
-                <HeaderContent>
-                    <MudTh><strong>Name</strong></MudTh>
-                    <MudTh><strong>Description Contains..</strong></MudTh>
-                    <MudTh><strong>Sets Budget To..</strong></MudTh>
-                    <MudTh></MudTh>
-                </HeaderContent>
-                <RowTemplate>
-                    <MudTd>@context.Name</MudTd>
-                    <MudTd>
-                        @if (context.Rules.Count == 0)
-                        {
-                            <i>No checks for this rule yet</i>
-                        }
-                        else
-                        {
-                            <ul>
-                                @foreach(AutomationRule rule in @context.Rules)
-                                {
-                                    <li>
-                                        @(rule.IsExactMatch ? rule.ContainsText + " (EXACT)" : rule.ContainsText)
-                                    </li>
-                                }
-                            </ul>
-                        }
-                    </MudTd>
-                    <MudTd>
-                        @(context.DefaultBudgetToSet == null && context.SetToIncome ? "INCOME" : @context.DefaultBudgetToSet.Name)
-                    </MudTd>
-                    <MudTd>
-                        <MudToolBar>
-                            <MudTooltip Text="Execute Rule Now">
-                                <MudIconButton Icon="@Icons.Material.Filled.PlayArrow" OnClick="() => ExecuteAutomation(context)" />
-                            </MudTooltip>
-                            <MudTooltip Text="Edit Rule">
-                                <MudIconButton Icon="@Icons.Material.Filled.Edit" OnClick="() => OpenEditAutomationDialog(context)" />
-                            </MudTooltip>
-                            <MudTooltip Text="Delete Rule">
-                                <MudIconButton Icon="@Icons.Material.Filled.Delete" OnClick="() => DeleteAutomation(context)" />
-                            </MudTooltip>
-                        </MudToolBar>
-                    </MudTd>
-                </RowTemplate>
-            </MudTable>
-        }
+        <MudTable Items="@Category.Automations" T="Automation" Hover="true" Breakpoint="Breakpoint.SmAndDown" Elevation="3">
+            <NoRecordsContent>
+                <MudText Typo="Typo.body2" Align="Align.Center"><i>No automations to display for this category</i></MudText>
+            </NoRecordsContent>
+            <ColGroup>
+                <col style="width: 25%;" />
+                <col style="width: 40%;" />
+                <col style="width: 25%;" />
+                <col style="width: 10%;" />
+            </ColGroup>
+            <HeaderContent>
+                <MudTh><strong>Name</strong></MudTh>
+                <MudTh><strong>Description Contains..</strong></MudTh>
+                <MudTh><strong>Sets Budget To..</strong></MudTh>
+                <MudTh></MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.Name</MudTd>
+                <MudTd>
+                    @if (context.Rules.Count == 0)
+                    {
+                        <i>No checks for this rule yet</i>
+                    }
+                    else
+                    {
+                        <ul>
+                            @foreach(AutomationRule rule in @context.Rules)
+                            {
+                                <li>
+                                    @(rule.IsExactMatch ? rule.ContainsText + " (EXACT)" : rule.ContainsText)
+                                </li>
+                            }
+                        </ul>
+                    }
+                </MudTd>
+                <MudTd>
+                    @(context.DefaultBudgetToSet == null && context.SetToIncome ? "INCOME" : @context.DefaultBudgetToSet.Name)
+                </MudTd>
+                <MudTd>
+                    <MudToolBar>
+                        <MudTooltip Text="Execute Rule Now">
+                            <MudIconButton Icon="@Icons.Material.Filled.PlayArrow" OnClick="() => ExecuteAutomation(context)" />
+                        </MudTooltip>
+                        <MudTooltip Text="Edit Rule">
+                            <MudIconButton Icon="@Icons.Material.Filled.Edit" OnClick="() => OpenEditAutomationDialog(context)" />
+                        </MudTooltip>
+                        <MudTooltip Text="Delete Rule">
+                            <MudIconButton Icon="@Icons.Material.Filled.Delete" OnClick="() => DeleteAutomation(context)" />
+                        </MudTooltip>
+                    </MudToolBar>
+                </MudTd>
+            </RowTemplate>
+        </MudTable>
     </MudCardContent>
 </MudCard>
 
@@ -213,8 +209,8 @@
     /// <returns></returns>
     private async Task ExecuteAutomation(Automation automationToExecute)
     {
-        int numUpdated = AutomationEngine.ExecuteSingleAutomation(automationToExecute, _currentUserId, BudgetDataService);
+        Snackbar.Add("Automation execution has started, please do not exit this page until they are complete.");
 
-        Snackbar.Add("Done! \"" + automationToExecute.Name + "\" updated " + numUpdated + " transactions");
+        Task.Run(() => AutomationEngine.ExecuteSingleAutomation(automationToExecute, _currentUserId, BudgetDataService, Snackbar, null, true));
     }
 }

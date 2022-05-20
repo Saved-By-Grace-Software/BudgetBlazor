@@ -1,5 +1,6 @@
 ﻿using CsvHelper;
 using DataAccess.Services;
+using MudBlazor;
 using OfxSharp;
 using System.Globalization;
 using BudgetAccount = DataAccess.Models.Account;
@@ -16,7 +17,7 @@ namespace BudgetBlazor.Helpers
         /// <param name="account">Account to import the transactions into</param>
         /// <param name="dataService">Data service for adding transactions into the database</param>
         /// <returns></returns>
-        public static bool ImportOFXTransactions(string transactionsFile, BudgetAccount account, IBudgetDataService dataService)
+        public static async Task<bool> ImportOFXTransactions(string transactionsFile, BudgetAccount account, IBudgetDataService dataService)
         {
             bool success = false;
 
@@ -46,7 +47,7 @@ namespace BudgetBlazor.Helpers
                         if (!account.Transactions.Contains(t))
                         {
                             // Run automations against the transaction
-                            t = AutomationEngine.ExecuteAllAutomations(t, account.User, dataService);
+                            t = await AutomationEngine.ExecuteAllAutomations(t, account.User, dataService);
 
                             // Add the transaction to the account
                             account.Transactions.Add(t);
@@ -77,7 +78,7 @@ namespace BudgetBlazor.Helpers
         /// <param name="account">Account to import the transactions into</param>
         /// <param name="dataService">Data service for adding transactions into the database</param>
         /// <returns></returns>
-        public static bool ImportCSVTransactions(string transactionsFile, BudgetAccount account, IBudgetDataService dataService)
+        public static async Task<bool> ImportCSVTransactions(string transactionsFile, BudgetAccount account, IBudgetDataService dataService)
         {
             bool success = false;
             List<dynamic> records = new List<dynamic>();
@@ -112,7 +113,7 @@ namespace BudgetBlazor.Helpers
                         if (!account.Transactions.Contains(t))
                         {
                             // Run automations against the transaction
-                            t = AutomationEngine.ExecuteAllAutomations(t, account.User, dataService);
+                            t = await AutomationEngine.ExecuteAllAutomations(t, account.User, dataService);
 
                             // Add the transaction to the account
                             account.Transactions.Add(t);

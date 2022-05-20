@@ -73,9 +73,10 @@ namespace BudgetBlazor.Pages
         /// <returns></returns>
         protected async Task ExecuteAllAutomations()
         {
-            int numUpdated = AutomationEngine.ExecuteAllAutomations(_currentUserId, BudgetDataService);
+            Snackbar.Add("Automation execution has started, please do not exit this page until they are complete.");
 
-            Snackbar.Add("Done! Updated " + numUpdated + " transactions");
+            //int numUpdated = await AutomationEngine.ExecuteAllAutomations(_currentUserId, BudgetDataService, Snackbar, true);
+            Task.Run(() => AutomationEngine.ExecuteAllAutomations(_currentUserId, BudgetDataService, Snackbar, true));
         }
 
         #region Event Functions

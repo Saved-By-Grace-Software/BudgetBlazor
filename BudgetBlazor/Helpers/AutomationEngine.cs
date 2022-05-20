@@ -1,5 +1,6 @@
 ﻿using DataAccess.Models;
 using DataAccess.Services;
+using MudBlazor;
 
 namespace BudgetBlazor.Helpers
 {
@@ -13,8 +14,8 @@ namespace BudgetBlazor.Helpers
         /// <param name="dataService"></param>
         /// <param name="userTransactions"></param>
         /// <returns></returns>
-        public static int ExecuteSingleAutomation(
-            Automation automationToExecute, Guid user, IBudgetDataService dataService, List<Transaction> userTransactions = null)
+        public static async Task<int> ExecuteSingleAutomation(
+            Automation automationToExecute, Guid user, IBudgetDataService dataService, ISnackbar snackbar, List<Transaction> userTransactions = null, bool showSnackbar = false)
         {
             int updateCounter = 0;
 
@@ -67,6 +68,11 @@ namespace BudgetBlazor.Helpers
                 }
             }
 
+            if (showSnackbar)
+            {
+                snackbar.Add("Done! \"" + automationToExecute.Name + "\" updated " + updateCounter + " transactions");
+            }
+
             return updateCounter;
         }
 
@@ -76,7 +82,7 @@ namespace BudgetBlazor.Helpers
         /// <param name="user"></param>
         /// <param name="dataService"></param>
         /// <returns></returns>
-        public static int ExecuteAllAutomations(Guid user, IBudgetDataService dataService)
+        public static async Task<int> ExecuteAllAutomations(Guid user, IBudgetDataService dataService, ISnackbar snackbar, bool showSnackbar = false)
         {
             int updateCounter = 0;
 
@@ -89,7 +95,12 @@ namespace BudgetBlazor.Helpers
             // Process each automation
             foreach (Automation automation in userAutomations)
             {
-                updateCounter += ExecuteSingleAutomation(automation, user, dataService, userTransactions);
+                updateCounter += ExecuteSingleAutomation(automation, user, dataService, snackbar, userTransactions).Result;
+            }
+
+            if (showSnackbar)
+            {
+                snackbar.Add("Done! Updated " + updateCounter + " transactions");
             }
 
             return updateCounter;
@@ -102,7 +113,7 @@ namespace BudgetBlazor.Helpers
         /// <param name="user"></param>
         /// <param name="dataService"></param>
         /// <returns></returns>
-        public static Transaction ExecuteAllAutomations(Transaction transaction, Guid user, IBudgetDataService dataService)
+        public static async Task<Transaction> ExecuteAllAutomations(Transaction transaction, Guid user, IBudgetDataService dataService)
         {
             // Get all automations for this user
             List<Automation> userAutomations = dataService.GetAutomations(user);
