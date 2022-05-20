@@ -32,6 +32,8 @@ namespace BudgetBlazor.Pages
         protected Guid _currentUserId;
         protected MudDatePicker _datePicker;
         private int _currentMonthId = -1;
+        protected bool _isLoadingData = true;
+        protected Dictionary<BudgetCategory, BudgetCategoryDisplay> _budgetCategoryDisplays = new Dictionary<BudgetCategory, BudgetCategoryDisplay>();
 
         /// <summary>
         /// Lifecycle method called when the page is initialized
@@ -41,6 +43,8 @@ namespace BudgetBlazor.Pages
         {
             var authstate = await AuthenticationStateProvider.GetAuthenticationStateAsync();
             _currentUserId = Guid.Parse(authstate.User.Claims.First().Value);
+
+            _isLoadingData = true;
 
             _currentMonth = BudgetDataService.GetOrCreate(((DateTime)_currentMonthDate).Year, ((DateTime)_currentMonthDate).Month, _currentUserId);
             BudgetDataService.BudgetDataChanged += BudgetDataService_BudgetDataChanged;
@@ -61,6 +65,12 @@ namespace BudgetBlazor.Pages
                 // Update the current month Id so we don't constantly recalculate
                 _currentMonthId = _currentMonth.Id;
 
+                // Done loading, force the child components to hide the loading indicator
+                _isLoadingData = false;
+                foreach(BudgetCategoryDisplay categoryDisplay in _budgetCategoryDisplays.Values)
+                {
+                    categoryDisplay.HideLoadingIndicator();
+                }
                 Snackbar.Add("Loaded: " + ((DateTime)_currentMonthDate).ToString("MMMM yyyy"));
             }
         }
@@ -179,6 +189,10 @@ namespace BudgetBlazor.Pages
         {
             if (newDate.HasValue)
             {
+                // Set loading data
+                _isLoadingData = true;
+
+                // Load the new month (this triggers an update in the AfterRender function)
                 _currentMonthDate = newDate;
                 _currentMonth = BudgetDataService.GetOrCreate(((DateTime)_currentMonthDate).Year, ((DateTime)_currentMonthDate).Month, _currentUserId);
             }

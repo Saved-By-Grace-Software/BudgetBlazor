@@ -38,6 +38,7 @@ namespace BudgetBlazor.Pages
         protected List<BreadcrumbItem> _items = new List<BreadcrumbItem>();
         protected Variant _filterButtonVariant = Variant.Outlined;
         private bool _showOnlyUnbudgeted = false;
+        protected bool _isAccountLoading = true;
         protected PlotlyChart chart;
         protected Config config { get; set; }
         protected Layout layout { get; set; }
@@ -51,6 +52,8 @@ namespace BudgetBlazor.Pages
         {
             var authstate = await AuthenticationStateProvider.GetAuthenticationStateAsync();
             _currentUserId = Guid.Parse(authstate.User.Claims.First().Value);
+
+            Account = new Account("Loading Account...");
 
             BudgetDataService.AccountDataChanged += BudgetDataService_AccountDataChanged;
         }
@@ -104,6 +107,8 @@ namespace BudgetBlazor.Pages
                         }
                     };
 
+                    // Done loading data, show the data
+                    _isAccountLoading = false;
                     StateHasChanged();
                 }
             }

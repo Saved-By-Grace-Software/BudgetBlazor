@@ -27,8 +27,19 @@ namespace BudgetBlazor.Pages.Page_Components
         #endregion
 
         [Parameter] public BudgetCategory Category { get; set; }
+        [Parameter] public bool IsLoading { get; set; }
+        [Parameter] public EventCallback<bool> IsLoadingChanged { get; set; }
 
         private BudgetItem itemBeforeEdit;
+
+        /// <summary>
+        /// Function to forcably hide the table loading indicator
+        /// </summary>
+        public void HideLoadingIndicator()
+        {
+            IsLoading = false;
+            StateHasChanged();
+        }
 
         /// <summary>
         /// Opens the dialog to edit a budget category

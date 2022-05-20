@@ -2,7 +2,7 @@
 @page "/Accounts/Edit/{AccountId}"
 @inherits AccountTransactionsBase
 
-<PageHeader PageIcon="@Icons.Material.Outlined.CreditCard" PageTitleText="@(Account == null ? "Loading Account..." : Account.Name)">
+<PageHeader PageIcon="@Icons.Material.Outlined.CreditCard" PageTitleText="@Account.Name">
     <PageHeaderActions>
         <MudHidden Breakpoint="Breakpoint.MdAndUp" Invert="true">
             <MudBreadcrumbs Items="_items"></MudBreadcrumbs>
@@ -18,130 +18,126 @@
 
 <MudCard Class="my-4" Elevation="3" Style="@($"color:{CurrentTheme.Palette.TextPrimary}; background:{CurrentTheme.Palette.GrayLighter};")">
     <MudCardContent>
-        @if (Account == null)
-        {
-            <MudText Typo="Typo.body2" Align="Align.Center"><i>Not a valid account, please go back and try again</i></MudText>
-        }
-        else if (Account.Transactions.Count == 0)
-        {
-            <MudText Typo="Typo.body2" Align="Align.Center"><i>No transactions for this account yet</i></MudText>
-        }
-        else
-        {
-            <MudTable Items="@Account.Transactions" 
-                Hover="true" 
-                Breakpoint="Breakpoint.SmAndDown" 
-                T="Transaction" 
-                Dense="true" 
-                Striped="true" 
-                Filter="new Func<Transaction,bool>(FilterFunc1)"
-                Virtualize="true">
-                <ToolBarContent>
-                    <MudText Typo="Typo.h6">Transactions</MudText>
-                    <MudSpacer />
-                    <MudButton 
-                        Variant="@_filterButtonVariant" 
-                        StartIcon="@Icons.Material.Filled.FilterList" 
-                        Color="Color.Info" 
-                        Class="me-4 align-center"
-                        OnClick="FilterUnbudgeted">
-                        Unbudgeted
-                    </MudButton>
-                    <MudTextField @bind-Value="searchString" 
-                        Placeholder="Search" 
-                        Clearable="true"
-                        Adornment="Adornment.Start" 
-                        AdornmentIcon="@Icons.Material.Filled.Search" 
-                        IconSize="Size.Medium" 
-                        Class="mt-0"></MudTextField>
+        <MudTable Items="@Account.Transactions" 
+            Hover="true" 
+            Breakpoint="Breakpoint.SmAndDown" 
+            T="Transaction" 
+            Dense="true" 
+            Striped="true" 
+            Filter="new Func<Transaction,bool>(FilterFunc1)"
+            Virtualize="true"
+            Loading="@_isAccountLoading">
+            <ToolBarContent>
+                <MudText Typo="Typo.h6">Transactions</MudText>
+                <MudSpacer />
+                <MudButton 
+                    Variant="@_filterButtonVariant" 
+                    StartIcon="@Icons.Material.Filled.FilterList" 
+                    Color="Color.Info" 
+                    Class="me-4 align-center"
+                    OnClick="FilterUnbudgeted">
+                    Unbudgeted
+                </MudButton>
+                <MudTextField @bind-Value="searchString" 
+                    Placeholder="Search" 
+                    Clearable="true"
+                    Adornment="Adornment.Start" 
+                    AdornmentIcon="@Icons.Material.Filled.Search" 
+                    IconSize="Size.Medium" 
+                    Class="mt-0"></MudTextField>
                     
-                </ToolBarContent>
-                <ColGroup>
-                    <col style="width: 10%;" />
-                    <col style="width: 40%;" />
-                    <col style="width: 20%;" />
-                    <col style="width: 25%;" />
-                    <col style="width: 5%;" />
-                </ColGroup>
-                <HeaderContent>
-                    <MudTh><MudTableSortLabel InitialDirection="SortDirection.Descending" SortBy="new Func<Transaction, object>(x=>x.TransactionDate)">Date</MudTableSortLabel></MudTh>
-                    <MudTh><MudTableSortLabel SortBy="new Func<Transaction, object>(x=>x.Name)">Description</MudTableSortLabel></MudTh>
-                    <MudTh><MudTableSortLabel SortBy="new Func<Transaction, object>(x=>x.Amount)">Amount</MudTableSortLabel></MudTh>
-                    <MudTh>Budget</MudTh>
-                    <MudTh></MudTh>
-                </HeaderContent>
-                <RowTemplate>
-                    <MudTd DataLabel="Date">@context.TransactionDate.ToString("MM/dd/yyyy")</MudTd>
-                    <MudTd DataLabel="Description">@context.Name</MudTd>
-                    <MudTd DataLabel="Amount">@string.Format("{0:C}", context.Amount)</MudTd>
-                    <MudTd DataLabel="Budget">@(context.IsIncome ? "INCOME" : context.Budget)</MudTd>
-                    <MudTd>
-                        <MudMenu Icon="@Icons.Material.Filled.MoreVert">
-                            <MudMenuItem OnClick="() => OpenEditTransactionDialog(context)">
-                                <MudStack Row="true" Spacing="4" AlignItems="AlignItems.Center">
-                                    <MudIcon Icon="@Icons.Material.Filled.Edit" />
-                                    <MudText>Edit Transaction</MudText>
-                                </MudStack>
-                            </MudMenuItem>
-                            <MudMenuItem OnClick="() => DeleteTransaction(context)">
-                                <MudStack Row="true" Spacing="4" AlignItems="AlignItems.Center">
-                                    <MudIcon Icon="@Icons.Material.Filled.Delete" />
-                                    <MudText>Delete Transaction</MudText>
-                                </MudStack></MudMenuItem>
-                        </MudMenu>
-                    </MudTd>
-                </RowTemplate>
-                <ChildRowContent>
-                    @if(context.Splits.Count > 0)
-                    {
-                        <MudTr>
-                            <td colspan="5">
-                                <MudCard Elevation="1" Class="ma-2">
-                                    <MudCardHeader>
-                                        <CardHeaderContent>
-                                            <MudText Typo="Typo.body1"><i>Split Transactions for </i><strong>@context.Name</strong></MudText>
-                                        </CardHeaderContent>
-                                    </MudCardHeader>
-                                    <MudCardContent>
-                                        <MudTable Items="@context.Splits" Breakpoint="Breakpoint.SmAndDown" Context="SplitsContext" Hover="false" T="Transaction" Dense="true" Striped="true">
-                                            <ColGroup>
-                                                <col style="width: 10%;" />
-                                                <col style="width: 40%;" />
-                                                <col style="width: 20%;" />
-                                                <col style="width: 25%;" />
-                                                <col style="width: 5%;" />
-                                            </ColGroup>
-                                            <HeaderContent>
-                                                <MudTh><MudTableSortLabel InitialDirection="SortDirection.Descending" SortBy="new Func<Transaction, object>(x=>x.TransactionDate)">Date</MudTableSortLabel></MudTh>
-                                                <MudTh>Description</MudTh>
-                                                <MudTh>Amount</MudTh>
-                                                <MudTh>Budget</MudTh>
-                                                <MudTh></MudTh>
-                                            </HeaderContent>
-                                            <RowTemplate>
-                                                <MudTd DataLabel="Date">@SplitsContext.TransactionDate.ToString("MM/dd/yyyy")</MudTd>
-                                                <MudTd DataLabel="Description">@SplitsContext.Name</MudTd>
-                                                <MudTd DataLabel="Amount">@string.Format("{0:C}", SplitsContext.Amount)</MudTd>
-                                                <MudTd DataLabel="Budget">@(SplitsContext.IsIncome ? "INCOME" : SplitsContext.Budget)</MudTd>
-                                                <MudTd></MudTd>
-                                            </RowTemplate>
-                                        </MudTable>
-                                    </MudCardContent>
-                                </MudCard>
-                            </td>
-                        </MudTr>
-                    }
-	            </ChildRowContent>
-                <PagerContent>
-                    <MudHidden Breakpoint="Breakpoint.SmAndDown" Invert="true">
-                        <MudTablePager HideRowsPerPage="true" />
-                    </MudHidden>
-                    <MudHidden Breakpoint="Breakpoint.MdAndUp" Invert="true">
-                        <MudTablePager HideRowsPerPage="false" />
-                    </MudHidden>
-                </PagerContent>
-            </MudTable>
-        }
+            </ToolBarContent>
+            <LoadingContent>
+                <MudText Typo="Typo.body2" Align="Align.Center"><i>Please wait while we load the account data...</i></MudText>
+            </LoadingContent>
+            <NoRecordsContent>
+                <MudText Typo="Typo.body2" Align="Align.Center"><i>No transactions for this account yet</i></MudText>
+            </NoRecordsContent>
+            <ColGroup>
+                <col style="width: 10%;" />
+                <col style="width: 40%;" />
+                <col style="width: 20%;" />
+                <col style="width: 25%;" />
+                <col style="width: 5%;" />
+            </ColGroup>
+            <HeaderContent>
+                <MudTh><MudTableSortLabel InitialDirection="SortDirection.Descending" SortBy="new Func<Transaction, object>(x=>x.TransactionDate)">Date</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortBy="new Func<Transaction, object>(x=>x.Name)">Description</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortBy="new Func<Transaction, object>(x=>x.Amount)">Amount</MudTableSortLabel></MudTh>
+                <MudTh>Budget</MudTh>
+                <MudTh></MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Date">@context.TransactionDate.ToString("MM/dd/yyyy")</MudTd>
+                <MudTd DataLabel="Description">@context.Name</MudTd>
+                <MudTd DataLabel="Amount">@string.Format("{0:C}", context.Amount)</MudTd>
+                <MudTd DataLabel="Budget">@(context.IsIncome ? "INCOME" : context.Budget)</MudTd>
+                <MudTd>
+                    <MudMenu Icon="@Icons.Material.Filled.MoreVert">
+                        <MudMenuItem OnClick="() => OpenEditTransactionDialog(context)">
+                            <MudStack Row="true" Spacing="4" AlignItems="AlignItems.Center">
+                                <MudIcon Icon="@Icons.Material.Filled.Edit" />
+                                <MudText>Edit Transaction</MudText>
+                            </MudStack>
+                        </MudMenuItem>
+                        <MudMenuItem OnClick="() => DeleteTransaction(context)">
+                            <MudStack Row="true" Spacing="4" AlignItems="AlignItems.Center">
+                                <MudIcon Icon="@Icons.Material.Filled.Delete" />
+                                <MudText>Delete Transaction</MudText>
+                            </MudStack></MudMenuItem>
+                    </MudMenu>
+                </MudTd>
+            </RowTemplate>
+            <ChildRowContent>
+                @if(context.Splits.Count > 0)
+                {
+                    <MudTr>
+                        <td colspan="5">
+                            <MudCard Elevation="1" Class="ma-2">
+                                <MudCardHeader>
+                                    <CardHeaderContent>
+                                        <MudText Typo="Typo.body1"><i>Split Transactions for </i><strong>@context.Name</strong></MudText>
+                                    </CardHeaderContent>
+                                </MudCardHeader>
+                                <MudCardContent>
+                                    <MudTable Items="@context.Splits" Breakpoint="Breakpoint.SmAndDown" Context="SplitsContext" Hover="false" T="Transaction" Dense="true" Striped="true">
+                                        <ColGroup>
+                                            <col style="width: 10%;" />
+                                            <col style="width: 40%;" />
+                                            <col style="width: 20%;" />
+                                            <col style="width: 25%;" />
+                                            <col style="width: 5%;" />
+                                        </ColGroup>
+                                        <HeaderContent>
+                                            <MudTh><MudTableSortLabel InitialDirection="SortDirection.Descending" SortBy="new Func<Transaction, object>(x=>x.TransactionDate)">Date</MudTableSortLabel></MudTh>
+                                            <MudTh>Description</MudTh>
+                                            <MudTh>Amount</MudTh>
+                                            <MudTh>Budget</MudTh>
+                                            <MudTh></MudTh>
+                                        </HeaderContent>
+                                        <RowTemplate>
+                                            <MudTd DataLabel="Date">@SplitsContext.TransactionDate.ToString("MM/dd/yyyy")</MudTd>
+                                            <MudTd DataLabel="Description">@SplitsContext.Name</MudTd>
+                                            <MudTd DataLabel="Amount">@string.Format("{0:C}", SplitsContext.Amount)</MudTd>
+                                            <MudTd DataLabel="Budget">@(SplitsContext.IsIncome ? "INCOME" : SplitsContext.Budget)</MudTd>
+                                            <MudTd></MudTd>
+                                        </RowTemplate>
+                                    </MudTable>
+                                </MudCardContent>
+                            </MudCard>
+                        </td>
+                    </MudTr>
+                }
+	        </ChildRowContent>
+            <PagerContent>
+                <MudHidden Breakpoint="Breakpoint.SmAndDown" Invert="true">
+                    <MudTablePager HideRowsPerPage="true" />
+                </MudHidden>
+                <MudHidden Breakpoint="Breakpoint.MdAndUp" Invert="true">
+                    <MudTablePager HideRowsPerPage="false" />
+                </MudHidden>
+            </PagerContent>
+        </MudTable>
     </MudCardContent>
     <MudCardActions>
         <MudButton HtmlTag="label"
