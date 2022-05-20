@@ -24,7 +24,14 @@
         }
         else
         {
-            <MudTable Items="@Account.Transactions" Hover="true" Breakpoint="Breakpoint.SmAndDown" T="Transaction" Dense="true" Striped="true" Filter="new Func<Transaction,bool>(FilterFunc1)">
+            <MudTable Items="@Account.Transactions" 
+                Hover="true" 
+                Breakpoint="Breakpoint.SmAndDown" 
+                T="Transaction" 
+                Dense="true" 
+                Striped="true" 
+                Filter="new Func<Transaction,bool>(FilterFunc1)"
+                Virtualize="true">
                 <ToolBarContent>
                     <MudText Typo="Typo.h6">Transactions</MudText>
                     <MudSpacer />
