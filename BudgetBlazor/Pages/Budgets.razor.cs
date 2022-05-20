@@ -28,9 +28,10 @@ namespace BudgetBlazor.Pages
 
         // Parameters for the month being displayed
         protected DateTime? _currentMonthDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
-        protected BudgetMonth _currentMonth;
+        protected BudgetMonth _currentMonth = new BudgetMonth(DateTime.Now.Year, DateTime.Now.Month, new Guid());
         protected Guid _currentUserId;
         protected MudDatePicker _datePicker;
+        private int _currentMonthId = -1;
 
         /// <summary>
         /// Lifecycle method called when the page is initialized
@@ -43,9 +44,25 @@ namespace BudgetBlazor.Pages
 
             _currentMonth = BudgetDataService.GetOrCreate(((DateTime)_currentMonthDate).Year, ((DateTime)_currentMonthDate).Month, _currentUserId);
             BudgetDataService.BudgetDataChanged += BudgetDataService_BudgetDataChanged;
+        }
 
-            // Update the month totals on page load
-            BudgetDataService.UpdateMonthTotals(_currentMonth);
+        /// <summary>
+        /// Lifecycle method called after the page is rendered
+        /// </summary>
+        /// <param name="firstRender"></param>
+        /// <returns></returns>
+        protected override async Task OnAfterRenderAsync(bool firstRender)
+        {
+            if (firstRender || _currentMonth.Id != _currentMonthId)
+            {
+                // Update the month totals after the page is rendered the first time
+                BudgetDataService.UpdateMonthTotals(_currentMonth);
+
+                // Update the current month Id so we don't constantly recalculate
+                _currentMonthId = _currentMonth.Id;
+
+                Snackbar.Add("Loaded: " + ((DateTime)_currentMonthDate).ToString("MMMM yyyy"));
+            }
         }
 
         /// <summary>
@@ -164,11 +181,6 @@ namespace BudgetBlazor.Pages
             {
                 _currentMonthDate = newDate;
                 _currentMonth = BudgetDataService.GetOrCreate(((DateTime)_currentMonthDate).Year, ((DateTime)_currentMonthDate).Month, _currentUserId);
-
-                // Update the month totals on changing month
-                BudgetDataService.UpdateMonthTotals(_currentMonth);
-
-                Snackbar.Add("Loaded: " + ((DateTime)_currentMonthDate).ToString("MMMM yyyy"));
             }
         }
         #endregion
