@@ -37,6 +37,7 @@
     Dense="true" 
     Striped="true" 
     Virtualize="true"
+    FooterClass="justify-end"
     Loading="@_isAccountLoading">
     <ToolBarContent>
         <MudText Typo="Typo.h6">Transactions</MudText>
@@ -64,7 +65,7 @@
         <MudText Typo="Typo.body2" Align="Align.Center"><i>Please wait while we load the account data...</i></MudText>
     </LoadingContent>
     <NoRecordsContent>
-        <MudText Typo="Typo.body2" Align="Align.Center"><i>No transactions for this account yet</i></MudText>
+        <MudText Typo="Typo.body2" Align="Align.Center"><i>No transactions to show</i></MudText>
     </NoRecordsContent>
     <ColGroup>
         <col style="width: 10%;" />
@@ -142,14 +143,14 @@
             </MudTr>
         }
 	</ChildRowContent>
-    <PagerContent>
-        <MudHidden Breakpoint="Breakpoint.SmAndDown" Invert="true">
-            <MudTablePager HideRowsPerPage="true" />
-        </MudHidden>
-        <MudHidden Breakpoint="Breakpoint.MdAndUp" Invert="true">
-            <MudTablePager HideRowsPerPage="false" />
-        </MudHidden>
-    </PagerContent>
+    <FooterContent>
+        <MudTd colspan="5" Style="text-align:right !important">
+            <MudIconButton Icon="@Icons.Material.Filled.FirstPage" Size="Size.Small" Disabled="@(table.CurrentPage == 0)" OnClick="FirstPage" />
+            <MudIconButton Icon="@Icons.Material.Filled.KeyboardArrowLeft" Size="Size.Small" Disabled="@(table.CurrentPage == 0)" OnClick="BackPage" />
+            <MudText Typo="Typo.caption">Page @(table.CurrentPage + 1)</MudText>
+            <MudIconButton Icon="@Icons.Material.Filled.KeyboardArrowRight" Size="Size.Small" Disabled="@(!_isNextPage)" OnClick="NextPage" />
+        </MudTd>
+    </FooterContent>
 </MudTable>
 
 <InputFile id="fileInput" OnChange="UploadFiles" hidden accept=".qfx, .ofx, .csv" />

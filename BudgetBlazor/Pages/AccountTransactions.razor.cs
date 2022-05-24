@@ -45,6 +45,7 @@ namespace BudgetBlazor.Pages
         protected IList<ITrace> data { get; set; }
         private Transaction _transactionBeforeEdit;
         protected MudTable<Transaction> table;
+        protected bool _isNextPage = true;
 
         /// <summary>
         /// Lifecycle method called when the page is initialized
@@ -220,22 +221,9 @@ namespace BudgetBlazor.Pages
             return false;
         }
 
-        protected async Task FilterUnbudgeted()
-        {
-            // Toggle the unbudgeted filter
-            _showOnlyUnbudgeted = !_showOnlyUnbudgeted;
-            if (_showOnlyUnbudgeted)
-                _filterButtonVariant = Variant.Filled;
-            else
-                _filterButtonVariant= Variant.Outlined;
-
-            // Trigger the table to reload data
-            table.ReloadServerData();
-        }
-
         public async Task<TableData<Transaction>> LoadTransactions(TableState state)
         {
-            IEnumerable<Transaction> dataToShow;
+            IEnumerable<Transaction> filteredData;
 
             // Apply the sorting
             switch(state.SortLabel)
@@ -243,32 +231,32 @@ namespace BudgetBlazor.Pages
                 case "Amount":
                     if (state.SortDirection == SortDirection.Ascending)
                     {
-                        dataToShow = Account.Transactions.OrderBy(t => t.Amount);
+                        filteredData = Account.Transactions.OrderBy(t => t.Amount);
                     }
                     else
                     {
-                        dataToShow = Account.Transactions.OrderByDescending(t => t.Amount);
+                        filteredData = Account.Transactions.OrderByDescending(t => t.Amount);
                     }
                     break;
                 case "Description":
                     if (state.SortDirection == SortDirection.Ascending)
                     {
-                        dataToShow = Account.Transactions.OrderBy(t => t.Name);
+                        filteredData = Account.Transactions.OrderBy(t => t.Name);
                     }
                     else
                     {
-                        dataToShow = Account.Transactions.OrderByDescending(t => t.Name);
+                        filteredData = Account.Transactions.OrderByDescending(t => t.Name);
                     }
                     break;
                 case "Date":
                 default:
                     if (state.SortDirection == SortDirection.Ascending)
                     {
-                        dataToShow = Account.Transactions.OrderBy(t => t.TransactionDate);
+                        filteredData = Account.Transactions.OrderBy(t => t.TransactionDate);
                     }
                     else
                     {
-                        dataToShow = Account.Transactions.OrderByDescending(t => t.TransactionDate);
+                        filteredData = Account.Transactions.OrderByDescending(t => t.TransactionDate);
                     }
                     break;
             }
@@ -276,18 +264,59 @@ namespace BudgetBlazor.Pages
             // Filter unbudgeted
             if (_showOnlyUnbudgeted)
             {
-                dataToShow = dataToShow.Where(d => d.Budget == default(BudgetItem) && !d.IsIncome);
+                filteredData = filteredData.Where(d => d.Budget == default(BudgetItem) && !d.IsIncome);
             }
 
             // Filter by search string
-            dataToShow = dataToShow.Where(t => FilterFunc(t, searchString));
+            filteredData = filteredData.Where(t => FilterFunc(t, searchString));
 
-            return new TableData<Transaction>() { Items = dataToShow.Skip(state.Page * state.PageSize).Take(state.PageSize), TotalItems = Account.Transactions.Count };
+            // Check for the end
+            IEnumerable<Transaction> dataToShow = filteredData.Skip(state.Page * state.PageSize).Take(state.PageSize);
+            _isNextPage = dataToShow.Count() >= state.PageSize;
+
+            return new TableData<Transaction>() { Items = filteredData.Skip(state.Page * state.PageSize).Take(state.PageSize), TotalItems = Account.Transactions.Count };
+        }
+
+        protected async Task FilterUnbudgeted()
+        {
+            // Toggle the unbudgeted filter
+            _showOnlyUnbudgeted = !_showOnlyUnbudgeted;
+            if (_showOnlyUnbudgeted)
+                _filterButtonVariant = Variant.Filled;
+            else
+                _filterButtonVariant = Variant.Outlined;
+
+            // Set the table back to page 0
+            table.CurrentPage = 0;
+
+            // Trigger the table to reload data
+            table.ReloadServerData();
         }
 
         protected void OnSearch(string text)
         {
             searchString = text;
+            table.ReloadServerData();
+        }
+
+        protected async Task BackPage()
+        {
+            if (table.CurrentPage > 0)
+            {
+                table.CurrentPage--;
+                table.ReloadServerData();
+            }
+        }
+
+        protected async Task FirstPage()
+        {
+            table.CurrentPage = 0;
+            table.ReloadServerData();
+        }
+
+        protected async Task NextPage()
+        {
+            table.CurrentPage++;
             table.ReloadServerData();
         }
         #endregion
