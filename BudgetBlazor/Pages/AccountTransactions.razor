@@ -16,8 +16,20 @@
     </MudCardContent>
 </MudCard>
 
-<MudTable Items="@Account.Transactions" 
-    Class="my-4"
+<MudStack Justify="Justify.SpaceBetween" Row="true" Class="my-4">
+    <MudButton HtmlTag="label"
+            Variant="Variant.Filled"
+            Color="Color.Primary"
+            StartIcon="@Icons.Filled.CloudUpload"
+            for="fileInput"
+            Disabled="@(Account == null)">
+    Import Transactions
+    </MudButton>
+    <MudSpacer />
+    <MudButton Variant="Variant.Outlined" Color="Color.Primary" StartIcon="@Icons.Filled.Add" OnClick="OpenAddTransactionDialog" Disabled="@(Account == null)">Add New Transaction</MudButton>
+</MudStack>
+
+<MudTable Items="@Account.Transactions"
     Hover="true" 
     Breakpoint="Breakpoint.SmAndDown" 
     T="Transaction" 
@@ -137,18 +149,5 @@
         </MudHidden>
     </PagerContent>
 </MudTable>
-
-<MudStack Justify="Justify.SpaceBetween" Row="true">
-    <MudButton HtmlTag="label"
-            Variant="Variant.Filled"
-            Color="Color.Primary"
-            StartIcon="@Icons.Filled.CloudUpload"
-            for="fileInput"
-            Disabled="@(Account == null)">
-    Import Transactions
-    </MudButton>
-    <MudSpacer />
-    <MudButton Variant="Variant.Outlined" Color="Color.Primary" StartIcon="@Icons.Filled.Add" OnClick="OpenAddTransactionDialog" Disabled="@(Account == null)">Add New Transaction</MudButton>
-</MudStack>
 
 <InputFile id="fileInput" OnChange="UploadFiles" hidden accept=".qfx, .ofx, .csv" />

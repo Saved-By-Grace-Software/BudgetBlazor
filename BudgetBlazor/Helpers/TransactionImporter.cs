@@ -29,9 +29,12 @@ namespace BudgetBlazor.Helpers
 
                 if (ofxDocument != null)
                 {
-                    // Update the account balance
-                    account.CurrentBalance = ofxDocument.Balance.LedgerBalance;
-                    account.LastUpdated = ofxDocument.StatementEnd;
+                    // Update the account balance if this import is more recent than the last update
+                    if (ofxDocument.StatementEnd > account.LastUpdated)
+                    {
+                        account.CurrentBalance = ofxDocument.Balance.LedgerBalance;
+                        account.LastUpdated = ofxDocument.StatementEnd;
+                    }
 
                     // Import the transactions
                     foreach (Transaction transaction in ofxDocument.Transactions)

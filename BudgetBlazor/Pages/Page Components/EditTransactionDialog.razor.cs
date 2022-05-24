@@ -94,9 +94,6 @@ namespace BudgetBlazor.Pages.Page_Components
 
         protected void Cancel()
         {
-            // TODO: Fix this refresh to properly clear the cache and revert to the db transaction
-            NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true);
-
             // Close the dialog
             MudDialog.Cancel();
         }

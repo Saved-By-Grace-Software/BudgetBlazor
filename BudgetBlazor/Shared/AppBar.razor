@@ -2,6 +2,7 @@
 	<MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" 
 				   OnClick="async () => await OnSidebarToggled.InvokeAsync()" />
 	<MudSpacer />
+	<MudText Typo="Typo.caption">@_userName</MudText>
 	<form class="form-inline" method="post" action="/Identity/Account/LogOut?returnUrl=%2F">
         <MudIconButton Icon="@Icons.Material.Filled.Logout" Color="Color.Inherit" ButtonType="ButtonType.Submit" />
     </form>
@@ -14,3 +15,19 @@
 		<MudIconButton Icon="@Icons.Material.Filled.Brightness5" Color="Color.Inherit" OnClick="ToggleTheme" />
 	}
 </MudAppBar>
+
+@code
+{
+	[Inject] private AuthenticationStateProvider AuthenticationStateProvider { get; set; }
+	private string _userName { get; set; }
+
+	/// <summary>
+	/// Lifecycle method called when the page is initialized
+	/// </summary>
+	/// <returns></returns>
+	protected override async Task OnInitializedAsync()
+	{
+		var authstate = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+		_userName = authstate.User.Identity.Name;
+    }
+}
