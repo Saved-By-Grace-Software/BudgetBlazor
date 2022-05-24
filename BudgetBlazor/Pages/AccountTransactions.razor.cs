@@ -43,6 +43,7 @@ namespace BudgetBlazor.Pages
         protected Config config { get; set; }
         protected Layout layout { get; set; }
         protected IList<ITrace> data { get; set; }
+        private Transaction _transactionBeforeEdit;
 
         /// <summary>
         /// Lifecycle method called when the page is initialized
@@ -141,6 +142,9 @@ namespace BudgetBlazor.Pages
         /// <returns></returns>
         protected async Task OpenEditTransactionDialog(Transaction transactionToEdit)
         {
+            // Backup the transaction to edit
+            _transactionBeforeEdit = transactionToEdit.DuplicateTransaction();
+
             // Open the dialog
             var parameters = new DialogParameters { ["Transaction"] = transactionToEdit };
             var dialogRef = DialogService.Show<EditTransactionDialog>("Edit Transaction", parameters);
@@ -157,6 +161,14 @@ namespace BudgetBlazor.Pages
                     Account.Transactions[index] = transaction;
                     BudgetDataService.Update(Account);
                 }
+            }
+            else
+            {
+                // Edit was cancelled, revert the transaction to the before transaction
+                transactionToEdit.ResetTransaction(_transactionBeforeEdit);
+
+                // Reset the before edit transaction
+                _transactionBeforeEdit = null;
             }
         }
 
