@@ -44,6 +44,8 @@ namespace BudgetBlazor.Pages
         protected Layout layout { get; set; }
         protected IList<ITrace> data { get; set; }
         private Transaction _transactionBeforeEdit;
+        protected MudTable<Transaction> table;
+        protected bool _isNextPage = true;
 
         /// <summary>
         /// Lifecycle method called when the page is initialized
@@ -190,14 +192,8 @@ namespace BudgetBlazor.Pages
         }
 
         #region Table Filter Functions
-        protected bool FilterFunc1(Transaction transaction) => FilterFunc(transaction, searchString);
-
         protected bool FilterFunc(Transaction transaction, string searchString)
         {
-            // Check for unbudgeted
-            if (_showOnlyUnbudgeted && (transaction.Budget != default(BudgetItem) || transaction.IsIncome))
-                return false;
-
             if (string.IsNullOrWhiteSpace(searchString))
                 return true;
             if (transaction.Name.Contains(searchString, StringComparison.CurrentCultureIgnoreCase))
@@ -225,6 +221,62 @@ namespace BudgetBlazor.Pages
             return false;
         }
 
+        public async Task<TableData<Transaction>> LoadTransactions(TableState state)
+        {
+            IEnumerable<Transaction> filteredData;
+
+            // Apply the sorting
+            switch(state.SortLabel)
+            {
+                case "Amount":
+                    if (state.SortDirection == SortDirection.Ascending)
+                    {
+                        filteredData = Account.Transactions.OrderBy(t => t.Amount);
+                    }
+                    else
+                    {
+                        filteredData = Account.Transactions.OrderByDescending(t => t.Amount);
+                    }
+                    break;
+                case "Description":
+                    if (state.SortDirection == SortDirection.Ascending)
+                    {
+                        filteredData = Account.Transactions.OrderBy(t => t.Name);
+                    }
+                    else
+                    {
+                        filteredData = Account.Transactions.OrderByDescending(t => t.Name);
+                    }
+                    break;
+                case "Date":
+                default:
+                    if (state.SortDirection == SortDirection.Ascending)
+                    {
+                        filteredData = Account.Transactions.OrderBy(t => t.TransactionDate);
+                    }
+                    else
+                    {
+                        filteredData = Account.Transactions.OrderByDescending(t => t.TransactionDate);
+                    }
+                    break;
+            }
+
+            // Filter unbudgeted
+            if (_showOnlyUnbudgeted)
+            {
+                filteredData = filteredData.Where(d => d.Budget == default(BudgetItem) && !d.IsIncome);
+            }
+
+            // Filter by search string
+            filteredData = filteredData.Where(t => FilterFunc(t, searchString));
+
+            // Check for the end
+            IEnumerable<Transaction> dataToShow = filteredData.Skip(state.Page * state.PageSize).Take(state.PageSize);
+            _isNextPage = dataToShow.Count() >= state.PageSize;
+
+            return new TableData<Transaction>() { Items = filteredData.Skip(state.Page * state.PageSize).Take(state.PageSize), TotalItems = Account.Transactions.Count };
+        }
+
         protected async Task FilterUnbudgeted()
         {
             // Toggle the unbudgeted filter
@@ -232,7 +284,40 @@ namespace BudgetBlazor.Pages
             if (_showOnlyUnbudgeted)
                 _filterButtonVariant = Variant.Filled;
             else
-                _filterButtonVariant= Variant.Outlined;
+                _filterButtonVariant = Variant.Outlined;
+
+            // Set the table back to page 0
+            table.CurrentPage = 0;
+
+            // Trigger the table to reload data
+            table.ReloadServerData();
+        }
+
+        protected void OnSearch(string text)
+        {
+            searchString = text;
+            table.ReloadServerData();
+        }
+
+        protected async Task BackPage()
+        {
+            if (table.CurrentPage > 0)
+            {
+                table.CurrentPage--;
+                table.ReloadServerData();
+            }
+        }
+
+        protected async Task FirstPage()
+        {
+            table.CurrentPage = 0;
+            table.ReloadServerData();
+        }
+
+        protected async Task NextPage()
+        {
+            table.CurrentPage++;
+            table.ReloadServerData();
         }
         #endregion
 
