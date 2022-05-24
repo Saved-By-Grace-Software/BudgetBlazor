@@ -8,7 +8,8 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <base href="~/" />
-    <link rel="stylesheet" href="css/bootstrap/sketchy.bootstrap.min.css" integrity="if_needed" />
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
+    <link href="_content/MudBlazor/MudBlazor.min.css" rel="stylesheet" />
     <link href="css/site.css" rel="stylesheet" />
     <link href="BudgetBlazor.styles.css" rel="stylesheet" />
     <component type="typeof(HeadOutlet)" render-mode="ServerPrerendered" />
@@ -28,7 +29,12 @@
     </div>
 
     <script src="_framework/blazor.server.js"></script>
-    <script src="_content/BlazorStrap/popper.min.js"></script>
-    <script src="_content/BlazorStrap/blazorstrap.js"></script>
+    <script src="_content/MudBlazor/MudBlazor.min.js"></script>
+
+    <!-- Import the plotly.js library -->
+    <script src="_content/Plotly.Blazor/plotly-latest.min.js" type="text/javascript"></script>
+
+    <!-- Import the plotly.js interop functions -->
+    <script src="_content/Plotly.Blazor/plotly-interop.js" type="text/javascript"></script>
 </body>
 </html>

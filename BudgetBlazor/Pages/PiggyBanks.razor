@@ -1,0 +1,151 @@
+﻿@attribute [Authorize]
+@page "/PiggyBanks"
+@inherits PiggyBanksBase
+
+<PageTitle>Piggy Banks</PageTitle>
+
+<PageHeader PageIcon="@Icons.Material.Filled.Savings" PageTitleText="Piggy Banks" />
+
+<!-- Piggy Banks Card -->
+<MudCard Class="my-4" Elevation="3">
+    <MudCardHeader>
+        <CardHeaderContent>
+            <MudText Typo="Typo.h6">Piggy Banks</MudText>
+        </CardHeaderContent>
+        <CardHeaderActions>
+            <MudTooltip Text="Add New Piggy Bank">
+                <MudIconButton Icon="@Icons.Material.Filled.Add" Color="Color.Default" OnClick="OpenAddPiggyBankDialog" />
+            </MudTooltip>
+        </CardHeaderActions>
+    </MudCardHeader>
+    <MudCardContent>
+        @if (_banks.Count == 0)
+        {
+            <MudText Typo="Typo.body2" Align="Align.Center"><i>No piggy banks to display</i></MudText>
+        }
+        else
+        {
+            @foreach(PiggyBank bank in _banks)
+            {
+                <MudCard Class="my-2" Elevation="3" Style="@($"background:{CurrentTheme.Palette.Primary.SetAlpha(0.1)};")">
+                    <MudCardHeader>
+                        <CardHeaderContent>
+                            <MudText Typo="Typo.h6">@bank.Name</MudText>
+                        </CardHeaderContent>
+                        <CardHeaderActions>
+                            <MudMenu Icon="@Icons.Material.Filled.MoreVert">
+                                <MudMenuItem OnClick="() => OpenEditPiggyBankDialog(bank)">
+                                    <MudStack Row="true" Spacing="4" AlignItems="AlignItems.Center">
+                                        <MudIcon Icon="@Icons.Material.Filled.Edit" />
+                                        <MudText>Edit Piggy Bank</MudText>
+                                    </MudStack>
+                                </MudMenuItem>
+                                <MudMenuItem OnClick="() => DeletePiggyBank(bank)">
+                                    <MudStack Row="true" Spacing="4" AlignItems="AlignItems.Center">
+                                        <MudIcon Icon="@Icons.Material.Filled.Delete" />
+                                        <MudText>Delete Piggy Bank</MudText>
+                                    </MudStack></MudMenuItem>
+                            </MudMenu>
+                        </CardHeaderActions>
+                    </MudCardHeader>
+                    <MudCardContent Class="mx-4">
+                        <MudGrid Justify="Justify.SpaceBetween">
+                            <MudItem xs="12" sm="12" md="1">
+                                <MudHidden Breakpoint="Breakpoint.SmAndDown" Invert="true">
+                                    <MudProgressLinear Vertical="false" Rounded="true" Color="@ColorHelpers.ProgressBarColorReverse(bank.PercentSaved, false, 60, 90)" Size="Size.Large" Value="@bank.PercentSaved">
+                                        <MudText Typo="Typo.subtitle2">
+                                            <b>@string.Format("{0}%", bank.PercentSaved)</b>
+                                        </MudText>
+                                    </MudProgressLinear>
+                                </MudHidden>
+                                <MudHidden Breakpoint="Breakpoint.MdAndUp" Invert="true">
+                                    <MudProgressLinear Vertical="true" Rounded="true" Color="@ColorHelpers.ProgressBarColorReverse(bank.PercentSaved, false, 60, 90)" Size="Size.Large" Value="@bank.PercentSaved">
+                                        <MudText Typo="Typo.subtitle2">
+                                            <b>@string.Format("{0}%", bank.PercentSaved)</b>
+                                        </MudText>
+                                    </MudProgressLinear>
+                                </MudHidden>
+                            </MudItem>
+                            <MudItem xs="12" sm="12" md="5">
+                                <MudStack>
+                                    <MudStack Row="true" Justify="Justify.SpaceBetween">
+                                        <MudText Typo="Typo.body1"><strong>Current Amount Saved:</strong></MudText>
+                                        <MudStack Row="true" Spacing="0" Justify="Justify.FlexEnd">
+                                            <MudIconButton Icon="@Icons.Material.Filled.Remove" Size="Size.Small" Color="Color.Error" OnClick="() => OpenRemoveAmountDialog(bank)" />
+                                            <MudText Typo="Typo.body1">@string.Format("{0:C}", bank.CurrentAmount)</MudText>
+                                            <MudIconButton Icon="@Icons.Material.Filled.Add" Size="Size.Small" Color="Color.Success" OnClick="() => OpenAddAmountDialog(bank)" />
+                                        </MudStack>
+                                    </MudStack>
+                                    <MudStack Row="true" Justify="Justify.SpaceBetween">
+                                        <MudText Typo="Typo.body1"><strong>Target Amount:</strong></MudText>
+                                        <MudText Typo="Typo.body1">@string.Format("{0:C}", bank.TargetAmount)</MudText>
+                                    </MudStack>
+                                    <MudStack Row="true" Justify="Justify.SpaceBetween">
+                                        <MudText Typo="Typo.body1"><strong>Target Date:</strong></MudText>
+                                        <MudText Typo="Typo.body1">@bank.TargetDate.ToString("MMM yyyy")</MudText>
+                                    </MudStack>
+                                </MudStack>
+                            </MudItem>
+                            <MudHidden Breakpoint="Breakpoint.SmAndDown" Invert="true">
+                                <MudSpacer />
+                            </MudHidden>
+                            <MudItem xs="12" sm="12" md="5">
+                                <MudStack>
+                                    <MudStack Row="true" Justify="Justify.SpaceBetween">
+                                        <MudText Typo="Typo.body1"><strong>Remaining Amount:</strong></MudText>
+                                        <MudText Typo="Typo.body1">@string.Format("{0:C}", bank.RemainingAmount)</MudText>
+                                    </MudStack>
+                                    <MudStack Row="true" Justify="Justify.SpaceBetween">
+                                        <MudText Typo="Typo.body1"><strong>Suggested Per Month:</strong></MudText>
+                                        <MudText Typo="Typo.body1">@string.Format("{0:C}", bank.PerMonthAmount)</MudText>
+                                    </MudStack>
+                                    <MudStack Row="true" Justify="Justify.SpaceBetween">
+                                        <MudText Typo="Typo.body1"><strong>Account:</strong></MudText>
+                                        <MudText Typo="Typo.body1">@(bank.SavingsAccount != null ? bank.SavingsAccount : "None Selected")</MudText>
+                                    </MudStack>
+                                </MudStack>
+                            </MudItem>
+                        </MudGrid>
+                    </MudCardContent>
+            </MudCard>
+            }
+        }
+    </MudCardContent>
+</MudCard>
+
+<!-- Accounts Card -->
+<MudCard Class="my-4" Elevation="3">
+    <MudCardHeader>
+        <CardHeaderContent>
+            <MudText Typo="Typo.h6">Account Totals</MudText>
+        </CardHeaderContent>
+    </MudCardHeader>
+    <MudCardContent>
+        <MudTable Items="@_accounts" Hover="true" Breakpoint="Breakpoint.SmAndDown" T="Account" Elevation="3">
+            <NoRecordsContent>
+                <MudText Typo="Typo.body2" Align="Align.Center"><i>No accounts to display</i></MudText>
+            </NoRecordsContent>
+            <ColGroup>
+                <col style="width: 20%;" />
+                <col style="width: 20%;" />
+                <col style="width: 20%;" />
+                <col style="width: 20%;" />
+                <col style="width: 20%;" />
+            </ColGroup>
+            <HeaderContent>
+                <MudTh>Name</MudTh>
+                <MudTh>Current Balance</MudTh>
+                <MudTh>Target Amount</MudTh>
+                <MudTh>Saved So Far</MudTh>
+                <MudTh>Left To Save</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.Name</MudTd>
+                <MudTd>@string.Format("{0:C}", context.CurrentBalance)</MudTd>
+                <MudTd>@string.Format("{0:C}", _accountTotals[context]?.TargetAmount)</MudTd>
+                <MudTd>@string.Format("{0:C}", _accountTotals[context]?.SavedSoFar)</MudTd>
+                <MudTd>@string.Format("{0:C}", _accountTotals[context]?.LeftToSave)</MudTd>
+            </RowTemplate>
+        </MudTable>
+    </MudCardContent>
+</MudCard>

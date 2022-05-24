@@ -1,0 +1,98 @@
+﻿@inherits BudgetCategoryDisplayBase
+
+<MudCard Elevation="1" Style="@($"color:{CurrentTheme.Palette.TextPrimary}; background:{Category.Color};")">
+    <MudCardHeader Class="mb-n4">
+        <CardHeaderContent>
+            <MudText Typo="Typo.body1"><strong>@Category.Name</strong></MudText>
+        </CardHeaderContent>
+        <CardHeaderActions>
+            <MudMenu Icon="@Icons.Material.Filled.MoreVert">
+                <MudMenuItem OnClick="OpenAddBudgetDialog">
+                    <MudStack Row="true" Spacing="4" AlignItems="AlignItems.Center">
+                        <MudIcon Icon="@Icons.Material.Filled.Add" />
+                        <MudText>Add Budget</MudText>
+                    </MudStack>
+                </MudMenuItem>
+                <MudMenuItem OnClick="OpenEditDialog">
+                    <MudStack Row="true" Spacing="4" AlignItems="AlignItems.Center">
+                        <MudIcon Icon="@Icons.Material.Filled.Edit" />
+                        <MudText>Edit Category</MudText>
+                    </MudStack>
+                </MudMenuItem>
+                <MudMenuItem OnClick="DeleteCategory">
+                    <MudStack Row="true" Spacing="4" AlignItems="AlignItems.Center">
+                        <MudIcon Icon="@Icons.Material.Filled.Delete" />
+                        <MudText>Delete Category</MudText>
+                    </MudStack>
+                </MudMenuItem>
+            </MudMenu>
+        </CardHeaderActions>
+    </MudCardHeader>
+    <MudCardContent>
+        <MudTable Items="@Category.BudgetItems" T="BudgetItem"
+            Hover="true" 
+            Dense="true" 
+            Virtualize="true"
+            Breakpoint="Breakpoint.SmAndDown" 
+            ReadOnly="false"
+            CustomFooter="true"
+            CanCancelEdit="true"
+            IsEditRowSwitchingBlocked="true"
+            Loading="@IsLoading"
+            CommitEditTooltip="Save Budget"
+            CancelEditTooltip="Cancel"
+            RowEditCommit="SaveBudgetItem"
+            RowEditPreview="BackupItem"
+            RowEditCancel="ResetItemToOriginalValues">
+            <NoRecordsContent>
+                <MudText Typo="Typo.body2" Align="Align.Center"><i>No budgets to display for this category</i></MudText>
+            </NoRecordsContent>
+            <LoadingContent>
+                <MudText Typo="Typo.body2" Align="Align.Center"><i>Please wait while we load the category data...</i></MudText>
+            </LoadingContent>
+            <ColGroup>
+                <col style="width: 35%;" />
+                <col style="width: 20%;" />
+                <col style="width: 20%;" />
+                <col style="width: 20%;" />
+                <col style="width: 5%;" />
+            </ColGroup>
+            <HeaderContent>
+                <MudTh></MudTh>
+                <MudTh><strong>Budget</strong></MudTh>
+                <MudTh><strong>Spent</strong></MudTh>
+                <MudTh><strong>Remaining</strong></MudTh>
+                <MudTh></MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.Name</MudTd>
+                <MudTd>@string.Format("{0:C}", context.Budget)</MudTd>
+                <MudTd>@string.Format("{0:C}", (context.Spent * -1))</MudTd>
+                <MudTd Style="@($"color:{((context.Remaining <= 0 && context.Budget != 0) ? CurrentTheme.Palette.Error : CurrentTheme.Palette.TextPrimary)};")">@string.Format("{0:C}", context.Remaining)</MudTd>
+                <MudTd>
+                    <MudIconButton Icon="@Icons.Material.Filled.Delete" Size="Size.Small" OnClick="() => DeleteBudgetItem(context)" />
+                </MudTd>
+            </RowTemplate>
+            <RowEditingTemplate>
+                <MudTd>
+                    <MudTextField @bind-Value="@context.Name" Required />
+                </MudTd>
+                <MudTd>
+                    <MudTextField @bind-Value="@context.Budget" Required />
+                </MudTd>
+                <MudTd>@string.Format("{0:C}", (context.Spent * -1))</MudTd>
+                <MudTd Style="@($"color:{((context.Remaining <= 0 && context.Budget != 0) ? CurrentTheme.Palette.Error : CurrentTheme.Palette.TextPrimary)};")">@string.Format("{0:C}", context.Remaining)</MudTd>
+                <MudTd></MudTd>
+            </RowEditingTemplate>
+            <FooterContent>
+                <MudTFootRow>
+                    <MudTd><strong>TOTALS</strong></MudTd>
+                    <MudTd><strong>@string.Format("{0:C}", Category.Budgeted)</strong></MudTd>
+                    <MudTd><strong>@string.Format("{0:C}", (Category.Spent * -1))</strong></MudTd>
+                    <MudTd Style="@($"color:{((Category.Remaining <= 0 && Category.Budgeted != 0) ? CurrentTheme.Palette.Error : CurrentTheme.Palette.TextPrimary)};")"><strong>@string.Format("{0:C}", Category.Remaining)</strong></MudTd>
+                    <MudTd></MudTd>
+                </MudTFootRow>
+            </FooterContent>
+        </MudTable>
+    </MudCardContent>
+</MudCard>

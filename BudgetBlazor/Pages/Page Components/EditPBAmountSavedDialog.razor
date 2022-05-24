@@ -1,0 +1,41 @@
+﻿<MudDialog>
+    <DialogContent>
+        <MudForm @ref="form" @bind-IsValid="@success" @bind-Errors="@errors">
+            <MudTextField 
+                T="decimal" 
+                @bind-Value="AmountToAddRemove" 
+                Label="Amount" 
+                Variant="Variant.Outlined"
+                Required="true"
+                RequiredError="Must enter an amount" />
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">@OkButtonText</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+    [Parameter] public string OkButtonText { get; set; }
+
+    private decimal AmountToAddRemove { get; set; }
+
+    bool success;
+    string[] errors = { };
+    MudForm form;
+
+    private async Task Submit()
+    {
+        // Validate the form
+        await form.Validate();
+
+        if (form.IsValid)
+        {
+            MudDialog.Close(AmountToAddRemove);
+        }
+    }
+    void Cancel() => MudDialog.Cancel();
+}

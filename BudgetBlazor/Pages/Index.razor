@@ -1,6 +1,50 @@
 ﻿@attribute [Authorize]
 @page "/"
+@inherits IndexBase
 
-<PageTitle>Index</PageTitle>
+<PageTitle>Dashboard</PageTitle>
 
-<h1>Hello, world!</h1>
+<MudGrid Spacing="4" Justify="Justify.SpaceBetween" Class="my-2">
+    @foreach(Account account in _userAccounts)
+    {
+        <MudItem xs="6" md="3">
+            <MudCard Elevation="3" Class="pa-4" Style="@($"color:{CurrentTheme.Palette.PrimaryContrastText}; background:{CurrentTheme.Palette.Tertiary};")">
+                <MudStack Row="true" AlignItems="AlignItems.Center">
+                    <MudIcon Icon="@Icons.Material.Filled.Balance" Size="Size.Large" />
+                    <MudDivider Vertical="true" FlexItem="true" />
+                    <MudStack>
+                        <MudLink Href="@string.Format("/Accounts/Edit/{0}", account.Id)" Typo="Typo.h6" Underline="Underline.None" Style="@($"color:{CurrentTheme.Palette.PrimaryContrastText} !important;")">@account.Name</MudLink>
+                        <MudText Typo="Typo.body1">@string.Format("{0:C}", account.CurrentBalance)</MudText>
+                    </MudStack>
+                </MudStack>
+            </MudCard>
+        </MudItem>
+    }
+</MudGrid>
+
+<MudCard Elevation="3" Class="my-2">
+    <MudCardContent>
+        <PlotlyChart @bind-Config="config" @bind-Layout="layout" @bind-Data="data" @ref="chart"/>
+    </MudCardContent>
+</MudCard>
+
+<MudCard Elevation="3" Class="mt-2">
+    <MudCardHeader>
+        <MudLink Href="/PiggyBanks" Typo="Typo.h5" Underline="Underline.None" Style="@($"color:{CurrentTheme.Palette.TextPrimary} !important;")">Piggy Banks</MudLink>
+    </MudCardHeader>
+    <MudCardContent>
+        <MudStack>
+            @foreach (PiggyBank bank in _userBanks)
+            {
+                <MudStack>
+                    <MudText Typo="Typo.body1"><strong>@bank.Name</strong></MudText>
+                    <MudProgressLinear Vertical="false" Rounded="true" Color="@ColorHelpers.ProgressBarColorReverse(bank.PercentSaved, false, 60, 90)" Size="Size.Large" Value="@bank.PercentSaved">
+                        <MudText Typo="Typo.subtitle2">
+                            <b>@string.Format("{0}%", bank.PercentSaved)</b>
+                        </MudText>
+                    </MudProgressLinear>
+                </MudStack>
+            }
+        </MudStack>
+    </MudCardContent>
+</MudCard>

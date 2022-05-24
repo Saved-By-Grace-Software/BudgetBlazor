@@ -1,0 +1,104 @@
+﻿@attribute [Authorize]
+@page "/Budgets"
+@inherits BudgetsBase
+
+<PageTitle>Budgets</PageTitle>
+
+<!-- Page Header -->
+<PageHeader PageIcon="@Icons.Material.Filled.PieChartOutline" PageTitleText="Budgets">
+    <PageHeaderActions>
+        <MudGrid Spacing="0" Justify="Justify.Center">
+            <MudItem xs="6" md="3">
+                <MudTooltip Text="Reset Month To Default">
+                    <MudIconButton Icon="@Icons.Filled.RestartAlt" OnClick="ResetMonthToDefault" />
+                </MudTooltip>
+            </MudItem>
+            <MudHidden Breakpoint="Breakpoint.SmAndDown">
+                <MudItem md="3">
+                    <MudIconButton Icon="@Icons.Filled.ArrowLeft" OnClick="LastMonth" />
+                </MudItem>
+            </MudHidden>
+            <MudItem xs="6" md="3">
+                <MudIconButton Icon="@Icons.Material.Filled.EditCalendar" OnClick="OpenDatePicker" />
+            </MudItem>
+            <MudHidden Breakpoint="Breakpoint.SmAndDown">
+                <MudItem md="3">
+                    <MudIconButton Icon="@Icons.Filled.ArrowRight" OnClick="NextMonth" />
+                </MudItem>
+            </MudHidden>
+        </MudGrid>
+    </PageHeaderActions>
+</PageHeader>
+
+<!-- Income and Total Budget Card -->
+<MudCard Class="my-4" Elevation="3">
+    <MudCardHeader>
+        <CardHeaderContent>
+            <MudText Typo="Typo.h6">Total Budget - @String.Format("{0:MMMM yyyy}", _currentMonthDate)</MudText>
+        </CardHeaderContent>
+        <CardHeaderActions>
+            <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Default" OnClick="OpenEditIncomeDialog" />
+        </CardHeaderActions>
+    </MudCardHeader>
+    <MudCardContent Class="my-n4">
+        <MudPaper Class="my-2 pa-3" Elevation="0" Outlined="true">
+            <MudText Typo="Typo.body1"><strong>Expected Income - </strong>@String.Format("{0:C}", _currentMonth.ExpectedIncome)</MudText>
+            <MudProgressLinear Color="@ColorHelpers.ProgressBarColorReverse(_currentMonth.PercentBudgeted)" Rounded="true" Size="Size.Large" Value="@_currentMonth.PercentBudgeted">
+                <MudText Typo="Typo.subtitle2">
+                    <b>@string.Format("{0}%", _currentMonth.PercentBudgeted)</b>
+                </MudText>
+            </MudProgressLinear>
+            <MudText Typo="Typo.body1"><strong>Total Budgeted - </strong>@String.Format("{0:C}", _currentMonth.TotalBudgeted)</MudText>
+        </MudPaper>
+        
+        <MudPaper Class="my-2 pa-3" Elevation="0" Outlined="true">
+            <MudText Typo="Typo.body1"><strong>Actual Income - </strong>@String.Format("{0:C}", _currentMonth.ActualIncome)</MudText>
+            <MudProgressLinear Color="@ColorHelpers.ProgressBarColor(_currentMonth.PercentSpent)" Rounded="true" Size="Size.Large" Value="@_currentMonth.PercentSpent">
+                <MudText Typo="Typo.subtitle2">
+                    <b>@string.Format("{0}%", _currentMonth.PercentSpent)</b>
+                </MudText>
+            </MudProgressLinear>
+            <MudText Typo="Typo.body1"><strong>Total Spent - </strong>@String.Format("{0:C}", (_currentMonth.TotalSpent * -1))</MudText>
+        </MudPaper>
+    </MudCardContent>
+</MudCard>
+
+<!-- Budget Lists -->
+<MudCard Class="my-8" Elevation="3">
+    <MudCardHeader>
+        <CardHeaderContent>
+            <MudText Typo="Typo.h6">Budgets</MudText>
+        </CardHeaderContent>
+        <CardHeaderActions>
+            <MudIconButton Icon="@Icons.Material.Filled.Add" OnClick="OpenAddCategoryDialog" />
+        </CardHeaderActions>
+    </MudCardHeader>
+    <MudCardContent>
+        @if (_currentMonth.BudgetCategories.Count == 0)
+        {
+            <MudText Typo="Typo.body2" Align="Align.Center"><i>No budget categories to display</i></MudText>
+        }
+        else
+        {
+            <MudGrid Spacing="4" Justify="Justify.SpaceBetween">
+                @foreach(BudgetCategory category in _currentMonth.BudgetCategories)
+                {
+                    <MudItem xs="12" md="6">
+                        <BudgetCategoryDisplay Category="@category" @bind-IsLoading="@_isLoadingData" @ref="_budgetCategoryDisplays[category]" />
+                    </MudItem>
+                }
+            </MudGrid>
+        }
+    </MudCardContent>
+</MudCard>
+
+<!-- Hidden Date Picker -->
+<MudDatePicker 
+    PickerVariant="PickerVariant.Dialog"
+    DateFormat="MMMM yyyy" 
+    FixDay="1" 
+    OpenTo="OpenTo.Month"
+    PickerClosed="MonthChanged"
+    @ref="_datePicker"
+    @bind-Date="_currentMonthDate"
+    Style="@($"display: none;")"/>

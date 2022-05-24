@@ -4,23 +4,46 @@
     <Authorized>
         <PageTitle>BudgetBlazor</PageTitle>
 
-        <div class="page">
-            <div class="sidebar">
-                <NavMenu />
-            </div>
+        <MudThemeProvider Theme="CurrentTheme"/>
+        <MudDialogProvider
+            FullWidth="false"
+            MaxWidth="MaxWidth.Large"
+            CloseButton="true"
+            DisableBackdropClick="true"
+            NoHeader="false"
+            Position="DialogPosition.Center"
+            CloseOnEscapeKey="true"
+        />
+        <MudSnackbarProvider/>
 
-            <main>
-                <div class="top-row px-4 auth">
-                    <LoginDisplay />
-                </div>
+        <MudLayout Style="@($"background:{CurrentTheme.Palette.BackgroundGrey}; height: 100%")">
+            <CascadingValue Value="@CurrentTheme">
+                <AppBar OnSidebarToggled="ToggleSidebar" OnThemeToggled="ToggleTheme" />
 
-                <article class="content px-4">
-                    @Body
-                </article>
-            </main>
-        </div>
+	            <NavMenu @bind-SideBarOpen="@_sidebarOpen" />
+
+                <MudMainContent>
+                    <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge">
+                        @Body
+                    </MudContainer>
+                    <PageFooter />
+                </MudMainContent>
+            </CascadingValue>
+        </MudLayout>
+
     </Authorized>
     <NotAuthorized>
         <LoginRedirect />
     </NotAuthorized>
 </AuthorizeView>
+
+@code
+{
+    MudTheme CurrentTheme = new MudTheme();
+
+	private bool _sidebarOpen = true;
+
+	private void ToggleTheme(MudTheme changedTheme) => CurrentTheme = changedTheme;
+
+	private void ToggleSidebar() => _sidebarOpen = !_sidebarOpen;
+}
