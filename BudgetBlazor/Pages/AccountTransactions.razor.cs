@@ -44,6 +44,7 @@ namespace BudgetBlazor.Pages
         protected Layout layout { get; set; }
         protected IList<ITrace> data { get; set; }
         private Transaction _transactionBeforeEdit;
+        protected MudTable<Transaction> table;
 
         /// <summary>
         /// Lifecycle method called when the page is initialized
@@ -190,14 +191,8 @@ namespace BudgetBlazor.Pages
         }
 
         #region Table Filter Functions
-        protected bool FilterFunc1(Transaction transaction) => FilterFunc(transaction, searchString);
-
         protected bool FilterFunc(Transaction transaction, string searchString)
         {
-            // Check for unbudgeted
-            if (_showOnlyUnbudgeted && (transaction.Budget != default(BudgetItem) || transaction.IsIncome))
-                return false;
-
             if (string.IsNullOrWhiteSpace(searchString))
                 return true;
             if (transaction.Name.Contains(searchString, StringComparison.CurrentCultureIgnoreCase))
@@ -233,6 +228,67 @@ namespace BudgetBlazor.Pages
                 _filterButtonVariant = Variant.Filled;
             else
                 _filterButtonVariant= Variant.Outlined;
+
+            // Trigger the table to reload data
+            table.ReloadServerData();
+        }
+
+        public async Task<TableData<Transaction>> LoadTransactions(TableState state)
+        {
+            IEnumerable<Transaction> dataToShow;
+
+            // Apply the sorting
+            switch(state.SortLabel)
+            {
+                case "Amount":
+                    if (state.SortDirection == SortDirection.Ascending)
+                    {
+                        dataToShow = Account.Transactions.OrderBy(t => t.Amount);
+                    }
+                    else
+                    {
+                        dataToShow = Account.Transactions.OrderByDescending(t => t.Amount);
+                    }
+                    break;
+                case "Description":
+                    if (state.SortDirection == SortDirection.Ascending)
+                    {
+                        dataToShow = Account.Transactions.OrderBy(t => t.Name);
+                    }
+                    else
+                    {
+                        dataToShow = Account.Transactions.OrderByDescending(t => t.Name);
+                    }
+                    break;
+                case "Date":
+                default:
+                    if (state.SortDirection == SortDirection.Ascending)
+                    {
+                        dataToShow = Account.Transactions.OrderBy(t => t.TransactionDate);
+                    }
+                    else
+                    {
+                        dataToShow = Account.Transactions.OrderByDescending(t => t.TransactionDate);
+                    }
+                    break;
+            }
+
+            // Filter unbudgeted
+            if (_showOnlyUnbudgeted)
+            {
+                dataToShow = dataToShow.Where(d => d.Budget == default(BudgetItem) && !d.IsIncome);
+            }
+
+            // Filter by search string
+            dataToShow = dataToShow.Where(t => FilterFunc(t, searchString));
+
+            return new TableData<Transaction>() { Items = dataToShow.Skip(state.Page * state.PageSize).Take(state.PageSize), TotalItems = Account.Transactions.Count };
+        }
+
+        protected void OnSearch(string text)
+        {
+            searchString = text;
+            table.ReloadServerData();
         }
         #endregion
 

@@ -29,13 +29,13 @@
     <MudButton Variant="Variant.Outlined" Color="Color.Primary" StartIcon="@Icons.Filled.Add" OnClick="OpenAddTransactionDialog" Disabled="@(Account == null)">Add New Transaction</MudButton>
 </MudStack>
 
-<MudTable Items="@Account.Transactions"
+<MudTable
+    ServerData="@(new Func<TableState, Task<TableData<Transaction>>>(LoadTransactions))" @ref="table"
     Hover="true" 
-    Breakpoint="Breakpoint.SmAndDown" 
+    Breakpoint="Breakpoint.SmAndDown"
     T="Transaction" 
     Dense="true" 
     Striped="true" 
-    Filter="new Func<Transaction,bool>(FilterFunc1)"
     Virtualize="true"
     Loading="@_isAccountLoading">
     <ToolBarContent>
@@ -49,7 +49,9 @@
             OnClick="FilterUnbudgeted">
             Unbudgeted
         </MudButton>
-        <MudTextField @bind-Value="searchString" 
+        <MudTextField
+            T="string"
+            ValueChanged="@(s=>OnSearch(s))"
             Placeholder="Search" 
             Clearable="true"
             Adornment="Adornment.Start" 
@@ -72,9 +74,9 @@
         <col style="width: 5%;" />
     </ColGroup>
     <HeaderContent>
-        <MudTh><MudTableSortLabel InitialDirection="SortDirection.Descending" SortBy="new Func<Transaction, object>(x=>x.TransactionDate)">Date</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<Transaction, object>(x=>x.Name)">Description</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<Transaction, object>(x=>x.Amount)">Amount</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortLabel="Date" T="Transaction" InitialDirection="SortDirection.Descending">Date</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortLabel="Description" T="Transaction">Description</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortLabel="Amount" T="Transaction">Amount</MudTableSortLabel></MudTh>
         <MudTh>Budget</MudTh>
         <MudTh></MudTh>
     </HeaderContent>
