@@ -70,5 +70,56 @@ namespace DataAccess.Models
                 }
             }
         }
+
+        /// <summary>
+        /// Returns a new transaction with the same values as the current transaction
+        /// </summary>
+        /// <returns></returns>
+        public Transaction DuplicateTransaction()
+        {
+            // Create a new transaction
+            Transaction newTransaction = new Transaction(this.Name, this.User, this.TransactionDate);
+
+            // Duplicate the "standard" parameters
+            newTransaction.Amount = this.Amount;
+            newTransaction.Budget = this.Budget;
+            newTransaction.CheckNumber = this.CheckNumber;
+            newTransaction.FITransactionId = this.FITransactionId;
+            newTransaction.IsIncome = this.IsIncome;
+            newTransaction.IsPartial = this.IsPartial;
+            newTransaction.IsSplit = this.IsSplit;
+            newTransaction.Notes = this.Notes;
+
+            // Duplicate the splits
+            foreach(Transaction split in this.Splits)
+            {
+                newTransaction.Splits.Add(split.DuplicateTransaction());
+            }
+
+            return newTransaction;
+        }
+
+        public void ResetTransaction(Transaction originalValues)
+        {
+            // Reset the "standard" parameters
+            this.Name = originalValues.Name;
+            this.User = originalValues.User;
+            this.TransactionDate = originalValues.TransactionDate;
+            this.Amount = originalValues.Amount;
+            this.Budget = originalValues.Budget;
+            this.CheckNumber = originalValues.CheckNumber;
+            this.FITransactionId = originalValues.FITransactionId;
+            this.IsIncome = originalValues.IsIncome;
+            this.IsPartial = originalValues.IsPartial;
+            this.IsSplit = originalValues.IsSplit;
+            this.Notes = originalValues.Notes;
+
+            // Reset the splits
+            this.Splits = new List<Transaction>();
+            foreach (Transaction split in originalValues.Splits)
+            {
+                this.Splits.Add(split.DuplicateTransaction());
+            }
+        }
     }
 }

@@ -535,24 +535,38 @@ namespace DataAccess.Services
 
         public void UpdateAccountHistory(Account account, DateTime balanceDate, decimal balance)
         {
-            // Create a new account history
-            AccountHistory history = new AccountHistory()
-            {
-                Account = account,
-                Balance = balance,
-                BalanceDate = balanceDate
-            };
+            // Check for an existing account history with the same date
+            AccountHistory history = _db.AccountsHistories.FirstOrDefault(h => h.Account.Id == account.Id && h.BalanceDate == balanceDate);
 
-            // Add the history to the database
-            try
+            if (history == default(AccountHistory))
             {
-                _db.AccountsHistories.Add(history);
-                _db.SaveChanges();
+                // Create a new account history
+                history = new AccountHistory()
+                {
+                    Account = account,
+                    Balance = balance,
+                    BalanceDate = balanceDate
+                };
+
+                // Add the history to the database
+                try
+                {
+                    _db.AccountsHistories.Add(history);
+                    _db.SaveChanges();
+                }
+                catch { }
             }
-            catch (DbUpdateException ex)
+            else
             {
-                // Tried to insert duplicate, we can ignore this and move on
+                // Update the history balance
+                try
+                {
+                    history.Balance = balance;
+                    _db.SaveChanges();
+                }
+                catch { }
             }
+            
         }
         #endregion
 
