@@ -9,8 +9,6 @@ using MudBlazor;
 using MudBlazor.Services;
 using System.Globalization;
 
-CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("en-US");
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -55,8 +53,12 @@ if (!builder.Services.Any(x => x.ServiceType == typeof(HttpClient)))
     });
 }
 
+builder.Services.AddLocalization();
+
 
 var app = builder.Build();
+
+app.UseRequestLocalization("en-US");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
