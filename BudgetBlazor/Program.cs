@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using MudBlazor;
 using MudBlazor.Services;
 using System.Globalization;
+using Microsoft.AspNetCore.Localization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -53,12 +54,17 @@ if (!builder.Services.Any(x => x.ServiceType == typeof(HttpClient)))
     });
 }
 
-builder.Services.AddLocalization();
+//builder.Services.AddLocalization();
+builder.Services.Configure<RequestLocalizationOptions>(options =>
+{
+    options.DefaultRequestCulture = new RequestCulture("en-US");
+    options.DefaultRequestCulture.Culture.NumberFormat.CurrencyNegativePattern = 0;
+});
 
 
 var app = builder.Build();
 
-app.UseRequestLocalization("en-US");
+app.UseRequestLocalization();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
