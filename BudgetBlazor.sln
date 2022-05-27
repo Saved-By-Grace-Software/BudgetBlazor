@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BudgetBlazor.Helpers", "Bud
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BudgetBlazor.PageComponents", "BudgetBlazor.PageComponents\BudgetBlazor.PageComponents.csproj", "{B93E323E-E2E3-47D1-AC08-53F90EF44883}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BudgetBlazor.Shared", "BudgetBlazor.Shared\BudgetBlazor.Shared.csproj", "{1D774C11-0175-4A44-8DAD-41E3ECD15A2C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{B93E323E-E2E3-47D1-AC08-53F90EF44883}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B93E323E-E2E3-47D1-AC08-53F90EF44883}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B93E323E-E2E3-47D1-AC08-53F90EF44883}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1D774C11-0175-4A44-8DAD-41E3ECD15A2C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1D774C11-0175-4A44-8DAD-41E3ECD15A2C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1D774C11-0175-4A44-8DAD-41E3ECD15A2C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1D774C11-0175-4A44-8DAD-41E3ECD15A2C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
