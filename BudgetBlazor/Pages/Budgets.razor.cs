@@ -1,4 +1,4 @@
-﻿using BudgetBlazor.Pages.Page_Components;
+﻿using BudgetBlazor.PageComponents;
 using BudgetBlazor.DataAccess.Services;
 using BudgetBlazor.DataAccess.Models;
 using Microsoft.AspNetCore.Components;

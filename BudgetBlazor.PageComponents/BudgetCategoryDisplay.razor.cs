@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 using MudBlazor;
 using MudBlazor.Utilities;
 
-namespace BudgetBlazor.Pages.Page_Components
+namespace BudgetBlazor.PageComponents
 {
     public class BudgetCategoryDisplayBase : ComponentBase
     {

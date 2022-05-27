@@ -1,5 +1,5 @@
 ﻿using BudgetBlazor.Helpers;
-using BudgetBlazor.Pages.Page_Components;
+using BudgetBlazor.PageComponents;
 using BudgetBlazor.DataAccess.Models;
 using BudgetBlazor.DataAccess.Services;
 using Microsoft.AspNetCore.Components;

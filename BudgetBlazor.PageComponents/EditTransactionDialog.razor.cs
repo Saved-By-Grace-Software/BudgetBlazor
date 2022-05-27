@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using MudBlazor;
 
-namespace BudgetBlazor.Pages.Page_Components
+namespace BudgetBlazor.PageComponents
 {
     public class EditTransactionDialogBase : ComponentBase
     {
