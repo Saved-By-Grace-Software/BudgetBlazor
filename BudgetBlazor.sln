@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BudgetBlazor.PageComponents
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BudgetBlazor.Shared", "BudgetBlazor.Shared\BudgetBlazor.Shared.csproj", "{1D774C11-0175-4A44-8DAD-41E3ECD15A2C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BudgetBlazor.Pages", "BudgetBlazor.Pages\BudgetBlazor.Pages.csproj", "{5C67AC81-B063-457B-956F-EE62E8F5825C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{1D774C11-0175-4A44-8DAD-41E3ECD15A2C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1D774C11-0175-4A44-8DAD-41E3ECD15A2C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1D774C11-0175-4A44-8DAD-41E3ECD15A2C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5C67AC81-B063-457B-956F-EE62E8F5825C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C67AC81-B063-457B-956F-EE62E8F5825C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C67AC81-B063-457B-956F-EE62E8F5825C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C67AC81-B063-457B-956F-EE62E8F5825C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

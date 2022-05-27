@@ -25,6 +25,7 @@
     <ProjectReference Include="..\BudgetBlazor.DataAccess\BudgetBlazor.DataAccess.csproj" />
     <ProjectReference Include="..\BudgetBlazor.Helpers\BudgetBlazor.Helpers.csproj" />
     <ProjectReference Include="..\BudgetBlazor.PageComponents\BudgetBlazor.PageComponents.csproj" />
+    <ProjectReference Include="..\BudgetBlazor.Pages\BudgetBlazor.Pages.csproj" />
     <ProjectReference Include="..\BudgetBlazor.Shared\BudgetBlazor.Shared.csproj" />
     <ProjectReference Include="..\DataAccess\BudgetBlazor.DataAccess.csproj" />
   </ItemGroup>
