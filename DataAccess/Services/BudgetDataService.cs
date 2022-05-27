@@ -1,8 +1,8 @@
-﻿using DataAccess.Data;
-using DataAccess.Models;
+﻿using BudgetBlazor.DataAccess.Data;
+using BudgetBlazor.DataAccess.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace DataAccess.Services
+namespace BudgetBlazor.DataAccess.Services
 {
     public class BudgetDataService : IBudgetDataService
     {

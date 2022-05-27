@@ -1,6 +1,6 @@
-﻿using DataAccess.Models;
+﻿using BudgetBlazor.DataAccess.Models;
 
-namespace DataAccess.Services
+namespace BudgetBlazor.DataAccess.Services
 {
     public interface IBudgetDataService
     {

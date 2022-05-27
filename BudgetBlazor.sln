@@ -5,7 +5,7 @@ VisualStudioVersion = 17.1.32328.378
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BudgetBlazor", "BudgetBlazor\BudgetBlazor.csproj", "{53E6455B-61B4-4123-908A-2AE44C7ECDC6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataAccess", "DataAccess\DataAccess.csproj", "{37CC5F7B-52A6-495A-A6ED-AB588DEC405B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BudgetBlazor.DataAccess", "DataAccess\BudgetBlazor.DataAccess.csproj", "{37CC5F7B-52A6-495A-A6ED-AB588DEC405B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,4 +1,4 @@
-﻿namespace DataAccess.Models
+﻿namespace BudgetBlazor.DataAccess.Models
 {
     public class AutomationRule
     {

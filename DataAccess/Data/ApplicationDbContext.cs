@@ -1,8 +1,8 @@
-﻿using DataAccess.Models;
+﻿using BudgetBlazor.DataAccess.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace DataAccess.Data
+namespace BudgetBlazor.DataAccess.Data
 {
     public class ApplicationDbContext : IdentityDbContext
     {

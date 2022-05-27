@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace DataAccess.Models
+namespace BudgetBlazor.DataAccess.Models
 {
     [Index(nameof(BalanceDate), nameof(Balance), IsUnique = true)]
     public class AccountHistory

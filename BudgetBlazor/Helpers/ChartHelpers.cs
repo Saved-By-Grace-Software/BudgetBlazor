@@ -1,5 +1,5 @@
-﻿using DataAccess.Models;
-using DataAccess.Services;
+﻿using BudgetBlazor.DataAccess.Models;
+using BudgetBlazor.DataAccess.Services;
 using Plotly.Blazor.Traces;
 using Plotly.Blazor.Traces.ScatterLib;
 

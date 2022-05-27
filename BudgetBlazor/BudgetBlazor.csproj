@@ -24,7 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DataAccess\DataAccess.csproj" />
+    <ProjectReference Include="..\DataAccess\BudgetBlazor.DataAccess.csproj" />
   </ItemGroup>
 
 </Project>

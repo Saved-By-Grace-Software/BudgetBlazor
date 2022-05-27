@@ -1,6 +1,6 @@
 ﻿using BudgetBlazor.Helpers;
-using DataAccess.Models;
-using DataAccess.Services;
+using BudgetBlazor.DataAccess.Models;
+using BudgetBlazor.DataAccess.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using MudBlazor;

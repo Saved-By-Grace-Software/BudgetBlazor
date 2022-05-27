@@ -1,10 +1,9 @@
-﻿using CsvHelper;
-using DataAccess.Services;
-using MudBlazor;
+﻿using BudgetBlazor.DataAccess.Services;
+using CsvHelper;
 using OfxSharp;
 using System.Globalization;
-using BudgetAccount = DataAccess.Models.Account;
-using BudgetTransaction = DataAccess.Models.Transaction;
+using BudgetAccount = BudgetBlazor.DataAccess.Models.Account;
+using BudgetTransaction = BudgetBlazor.DataAccess.Models.Transaction;
 
 namespace BudgetBlazor.Helpers
 {
