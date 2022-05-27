@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BudgetBlazor", "BudgetBlazo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BudgetBlazor.DataAccess", "DataAccess\BudgetBlazor.DataAccess.csproj", "{37CC5F7B-52A6-495A-A6ED-AB588DEC405B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BudgetBlazor.Helpers", "BudgetBlazor.Helpers\BudgetBlazor.Helpers.csproj", "{4A130FE8-3026-4537-97DE-B28523D8F203}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{37CC5F7B-52A6-495A-A6ED-AB588DEC405B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{37CC5F7B-52A6-495A-A6ED-AB588DEC405B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{37CC5F7B-52A6-495A-A6ED-AB588DEC405B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4A130FE8-3026-4537-97DE-B28523D8F203}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4A130FE8-3026-4537-97DE-B28523D8F203}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4A130FE8-3026-4537-97DE-B28523D8F203}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4A130FE8-3026-4537-97DE-B28523D8F203}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
