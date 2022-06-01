@@ -15,7 +15,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BudgetBlazor.DataAccess\BudgetBlazor.DataAccess.csproj" />
-    <ProjectReference Include="..\DataAccess\BudgetBlazor.DataAccess.csproj" />
   </ItemGroup>
 
 </Project>
