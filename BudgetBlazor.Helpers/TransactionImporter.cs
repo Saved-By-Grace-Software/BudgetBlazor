@@ -46,7 +46,7 @@ namespace BudgetBlazor.Helpers
                         t.TransactionDate = transaction.Date;
 
                         // Add the transaction to the account if it is unique
-                        if (!account.Transactions.Contains(t))
+                        if (!DoesTransactionExist(account.Transactions, t))
                         {
                             // Run automations against the transaction
                             t = await AutomationEngine.ExecuteAllAutomations(t, account.User, dataService);
@@ -112,7 +112,7 @@ namespace BudgetBlazor.Helpers
                         t.TransactionDate = transactionDate;
 
                         // Add the transaction to the account if it is unique
-                        if (!account.Transactions.Contains(t))
+                        if (!DoesTransactionExist(account.Transactions, t))
                         {
                             // Run automations against the transaction
                             t = await AutomationEngine.ExecuteAllAutomations(t, account.User, dataService);
@@ -149,6 +149,23 @@ namespace BudgetBlazor.Helpers
             }
 
             return success;
+        }
+
+        private static bool DoesTransactionExist(List<BudgetTransaction> currentTransactions, BudgetTransaction transactionToAdd)
+        {
+            // Default to true so we fail to not adding the transaction
+            bool ret = true;
+
+            if (transactionToAdd.FITransactionId == null || string.IsNullOrWhiteSpace(transactionToAdd.FITransactionId))
+            {
+                ret = currentTransactions.Contains(transactionToAdd);
+            }
+            else
+            {
+                ret = currentTransactions.Select(x => x.FITransactionId == transactionToAdd.FITransactionId).Any();
+            }
+
+            return ret;
         }
     }
 }

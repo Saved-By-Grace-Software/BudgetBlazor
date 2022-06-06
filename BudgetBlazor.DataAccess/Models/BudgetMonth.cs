@@ -66,7 +66,8 @@ namespace BudgetBlazor.DataAccess.Models
         {
             get
             {
-                return ActualIncome - TotalSpent;
+                // Add here because spent is stored as a negative
+                return ActualIncome + TotalSpent;
             }
         }
 
