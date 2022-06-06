@@ -135,6 +135,9 @@ namespace BudgetBlazor.Pages
                 Transaction transaction = (Transaction)res.Data;
                 Account.Transactions.Add(transaction);
                 BudgetDataService.Update(Account);
+
+                // Recalculate the budget month totals in the background
+                Task.Run(() => BudgetDataService.UpdateMonthTotals(transaction.TransactionDate.Year, transaction.TransactionDate.Month, _currentUserId));
             }
         }
 
@@ -162,6 +165,22 @@ namespace BudgetBlazor.Pages
                 {
                     Account.Transactions[index] = transaction;
                     BudgetDataService.Update(Account);
+
+                    // Recalculate the budget month totals in the background
+                    int oldYear = _transactionBeforeEdit.TransactionDate.Year;
+                    int oldMonth = _transactionBeforeEdit.TransactionDate.Month;
+                    Task.Run(() =>
+                    {
+                        BudgetDataService.UpdateMonthTotals(transaction.TransactionDate.Year, transaction.TransactionDate.Month, _currentUserId);
+
+                        if (transaction.TransactionDate.Year != oldYear || transaction.TransactionDate.Month != oldMonth)
+                        {
+                            BudgetDataService.UpdateMonthTotals(oldYear, oldMonth, _currentUserId);
+                        }
+                    });
+
+                    // Reset the before edit transaction
+                    _transactionBeforeEdit = null;
                 }
             }
             else
@@ -186,8 +205,14 @@ namespace BudgetBlazor.Pages
 
             if (result != null && result == true)
             {
+                int year = transactionToDelete.TransactionDate.Year;
+                int month = transactionToDelete.TransactionDate.Month;
+
                 // Delete the transaction 
                 BudgetDataService.Delete(transactionToDelete);
+
+                // Recalculate the budget month totals in the background
+                Task.Run(() => BudgetDataService.UpdateMonthTotals(year, month, _currentUserId));
             }
         }
 
