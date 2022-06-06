@@ -437,6 +437,17 @@ namespace BudgetBlazor.DataAccess.Services
         /// <summary>
         /// Updates the totals for the given month
         /// </summary>
+        /// <param name="year"></param>
+        /// <param name="month"></param>
+        /// <param name="user"></param>
+        public void UpdateMonthTotals(int year, int month, Guid user)
+        {
+            UpdateMonthTotals(Get(year, month, user));
+        }
+
+        /// <summary>
+        /// Updates the totals for the given month
+        /// </summary>
         /// <param name="budgetMonth"></param>
         public void UpdateMonthTotals(BudgetMonth budgetMonth)
         {
