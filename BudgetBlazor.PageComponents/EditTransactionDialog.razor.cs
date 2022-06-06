@@ -24,7 +24,9 @@ namespace BudgetBlazor.PageComponents
         protected bool success;
         protected string[] errors = { };
         protected bool _isSplitsError = false;
-        protected readonly string _splitsErrorMessage = "Splits must add to total";
+        protected string _splitsErrorMessage = "Splits must add to total";
+        protected bool _hideRemainingSplits = true;
+        protected string _remainingSplitsMessage = "";
 
         /// <summary>
         /// Lifecycle method called when the page is initialized
@@ -61,7 +63,7 @@ namespace BudgetBlazor.PageComponents
             await form.Validate();
 
             // Manually validate the form along with standard validation
-            if (IsSplitsAmountsCorrect() && form.IsValid)
+            if (IsSplitsAmountsCorrect(out decimal amountRemaining) && form.IsValid)
             {
                 // Update the transaction date from the binder
                 Transaction.TransactionDate = (DateTime)_transactionDateBinder;
@@ -173,16 +175,28 @@ namespace BudgetBlazor.PageComponents
         /// <returns></returns>
         protected void VerifySplitAmounts(string arg)
         {
-            _isSplitsError = !IsSplitsAmountsCorrect();
+            if (!IsSplitsAmountsCorrect(out decimal amountRemaining))
+            {
+                _remainingSplitsMessage = String.Format("Need {0:C} more", amountRemaining);
+                _hideRemainingSplits = false;
+                _isSplitsError = true;
+            }
+            else
+            {
+                _hideRemainingSplits = true;
+                _isSplitsError = false;
+            }
+            //_isSplitsError = !IsSplitsAmountsCorrect();
         }
 
         /// <summary>
         /// Checks to see if the split amounts add to the total
         /// </summary>
         /// <returns></returns>
-        private bool IsSplitsAmountsCorrect()
+        private bool IsSplitsAmountsCorrect(out decimal amountRemaining)
         {
             bool ret = false;
+            amountRemaining = 0;
 
             // Check that all of the split amounts add up to the total
             decimal totalSplits = 0;
@@ -190,6 +204,8 @@ namespace BudgetBlazor.PageComponents
             {
                 totalSplits += split.Amount;
             }
+
+            amountRemaining = Transaction.Amount - totalSplits;
 
             if (Transaction.Splits.Count == 0 || totalSplits == Transaction.Amount)
             {
