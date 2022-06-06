@@ -1,0 +1,40 @@
+﻿<MudDrawer @bind-Open="SideBarOpen" Elevation="1">
+	<MudDrawerHeader LinkToIndex="true" Style="@($"color:{CurrentTheme.Palette.AppbarText}; background:{CurrentTheme.Palette.AppbarBackground};")">
+		<MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.Center">
+			<MudImage Src="budget.png" Elevation="25" ObjectFit="ObjectFit.ScaleDown" ObjectPosition="ObjectPosition.Center" Height="30" />
+			<MudText Typo="Typo.h5" >SBG Budget</MudText>
+		</MudStack>
+	</MudDrawerHeader>
+	<MudNavMenu>
+		<MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Filled.Home">Dashboard</MudNavLink>
+		<MudNavLink Href="/Budgets" Match="NavLinkMatch.All" Icon="@Icons.Filled.PieChart">Budgets</MudNavLink>
+		<MudNavLink Href="/PiggyBanks" Match="NavLinkMatch.All" Icon="@Icons.Filled.Savings">Piggy Banks</MudNavLink>
+		<MudNavLink Href="/Accounts" Match="NavLinkMatch.All" Icon="@Icons.Filled.CreditCard">Accounts</MudNavLink>
+		<MudNavLink Href="/Automations" Match="NavLinkMatch.All" Icon="@Icons.Filled.Code">Automations</MudNavLink>
+		<MudNavGroup Title="Settings" Expanded="false" Icon="@Icons.Filled.MiscellaneousServices">
+			<MudNavLink Href="/DefaultBudgets" Match="NavLinkMatch.All" Icon="@Icons.Filled.PieChartOutline">Default Budgets</MudNavLink>
+			<MudNavLink Href="Identity/Account/Manage" Icon="@Icons.Filled.Person">Profile</MudNavLink>
+		</MudNavGroup>
+	</MudNavMenu>
+</MudDrawer>
+
+@code {
+	private bool _sideBarOpen;
+
+	[Parameter]
+	public bool SideBarOpen 
+	{
+		get => _sideBarOpen;
+		set
+		{
+			if (_sideBarOpen == value ) return;
+			_sideBarOpen = value;
+			SideBarOpenChanged.InvokeAsync(value);
+		}
+	}
+
+	[Parameter]
+	public EventCallback<bool> SideBarOpenChanged { get; set; }
+
+	[CascadingParameter] protected MudTheme CurrentTheme { get; set; }
+}

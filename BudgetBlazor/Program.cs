@@ -1,13 +1,13 @@
 using BudgetBlazor.Areas.Identity;
-using DataAccess.Services;
-using DataAccess.Data;
+using BudgetBlazor.DataAccess.Data;
+using BudgetBlazor.DataAccess.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using MudBlazor;
 using MudBlazor.Services;
-using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -53,12 +53,17 @@ if (!builder.Services.Any(x => x.ServiceType == typeof(HttpClient)))
     });
 }
 
-builder.Services.AddLocalization();
+//builder.Services.AddLocalization();
+builder.Services.Configure<RequestLocalizationOptions>(options =>
+{
+    options.DefaultRequestCulture = new RequestCulture("en-US");
+    options.DefaultRequestCulture.Culture.NumberFormat.CurrencyNegativePattern = 0;
+});
 
 
 var app = builder.Build();
 
-app.UseRequestLocalization("en-US");
+app.UseRequestLocalization();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
