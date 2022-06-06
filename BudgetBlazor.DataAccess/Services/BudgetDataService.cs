@@ -186,6 +186,19 @@ namespace BudgetBlazor.DataAccess.Services
             }
         }
 
+        public List<BudgetCategory> GetBudgetCategories(int year, int month, Guid user)
+        {
+            BudgetMonth m = Get(year, month, user);
+            if (m != default(BudgetMonth))
+            {
+                return m.BudgetCategories.ToList();
+            }
+            else
+            {
+                return null;
+            }
+        }
+
         public List<AutomationCategory> GetAutomationCategories(Guid user)
         {
             return _db.AutomationCategories.Where(x => x.User == user).ToList();

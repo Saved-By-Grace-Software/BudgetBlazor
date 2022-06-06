@@ -52,6 +52,24 @@ namespace BudgetBlazor.DataAccess.Models
             }
         }
 
+        [NotMapped]
+        public decimal RemainingToBudget
+        {
+            get
+            {
+                return ExpectedIncome - TotalBudgeted;
+            }
+        }
+
+        [NotMapped]
+        public decimal RemainingToSpend
+        {
+            get
+            {
+                return ActualIncome - TotalSpent;
+            }
+        }
+
         public BudgetMonth(int year, int month, Guid user)
         {
             BudgetCategories = new List<BudgetCategory>();

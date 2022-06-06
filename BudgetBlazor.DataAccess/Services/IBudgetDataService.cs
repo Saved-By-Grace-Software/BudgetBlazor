@@ -34,6 +34,7 @@ namespace BudgetBlazor.DataAccess.Services
         List<PiggyBank> GetAllPiggyBanks(Guid user);
         Account GetAccount(int accountId, Guid user);
         List<BudgetItem> GetBudgetItems(int year, int month, Guid user);
+        List<BudgetCategory> GetBudgetCategories(int year, int month, Guid user);
         List<AutomationCategory> GetAutomationCategories(Guid user);
         List<Automation> GetAutomations(Guid user);
         List<Transaction> GetTransactions(Guid user);
