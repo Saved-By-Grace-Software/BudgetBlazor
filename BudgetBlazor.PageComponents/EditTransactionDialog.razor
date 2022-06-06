@@ -22,9 +22,12 @@
                         Required="false" 
                         Disabled="@(Transaction.IsIncome || Transaction.IsSplit)"
                         Clearable="true">
-                        @foreach(BudgetItem budget in _parentBudgets)
+                        @foreach(BudgetCategory category in _parentCategories)
                         {
-                            <MudSelectItem Value="budget" />
+                            @foreach(BudgetItem budget in category.BudgetItems)
+                            {
+                                <MudSelectItem Value="budget">@category.Name - @budget.Name</MudSelectItem>
+                            }
                         }
                     </MudSelect>
                 </MudItem>
@@ -59,10 +62,13 @@
                                             TextChanged="VerifySplitAmounts"/>
                                     </MudItem>
                                     <MudItem sm="5" md="3">
-                                        <MudSelect T="BudgetItem" @bind-Value="@t.Budget" Label="Split Budget" AnchorOrigin="Origin.BottomCenter" Required="false">
-                                            @foreach(BudgetItem budget in _splitBudgets[t])
+                                        <MudSelect T="BudgetItem" @bind-Value="@t.Budget" Label="Split Budget" AnchorOrigin="Origin.BottomCenter" Required="false" Dense="true">
+                                            @foreach(BudgetCategory category in _splitCategories[t])
                                             {
-                                                <MudSelectItem Value="budget" />
+                                                @foreach(BudgetItem budget in category.BudgetItems)
+                                                {
+                                                    <MudSelectItem Value="budget">@category.Name - @budget.Name</MudSelectItem>
+                                                }
                                             }
                                         </MudSelect>
                                     </MudItem>

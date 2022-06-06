@@ -15,9 +15,9 @@ namespace BudgetBlazor.PageComponents
         [Parameter] public Transaction Transaction { get; set; }
 
         protected DateTime? _transactionDateBinder { get; set; }
-        protected List<BudgetItem> _parentBudgets { get; set; }
+        protected List<BudgetCategory> _parentCategories { get; set; }
         protected Guid _currentUserId { get; set; }
-        protected Dictionary<Transaction, List<BudgetItem>> _splitBudgets { get; set; }
+        protected Dictionary<Transaction, List<BudgetCategory>> _splitCategories { get; set; }
         protected Dictionary<Transaction, DateTime?> _splitDateBinders { get; set; }
 
         protected MudForm form;
@@ -38,14 +38,13 @@ namespace BudgetBlazor.PageComponents
             _currentUserId = Guid.Parse(authstate.User.Claims.First().Value);
 
             _transactionDateBinder = Transaction.TransactionDate;
-            _parentBudgets = BudgetDataService.GetBudgetItems(Transaction.TransactionDate.Year, Transaction.TransactionDate.Month, _currentUserId);
+            _parentCategories = BudgetDataService.GetBudgetCategories(Transaction.TransactionDate.Year, Transaction.TransactionDate.Month, _currentUserId);
 
-
-            _splitBudgets = new Dictionary<Transaction, List<BudgetItem>>();
+            _splitCategories = new Dictionary<Transaction, List<BudgetCategory>>();
             _splitDateBinders = new Dictionary<Transaction, DateTime?>();
             foreach (Transaction split in Transaction.Splits)
             {
-                _splitBudgets.TryAdd(split, BudgetDataService.GetBudgetItems(split.TransactionDate.Year, split.TransactionDate.Month, _currentUserId));
+                _splitCategories.TryAdd(split, BudgetDataService.GetBudgetCategories(split.TransactionDate.Year, split.TransactionDate.Month, _currentUserId));
                 _splitDateBinders.TryAdd(split, new DateTime?(split.TransactionDate));
             }
         }
@@ -69,7 +68,7 @@ namespace BudgetBlazor.PageComponents
                 Transaction.TransactionDate = (DateTime)_transactionDateBinder;
 
                 // Clear the budget if the selected budget is not from the list, or if this is income/split
-                if (!_parentBudgets.Contains(Transaction.Budget) || Transaction.IsIncome || Transaction.IsSplit)
+                if (!_parentCategories.SelectMany(c => c.BudgetItems).Contains(Transaction.Budget) || Transaction.IsIncome || Transaction.IsSplit)
                 {
                     Transaction.Budget = null;
                 }
@@ -80,7 +79,7 @@ namespace BudgetBlazor.PageComponents
                     // Check each split budget and update the date
                     foreach (Transaction t in Transaction.Splits)
                     {
-                        if (!_splitBudgets[t].Contains(t.Budget))
+                        if (!_splitCategories[t].SelectMany(c => c.BudgetItems).Contains(t.Budget))
                         {
                             t.Budget = null;
                         }
@@ -110,8 +109,8 @@ namespace BudgetBlazor.PageComponents
                 // Clear the existing budget
                 Transaction.Budget = null;
 
-                // The date changed to a new month, reload the budget items
-                _parentBudgets = BudgetDataService.GetBudgetItems(((DateTime)_transactionDateBinder).Year, ((DateTime)_transactionDateBinder).Month, _currentUserId);
+                // The date changed to a new month, reload the budget categories
+                _parentCategories = BudgetDataService.GetBudgetCategories(((DateTime)_transactionDateBinder).Year, ((DateTime)_transactionDateBinder).Month, _currentUserId);
             }
         }
 
@@ -122,7 +121,7 @@ namespace BudgetBlazor.PageComponents
         protected void SplitMonthChanged(Transaction split)
         {
             // Check for an existing entry
-            if (_splitBudgets.ContainsKey(split))
+            if (_splitCategories.ContainsKey(split))
             {
                 if (((DateTime)_splitDateBinders[split]).Year != split.TransactionDate.Year || ((DateTime)_splitDateBinders[split]).Month != split.TransactionDate.Month)
                 {
@@ -130,13 +129,13 @@ namespace BudgetBlazor.PageComponents
                     split.Budget = null;
 
                     // Update the existing entry
-                    _splitBudgets[split] = BudgetDataService.GetBudgetItems(((DateTime)_splitDateBinders[split]).Year, ((DateTime)_splitDateBinders[split]).Month, _currentUserId);
+                    _splitCategories[split] = BudgetDataService.GetBudgetCategories(((DateTime)_splitDateBinders[split]).Year, ((DateTime)_splitDateBinders[split]).Month, _currentUserId);
                 }   
             }
             else
             {
                 // No existing entry, add one
-                _splitBudgets.TryAdd(split, BudgetDataService.GetBudgetItems(((DateTime)_splitDateBinders[split]).Year, ((DateTime)_splitDateBinders[split]).Month, _currentUserId));
+                _splitCategories.TryAdd(split, BudgetDataService.GetBudgetCategories(((DateTime)_splitDateBinders[split]).Year, ((DateTime)_splitDateBinders[split]).Month, _currentUserId));
             }
         }
 
@@ -153,7 +152,7 @@ namespace BudgetBlazor.PageComponents
             Transaction.Splits.Add(transactionToAdd);
 
             // Update the splits dictionaries
-            _splitBudgets.TryAdd(transactionToAdd, BudgetDataService.GetBudgetItems(transactionToAdd.TransactionDate.Year, transactionToAdd.TransactionDate.Month, _currentUserId));
+            _splitCategories.TryAdd(transactionToAdd, BudgetDataService.GetBudgetCategories(transactionToAdd.TransactionDate.Year, transactionToAdd.TransactionDate.Month, _currentUserId));
             _splitDateBinders.TryAdd(transactionToAdd, new DateTime?(transactionToAdd.TransactionDate));
         }
 
