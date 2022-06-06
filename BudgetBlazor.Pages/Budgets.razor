@@ -48,7 +48,11 @@
                     <b>@string.Format("{0}%", _currentMonth.PercentBudgeted)</b>
                 </MudText>
             </MudProgressLinear>
-            <MudText Typo="Typo.body1"><strong>Total Budgeted - </strong>@String.Format("{0:C}", _currentMonth.TotalBudgeted)</MudText>
+            <MudStack Row="true" Justify="Justify.SpaceBetween">
+                <MudText Typo="Typo.body1"><strong>Total Budgeted - </strong>@String.Format("{0:C}", _currentMonth.TotalBudgeted)</MudText>
+                <MudText Typo="Typo.body1"><strong>Left to Budget - </strong>@String.Format("{0:C}", _currentMonth.RemainingToBudget)</MudText>
+            </MudStack>
+            
         </MudPaper>
         
         <MudPaper Class="my-2 pa-3" Elevation="0" Outlined="true">
@@ -58,7 +62,11 @@
                     <b>@string.Format("{0}%", _currentMonth.PercentSpent)</b>
                 </MudText>
             </MudProgressLinear>
-            <MudText Typo="Typo.body1"><strong>Total Spent - </strong>@String.Format("{0:C}", (_currentMonth.TotalSpent * -1))</MudText>
+            <MudStack Row="true" Justify="Justify.SpaceBetween">
+                <MudText Typo="Typo.body1"><strong>Total Spent - </strong>@String.Format("{0:C}", (_currentMonth.TotalSpent * -1))</MudText>
+                <MudText Typo="Typo.body1"><strong>Left to Spend - </strong>@String.Format("{0:C}", _currentMonth.RemainingToSpend)</MudText>
+            </MudStack>
+            
         </MudPaper>
     </MudCardContent>
 </MudCard>
