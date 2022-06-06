@@ -1,6 +1,9 @@
 ﻿<MudDrawer @bind-Open="SideBarOpen" Elevation="1">
-	<MudDrawerHeader>
-		<MudText Typo="Typo.h5" Color="Color.Primary" Style="margin-top:10px; margin-left:15px;">SBG Budget</MudText>
+	<MudDrawerHeader LinkToIndex="true" Style="@($"color:{CurrentTheme.Palette.AppbarText}; background:{CurrentTheme.Palette.AppbarBackground};")">
+		<MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.Center">
+			<MudImage Src="budget.png" Elevation="25" ObjectFit="ObjectFit.ScaleDown" ObjectPosition="ObjectPosition.Center" Height="30" />
+			<MudText Typo="Typo.h5" >SBG Budget</MudText>
+		</MudStack>
 	</MudDrawerHeader>
 	<MudNavMenu>
 		<MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Filled.Home">Dashboard</MudNavLink>
@@ -32,4 +35,6 @@
 
 	[Parameter]
 	public EventCallback<bool> SideBarOpenChanged { get; set; }
+
+	[CascadingParameter] protected MudTheme CurrentTheme { get; set; }
 }
