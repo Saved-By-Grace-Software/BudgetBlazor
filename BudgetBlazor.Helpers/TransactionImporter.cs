@@ -151,6 +151,12 @@ namespace BudgetBlazor.Helpers
             return success;
         }
 
+        /// <summary>
+        /// Determines if the given transaction exists in the list of transactions
+        /// </summary>
+        /// <param name="currentTransactions"></param>
+        /// <param name="transactionToAdd"></param>
+        /// <returns></returns>
         private static bool DoesTransactionExist(List<BudgetTransaction> currentTransactions, BudgetTransaction transactionToAdd)
         {
             // Default to true so we fail to not adding the transaction
@@ -162,7 +168,7 @@ namespace BudgetBlazor.Helpers
             }
             else
             {
-                ret = currentTransactions.Select(x => x.FITransactionId == transactionToAdd.FITransactionId).Any();
+                ret = currentTransactions.FirstOrDefault(x => x.FITransactionId == transactionToAdd.FITransactionId) != default(BudgetTransaction);
             }
 
             return ret;
