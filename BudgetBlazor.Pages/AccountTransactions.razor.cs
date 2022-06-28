@@ -156,28 +156,33 @@ namespace BudgetBlazor.Pages
             {
                 // Update the transaction
                 Transaction transaction = (Transaction)res.Data;
-                int index = Account.Transactions.FindIndex(t => t.Id == transaction.Id);
-                if (index != -1)
-                {
-                    Account.Transactions[index] = transaction;
-                    BudgetDataService.Update(Account);
+                BudgetDataService.UpdateTransactionInAccount(Account, transaction, _transactionBeforeEdit);
 
-                    // Recalculate the budget month totals in the background
-                    int oldYear = _transactionBeforeEdit.TransactionDate.Year;
-                    int oldMonth = _transactionBeforeEdit.TransactionDate.Month;
-                    Task.Run(() =>
-                    {
-                        BudgetDataService.UpdateMonthTotals(transaction.TransactionDate.Year, transaction.TransactionDate.Month, _currentUserId);
+                //int index = Account.Transactions.FindIndex(t => t.Id == transaction.Id);
+                //if (index != -1)
+                //{
+                //    Account.Transactions[index] = transaction;
+                //    BudgetDataService.Update(Account);
 
-                        if (transaction.TransactionDate.Year != oldYear || transaction.TransactionDate.Month != oldMonth)
-                        {
-                            BudgetDataService.UpdateMonthTotals(oldYear, oldMonth, _currentUserId);
-                        }
-                    });
+                //    // Recalculate the budget month totals in the background
+                //    int oldYear = _transactionBeforeEdit.TransactionDate.Year;
+                //    int oldMonth = _transactionBeforeEdit.TransactionDate.Month;
+                //    Task.Run(() =>
+                //    {
+                //        BudgetDataService.UpdateMonthTotals(transaction.TransactionDate.Year, transaction.TransactionDate.Month, _currentUserId);
 
-                    // Reset the before edit transaction
-                    _transactionBeforeEdit = null;
-                }
+                //        if (transaction.TransactionDate.Year != oldYear || transaction.TransactionDate.Month != oldMonth)
+                //        {
+                //            BudgetDataService.UpdateMonthTotals(oldYear, oldMonth, _currentUserId);
+                //        }
+                //    });
+
+                //    // Reset the before edit transaction
+                //    _transactionBeforeEdit = null;
+                //}
+
+                // Reset the before edit transaction
+                _transactionBeforeEdit = null;
             }
             else
             {

@@ -50,6 +50,7 @@ namespace BudgetBlazor.DataAccess.Services
         Transaction Update(Transaction transaction);
         PiggyBank Update(PiggyBank piggyBank);
         Account AddTransactionToAccount(Account account, Transaction transaction);
+        Account UpdateTransactionInAccount(Account account, Transaction transaction, Transaction originalTransaction);
         void UpdateMonthTotals(int year, int month, Guid user);
         void UpdateMonthTotals(BudgetMonth budgetMonth);
         void UpdateMonthTotals(int budgetMonthId);
