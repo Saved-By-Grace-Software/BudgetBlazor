@@ -212,7 +212,7 @@ namespace BudgetBlazor.Pages
                 BudgetDataService.Delete(transactionToDelete);
 
                 // Recalculate the budget month totals in the background
-                Task.Run(() => BudgetDataService.UpdateMonthTotals(year, month, _currentUserId));
+                //Task.Run(() => BudgetDataService.UpdateMonthTotals(year, month, _currentUserId));
             }
         }
 

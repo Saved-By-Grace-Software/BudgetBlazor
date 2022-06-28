@@ -520,7 +520,6 @@ namespace BudgetBlazor.DataAccess.Services
 
                 c.Budgeted = totalBudgeted;
                 c.Spent = totalSpent;
-                c.Remaining = totalBudgeted + totalSpent;
 
                 _db.SaveChanges();
             }
@@ -551,7 +550,6 @@ namespace BudgetBlazor.DataAccess.Services
                 }
 
                 i.Spent = totalSpent;
-                i.Remaining = i.Budget + totalSpent;
 
                 _db.SaveChanges();
             }
@@ -703,6 +701,24 @@ namespace BudgetBlazor.DataAccess.Services
 
             if (dbAccount != default(Account))
             {
+                // Update the spent amount on the budget item
+                transaction.Budget.Spent -= transaction.Amount;
+
+                // Update the category's totals to remove this amount
+                BudgetCategory category = GetCategoryFromItem(transaction.Budget);
+                if (category != default(BudgetCategory))
+                {
+                    category.Spent -= transaction.Amount;
+                }
+
+                // Update the month's totals to remove this amount
+                BudgetMonth month = GetMonthFromItem(transaction.Budget);
+                if (month != default(BudgetMonth))
+                {
+                    month.TotalSpent -= transaction.Amount;
+                }
+
+                // Remove the transaction from the account
                 dbAccount.Transactions.Remove(transaction);
 
                 // Delete the transaction
@@ -805,6 +821,20 @@ namespace BudgetBlazor.DataAccess.Services
 
             // Get the month from the db based on the category
             return GetMonthFromCategory(_db.Find<BudgetCategory>(catId));
+        }
+
+        /// <summary>
+        /// Gets the parent category from the given budget item
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        private BudgetCategory? GetCategoryFromItem(BudgetItem item)
+        {
+            // Get the category ID from the item's parent
+            int catId = (int)_db.Entry(item).Property("BudgetCategoryId").CurrentValue;
+
+            // Get the category from the db based on the ID
+            return _db.Find<BudgetCategory>(catId);
         }
 
         /// <summary>
