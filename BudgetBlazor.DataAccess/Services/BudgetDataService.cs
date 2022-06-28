@@ -434,6 +434,61 @@ namespace BudgetBlazor.DataAccess.Services
             return b;
         }
 
+        public Account AddTransactionToAccount(Account account, Transaction transaction)
+        {
+            Account a = _db.Find<Account>(account.Id);
+
+            if (a != default(Account))
+            {
+                // Update the account's data
+                a.LastUpdated = DateTime.Now;
+                a.AccountNumber = account.AccountNumber;
+                a.AccountType = account.AccountType;
+                a.CurrentBalance = account.CurrentBalance;
+                a.Name = account.Name;
+
+                // Add the transaction to the account
+                a.Transactions.Add(transaction);
+
+                // Check if the transaction is tied to a budget
+                if (transaction.Budget != default(BudgetItem))
+                {
+                    // Update the spent amount on the budget item
+                    transaction.Budget.Spent += transaction.Amount;
+
+                    // Update the category's totals to remove this amount
+                    BudgetCategory category = GetCategoryFromItem(transaction.Budget);
+                    if (category != default(BudgetCategory))
+                    {
+                        category.Spent += transaction.Amount;
+                    }
+
+                    // Update the month's totals to remove this amount
+                    BudgetMonth month = GetMonthFromItem(transaction.Budget);
+                    if (month != default(BudgetMonth))
+                    {
+                        month.TotalSpent += transaction.Amount;
+                    }
+                }
+
+                // Save the changes
+                try
+                {
+                    _db.SaveChanges();
+
+                    // Notify subscribers than an account has been updated
+                    RaiseAccountDataChanged();
+                }
+                catch (DbUpdateException ex)
+                {
+                    // Failed to update, return null
+                    a = default(Account);
+                }
+            }
+
+            return a;
+        }
+
         /// <summary>
         /// Updates the totals for the given month
         /// </summary>
@@ -701,21 +756,25 @@ namespace BudgetBlazor.DataAccess.Services
 
             if (dbAccount != default(Account))
             {
-                // Update the spent amount on the budget item
-                transaction.Budget.Spent -= transaction.Amount;
-
-                // Update the category's totals to remove this amount
-                BudgetCategory category = GetCategoryFromItem(transaction.Budget);
-                if (category != default(BudgetCategory))
+                // Check if the transaction is tied to a budget
+                if (transaction.Budget != default(BudgetItem))
                 {
-                    category.Spent -= transaction.Amount;
-                }
+                    // Update the spent amount on the budget item
+                    transaction.Budget.Spent -= transaction.Amount;
 
-                // Update the month's totals to remove this amount
-                BudgetMonth month = GetMonthFromItem(transaction.Budget);
-                if (month != default(BudgetMonth))
-                {
-                    month.TotalSpent -= transaction.Amount;
+                    // Update the category's totals to remove this amount
+                    BudgetCategory category = GetCategoryFromItem(transaction.Budget);
+                    if (category != default(BudgetCategory))
+                    {
+                        category.Spent -= transaction.Amount;
+                    }
+
+                    // Update the month's totals to remove this amount
+                    BudgetMonth month = GetMonthFromItem(transaction.Budget);
+                    if (month != default(BudgetMonth))
+                    {
+                        month.TotalSpent -= transaction.Amount;
+                    }
                 }
 
                 // Remove the transaction from the account

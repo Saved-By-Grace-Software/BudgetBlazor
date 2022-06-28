@@ -133,11 +133,7 @@ namespace BudgetBlazor.Pages
             {
                 // Add the new transaction
                 Transaction transaction = (Transaction)res.Data;
-                Account.Transactions.Add(transaction);
-                BudgetDataService.Update(Account);
-
-                // Recalculate the budget month totals in the background
-                Task.Run(() => BudgetDataService.UpdateMonthTotals(transaction.TransactionDate.Year, transaction.TransactionDate.Month, _currentUserId));
+                BudgetDataService.AddTransactionToAccount(Account, transaction);
             }
         }
 
