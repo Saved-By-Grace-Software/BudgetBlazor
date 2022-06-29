@@ -20,8 +20,14 @@ namespace BudgetBlazor.DataAccess.Models
         [Column(TypeName = "decimal(12,2)")]
         public decimal Spent { get; set; }
 
-        [Column(TypeName = "decimal(12,2)")]
-        public decimal Remaining { get; set; }
+        [NotMapped]
+        public decimal Remaining 
+        { 
+            get
+            {
+                return Budgeted + Spent;
+            }
+        }
 
         public BudgetCategory(string name) : this(name, "#1ec8a54d") { }
 

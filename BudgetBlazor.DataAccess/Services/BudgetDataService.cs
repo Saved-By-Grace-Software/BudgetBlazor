@@ -434,6 +434,134 @@ namespace BudgetBlazor.DataAccess.Services
             return b;
         }
 
+        public Account AddTransactionToAccount(Account account, Transaction transaction)
+        {
+            Account a = _db.Find<Account>(account.Id);
+
+            if (a != default(Account))
+            {
+                // Update the account's data
+                a.LastUpdated = DateTime.Now;
+                a.AccountNumber = account.AccountNumber;
+                a.AccountType = account.AccountType;
+                a.CurrentBalance = account.CurrentBalance;
+                a.Name = account.Name;
+
+                // Add the transaction to the account
+                a.Transactions.Add(transaction);
+
+                // Check if the transaction is tied to a budget
+                if (transaction.Budget != default(BudgetItem))
+                {
+                    // Update the spent amount on the budget item
+                    transaction.Budget.Spent += transaction.Amount;
+
+                    // Update the category's totals to remove this amount
+                    BudgetCategory category = GetCategoryFromItem(transaction.Budget);
+                    if (category != default(BudgetCategory))
+                    {
+                        category.Spent += transaction.Amount;
+                    }
+
+                    // Update the month's totals to remove this amount
+                    BudgetMonth month = GetMonthFromItem(transaction.Budget);
+                    if (month != default(BudgetMonth))
+                    {
+                        month.TotalSpent += transaction.Amount;
+                    }
+                }
+
+                // Save the changes
+                try
+                {
+                    _db.SaveChanges();
+
+                    // Notify subscribers than an account has been updated
+                    RaiseAccountDataChanged();
+                }
+                catch (DbUpdateException ex)
+                {
+                    // Failed to update, return null
+                    a = default(Account);
+                }
+            }
+
+            return a;
+        }
+
+        public Account UpdateTransactionInAccount(Account account, Transaction transaction, Transaction originalTransaction)
+        {
+            Account a = _db.Find<Account>(account.Id);
+
+            if (a != default(Account))
+            {
+                int index = a.Transactions.FindIndex(t => t.Id == transaction.Id);
+                if (index != -1)
+                {
+                    // Update the transaction in the account's transactions
+                    a.Transactions[index] = transaction;
+
+                    // Check if the new transaction is tied to a budget
+                    if (transaction.Budget != default(BudgetItem))
+                    {
+                        // Update the spent amount on the budget item
+                        transaction.Budget.Spent += transaction.Amount;
+
+                        // Update the category's totals to remove this amount
+                        BudgetCategory category = GetCategoryFromItem(transaction.Budget);
+                        if (category != default(BudgetCategory))
+                        {
+                            category.Spent += transaction.Amount;
+                        }
+
+                        // Update the month's totals to remove this amount
+                        BudgetMonth month = GetMonthFromItem(transaction.Budget);
+                        if (month != default(BudgetMonth))
+                        {
+                            month.TotalSpent += transaction.Amount;
+                        }
+                    }
+
+                    // Check if the old transaction was tied to a budget
+                    if (originalTransaction.Budget != default(BudgetItem))
+                    {
+                        // Update the spent amount on the budget item
+                        originalTransaction.Budget.Spent -= originalTransaction.Amount;
+
+                        // Update the category's totals to remove this amount
+                        BudgetCategory category = GetCategoryFromItem(originalTransaction.Budget);
+                        if (category != default(BudgetCategory))
+                        {
+                            category.Spent -= originalTransaction.Amount;
+                        }
+
+                        // Update the month's totals to remove this amount
+                        BudgetMonth month = GetMonthFromItem(originalTransaction.Budget);
+                        if (month != default(BudgetMonth))
+                        {
+                            month.TotalSpent -= originalTransaction.Amount;
+                        }
+                    }
+
+                    // Save the changes
+                    try
+                    {
+                        _db.SaveChanges();
+
+                        // Notify subscribers than an account has been updated
+                        RaiseAccountDataChanged();
+                    }
+                    catch (DbUpdateException ex)
+                    {
+                        // Failed to update, return null
+                        a = default(Account);
+                    }
+                }
+            }
+
+            return a;
+        }
+
         /// <summary>
         /// Updates the totals for the given month
         /// </summary>
@@ -520,7 +648,6 @@ namespace BudgetBlazor.DataAccess.Services
 
                 c.Budgeted = totalBudgeted;
                 c.Spent = totalSpent;
-                c.Remaining = totalBudgeted + totalSpent;
 
                 _db.SaveChanges();
             }
@@ -551,7 +678,6 @@ namespace BudgetBlazor.DataAccess.Services
                 }
 
                 i.Spent = totalSpent;
-                i.Remaining = i.Budget + totalSpent;
 
                 _db.SaveChanges();
             }
@@ -703,6 +829,28 @@ namespace BudgetBlazor.DataAccess.Services
 
             if (dbAccount != default(Account))
             {
+                // Check if the transaction is tied to a budget
+                if (transaction.Budget != default(BudgetItem))
+                {
+                    // Update the spent amount on the budget item
+                    transaction.Budget.Spent -= transaction.Amount;
+
+                    // Update the category's totals to remove this amount
+                    BudgetCategory category = GetCategoryFromItem(transaction.Budget);
+                    if (category != default(BudgetCategory))
+                    {
+                        category.Spent -= transaction.Amount;
+                    }
+
+                    // Update the month's totals to remove this amount
+                    BudgetMonth month = GetMonthFromItem(transaction.Budget);
+                    if (month != default(BudgetMonth))
+                    {
+                        month.TotalSpent -= transaction.Amount;
+                    }
+                }
+
+                // Remove the transaction from the account
                 dbAccount.Transactions.Remove(transaction);
 
                 // Delete the transaction
@@ -805,6 +953,20 @@ namespace BudgetBlazor.DataAccess.Services
 
             // Get the month from the db based on the category
             return GetMonthFromCategory(_db.Find<BudgetCategory>(catId));
+        }
+
+        /// <summary>
+        /// Gets the parent category from the given budget item
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        private BudgetCategory? GetCategoryFromItem(BudgetItem item)
+        {
+            // Get the category ID from the item's parent
+            int catId = (int)_db.Entry(item).Property("BudgetCategoryId").CurrentValue;
+
+            // Get the category from the db based on the ID
+            return _db.Find<BudgetCategory>(catId);
         }
 
         /// <summary>
