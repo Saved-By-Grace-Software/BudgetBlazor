@@ -504,43 +504,43 @@ namespace BudgetBlazor.DataAccess.Services
                     // Check if the new transaction is tied to a budget
                     if (transaction.Budget != default(BudgetItem))
                     {
-                        //// Update the spent amount on the budget item
-                        //transaction.Budget.Spent += transaction.Amount;
+                        // Update the spent amount on the budget item
+                        transaction.Budget.Spent += transaction.Amount;
 
-                        //// Update the category's totals to remove this amount
-                        //BudgetCategory category = GetCategoryFromItem(transaction.Budget);
-                        //if (category != default(BudgetCategory))
-                        //{
-                        //    category.Spent += transaction.Amount;
-                        //}
+                        // Update the category's totals to remove this amount
+                        BudgetCategory category = GetCategoryFromItem(transaction.Budget);
+                        if (category != default(BudgetCategory))
+                        {
+                            category.Spent += transaction.Amount;
+                        }
 
-                        //// Update the month's totals to remove this amount
-                        //BudgetMonth month = GetMonthFromItem(transaction.Budget);
-                        //if (month != default(BudgetMonth))
-                        //{
-                        //    month.TotalSpent += transaction.Amount;
-                        //}
+                        // Update the month's totals to remove this amount
+                        BudgetMonth month = GetMonthFromItem(transaction.Budget);
+                        if (month != default(BudgetMonth))
+                        {
+                            month.TotalSpent += transaction.Amount;
+                        }
                     }
 
                     // Check if the old transaction was tied to a budget
                     if (originalTransaction.Budget != default(BudgetItem))
                     {
-                        //// Update the spent amount on the budget item
-                        //transaction.Budget.Spent += transaction.Amount;
+                        // Update the spent amount on the budget item
+                        originalTransaction.Budget.Spent -= originalTransaction.Amount;
 
-                        //// Update the category's totals to remove this amount
-                        //BudgetCategory category = GetCategoryFromItem(transaction.Budget);
-                        //if (category != default(BudgetCategory))
-                        //{
-                        //    category.Spent += transaction.Amount;
-                        //}
+                        // Update the category's totals to remove this amount
+                        BudgetCategory category = GetCategoryFromItem(originalTransaction.Budget);
+                        if (category != default(BudgetCategory))
+                        {
+                            category.Spent -= originalTransaction.Amount;
+                        }
 
-                        //// Update the month's totals to remove this amount
-                        //BudgetMonth month = GetMonthFromItem(transaction.Budget);
-                        //if (month != default(BudgetMonth))
-                        //{
-                        //    month.TotalSpent += transaction.Amount;
-                        //}
+                        // Update the month's totals to remove this amount
+                        BudgetMonth month = GetMonthFromItem(originalTransaction.Budget);
+                        if (month != default(BudgetMonth))
+                        {
+                            month.TotalSpent -= originalTransaction.Amount;
+                        }
                     }
 
                     // Save the changes
