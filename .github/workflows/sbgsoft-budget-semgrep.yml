@@ -12,6 +12,7 @@ on:
   # paths or branches, see the following GitHub documentation:
   # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#pull_request
   pull_request: {}
+  workflow_dispatch:
 
 jobs:
   semgrep:
