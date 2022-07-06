@@ -6,11 +6,6 @@ namespace BudgetBlazor.DataAccess.Services
 {
     public class BudgetDataService : IBudgetDataService
     {
-        // This is my password and social security number!
-        public string MyPassword = "password";
-        public string SSN = "123-45-6789";
-
-
         private readonly ApplicationDbContext _db;
         public event IBudgetDataService.NotifyBudgetDataChange BudgetDataChanged;
         public event IBudgetDataService.NotifyAccountDataChange AccountDataChanged;
