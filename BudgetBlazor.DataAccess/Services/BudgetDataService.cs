@@ -19,6 +19,9 @@ namespace BudgetBlazor.DataAccess.Services
         public BudgetDataService(ApplicationDbContext db)
         {
             _db = db;
+
+            // Bad stuff!
+            if (db == null) { }
         }
 
         #region Create
