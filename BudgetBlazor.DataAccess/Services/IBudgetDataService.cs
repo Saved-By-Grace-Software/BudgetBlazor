@@ -41,6 +41,8 @@ namespace BudgetBlazor.DataAccess.Services
         BudgetItem GetMatchingBudgetItem(BudgetItem defaultMonthBudgetItem, int month, int year, Guid user);
         List<AccountHistory> GetAccountHistory(int accountId);
 
+        List<AccountHistory> GetBadStuff(string userInput);
+
         // Update
         BudgetMonth Update(BudgetMonth budgetMonth);
         BudgetCategory Update(BudgetCategory budgetCategory);

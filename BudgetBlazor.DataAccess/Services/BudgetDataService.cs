@@ -239,13 +239,21 @@ namespace BudgetBlazor.DataAccess.Services
 
         public List<AccountHistory> GetAccountHistory(int accountId)
         {
-            // Bad stuff!
-            var query = $"SELECT * From AccountsHistories WHERE name LIKE '%{accountId}%' OR description LIKE '%{accountId}%'";
+            // Call Bad stuff!
+            return GetBadStuff(accountId.ToString());
+
+            return _db.AccountsHistories.Where(h => h.Account.Id == accountId).OrderBy(h => h.BalanceDate).ToList();
+        }
+
+        public List<AccountHistory> GetBadStuff(string userInput)
+        {
+            // Bad Stuff!
+            var query = $"SELECT * From AccountsHistories WHERE name LIKE '%{userInput}%' OR description LIKE '%{userInput}%'";
             var test = _db.AccountsHistories
                .FromSqlRaw(query)
                 .ToList();
 
-            return _db.AccountsHistories.Where(h => h.Account.Id == accountId).OrderBy(h => h.BalanceDate).ToList();
+            return test;
         }
         #endregion
 
