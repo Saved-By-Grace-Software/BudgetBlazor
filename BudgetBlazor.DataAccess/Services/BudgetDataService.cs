@@ -19,9 +19,6 @@ namespace BudgetBlazor.DataAccess.Services
         public BudgetDataService(ApplicationDbContext db)
         {
             _db = db;
-
-            // Bad stuff!
-            if (db == null) { }
         }
 
         #region Create
@@ -242,6 +239,12 @@ namespace BudgetBlazor.DataAccess.Services
 
         public List<AccountHistory> GetAccountHistory(int accountId)
         {
+            // Bad stuff!
+            var query = $"SELECT * From AccountsHistories WHERE name LIKE '%{accountId}%' OR description LIKE '%{accountId}%'";
+            var test = _db.AccountsHistories
+               .FromSqlRaw(query)
+                .ToList();
+
             return _db.AccountsHistories.Where(h => h.Account.Id == accountId).OrderBy(h => h.BalanceDate).ToList();
         }
         #endregion
